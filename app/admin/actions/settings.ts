@@ -16,10 +16,6 @@ const SettingsInput = z.object({
   heroEyebrow: z.string().trim().max(60),
   heroHeadline: z.string().trim().min(1, "Headline is required").max(120),
   heroHeadlineAccent: z.string().trim().max(60),
-  heroImagePath: z
-    .string()
-    .regex(/^hero\/[0-9a-f-]{36}\.jpg$/)
-    .nullable(),
   defaultDetailsText: z.string().trim().max(4000),
   defaultCareText: z.string().trim().max(4000),
   defaultDeliveryText: z.string().trim().max(4000),
@@ -47,7 +43,7 @@ export async function saveSettings(input: SettingsInputT): Promise<ActionResult>
       hero_eyebrow: v.heroEyebrow,
       hero_headline: v.heroHeadline,
       hero_headline_accent: v.heroHeadlineAccent,
-      hero_image_path: v.heroImagePath,
+      hero_image_path: null, // hero background is now the static /images/hero.jpg
       default_details_text: v.defaultDetailsText,
       default_care_text: v.defaultCareText,
       default_delivery_text: v.defaultDeliveryText,
@@ -56,7 +52,8 @@ export async function saveSettings(input: SettingsInputT): Promise<ActionResult>
     })
     .eq("id", 1);
   if (error) return { ok: false, error: error.message };
-  if (before?.hero_image_path && before.hero_image_path !== v.heroImagePath) {
+  if (before?.hero_image_path) {
+    // Clean up a previously uploaded hero image.
     await supabase.storage.from("site").remove([before.hero_image_path]);
   }
   updateTag(TAGS.settings);

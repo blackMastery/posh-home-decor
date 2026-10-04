@@ -157,21 +157,25 @@
   }
 }
 
-/* Hero parallax: progressive enhancement via scroll-driven animations. */
-@keyframes hero-parallax {
-  from {
-    transform: translateY(0) scale(1.08);
-  }
+/* Hero accent: slow gold light sweep across the italic words. */
+@keyframes hero-shimmer {
   to {
-    transform: translateY(12%) scale(1.08);
+    background-position: -200% 0;
   }
 }
-@supports (animation-timeline: view()) {
+.hero-shimmer {
+  color: var(--color-gold-light);
+}
+@supports (background-clip: text) {
+  .hero-shimmer {
+    background: linear-gradient(100deg, var(--color-gold) 20%, #f6e3b4 40%, var(--color-gold-light) 55%, var(--color-gold) 80%) 0 0 / 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
   @media (prefers-reduced-motion: no-preference) {
-    .hero-parallax {
-      animation: hero-parallax linear both;
-      animation-timeline: view();
-      animation-range: exit;
+    .hero-shimmer {
+      animation: hero-shimmer 6s linear 1.6s infinite;
     }
   }
 }

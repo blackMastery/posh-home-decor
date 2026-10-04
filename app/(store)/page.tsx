@@ -6,6 +6,7 @@ import { PoshImage } from "@/components/ui/posh-image";
 import { ArrowRight, WhatsAppIcon } from "@/components/ui/icons";
 import { TrackedWhatsAppLink } from "@/components/store/tracked-link";
 import { JsonLd } from "@/components/store/json-ld";
+import { HomeHero } from "@/components/store/home-hero";
 import { waUrl } from "@/lib/whatsapp/message";
 import { SITE_URL } from "@/lib/env";
 
@@ -38,25 +39,7 @@ export default async function HomePage() {
       />
 
       {/* 1. Hero */}
-      <section className="relative isolate flex min-h-[min(88svh,820px)] items-end overflow-hidden bg-garnet-deep text-cream">
-        <div className="hero-parallax absolute inset-0 -z-20">
-          {settings.hero_image_path ? (
-            <PoshImage path={settings.hero_image_path} bucket="site" alt="" fill priority sizes="100vw" className="object-cover" />
-          ) : (
-            <Image src="/images/hero.jpg" alt="" fill priority sizes="100vw" className="object-cover" />
-          )}
-        </div>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(62,7,16,0.15)_0%,rgba(62,7,16,0.35)_45%,rgba(62,7,16,0.88)_100%)]" />
-        <div className="container-posh pt-40 pb-[clamp(48px,9vh,96px)]">
-          <p className="eyebrow text-gold">{settings.hero_eyebrow}</p>
-          <h1 className="mt-5 max-w-[14ch] font-display text-[clamp(42px,6.5vw,96px)] leading-[0.98] font-medium">
-            {settings.hero_headline} <em className="font-normal text-gold-light">{settings.hero_headline_accent}</em>
-          </h1>
-          <Link href="/shop" className="btn btn-gold mt-10">
-            Shop the collection <ArrowRight size={16} />
-          </Link>
-        </div>
-      </section>
+      <HomeHero eyebrow={settings.hero_eyebrow} headline={settings.hero_headline} accent={settings.hero_headline_accent} />
 
       {/* 2. Shop by category */}
       {tiles.length > 0 && (

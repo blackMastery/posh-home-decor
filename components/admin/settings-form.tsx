@@ -4,9 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { saveSettings, type SettingsInputT } from "@/app/admin/actions/settings";
-import { createClient } from "@/lib/supabase/browser";
-import { PoshImage } from "@/components/ui/posh-image";
-import { prepareImage } from "./image-prep";
 
 type Values = Omit<SettingsInputT, "newWindowDays"> & { newWindowDays: number };
 
@@ -17,27 +14,11 @@ export function SettingsForm({ initial }: { initial: Values }) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [heroStatus, setHeroStatus] = useState<string | null>(null);
   const set = <K extends keyof Values>(k: K, val: Values[K]) => setV((p) => ({ ...p, [k]: val }));
 
   const digits = v.whatsappNumber.replace(/\D/g, "");
   const label = "mb-2 block text-[13px] font-medium tracking-[0.08em] text-ink-soft uppercase";
   const err = (k: string) => fieldErrors[k] && <p className="mt-1.5 text-[13px] text-error">{fieldErrors[k]}</p>;
-
-  async function onHero(file: File) {
-    try {
-      setHeroStatus("Preparing…");
-      const prepared = await prepareImage(file, (p) => setHeroStatus(`Preparing ${p}%`));
-      setHeroStatus("Uploading…");
-      const path = `hero/${crypto.randomUUID()}.jpg`;
-      const { error } = await createClient().storage.from("site").upload(path, prepared.blob, { contentType: "image/jpeg" });
-      if (error) throw new Error("Upload failed — check your connection");
-      set("heroImagePath", path);
-      setHeroStatus("Uploaded — press Save to publish it.");
-    } catch (e) {
-      setHeroStatus(e instanceof Error ? e.message : "Upload failed");
-    }
-  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,7 +33,6 @@ export function SettingsForm({ initial }: { initial: Values }) {
       return;
     }
     setMsg({ ok: true, text: "Settings saved." });
-    setHeroStatus(null);
     router.refresh();
   }
 
@@ -111,34 +91,15 @@ export function SettingsForm({ initial }: { initial: Values }) {
 
       <section className="space-y-5 border-t border-line pt-8">
         <h2 className="text-[18px] font-medium text-garnet-deep">Home page hero</h2>
+        <p className="-mt-3 text-[13px] text-muted">The background image is fixed; only the text below can be changed.</p>
         <div className="relative aspect-[16/9] overflow-hidden bg-garnet-deep">
-          {v.heroImagePath ? (
-            <PoshImage path={v.heroImagePath} bucket="site" alt="" fill sizes="(max-width: 1024px) 100vw, 720px" className="object-cover opacity-80" />
-          ) : (
-            <Image src="/images/hero.jpg" alt="" fill sizes="(max-width: 1024px) 100vw, 720px" className="object-cover opacity-80" />
-          )}
+          <Image src="/images/hero.jpg" alt="" fill sizes="(max-width: 1024px) 100vw, 720px" className="object-cover opacity-80" />
           <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(62,7,16,0.85))] p-4 text-cream">
             <p className="text-[10px] tracking-[0.24em] text-gold uppercase">{v.heroEyebrow}</p>
             <p className="font-display text-[26px] leading-tight">
               {v.heroHeadline} <em className="text-gold-light">{v.heroHeadlineAccent}</em>
             </p>
           </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="btn btn-outline min-h-11 cursor-pointer px-4">
-            Change image
-            <input type="file" accept="image/*,.heic,.heif" className="sr-only" onChange={(e) => e.target.files?.[0] && void onHero(e.target.files[0])} />
-          </label>
-          {v.heroImagePath && (
-            <button type="button" className="min-h-11 px-3 text-[14px] text-error" onClick={() => set("heroImagePath", null)}>
-              Use default image
-            </button>
-          )}
-          {heroStatus && (
-            <span role="status" className="text-[13px] text-muted">
-              {heroStatus}
-            </span>
-          )}
         </div>
         <div>
           <label htmlFor={`${ids}-he`} className={label}>

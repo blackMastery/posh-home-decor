@@ -19,7 +19,6 @@ export default async function SettingsPage() {
           heroEyebrow: s.hero_eyebrow,
           heroHeadline: s.hero_headline,
           heroHeadlineAccent: s.hero_headline_accent,
-          heroImagePath: s.hero_image_path,
           defaultDetailsText: s.default_details_text,
           defaultCareText: s.default_care_text,
           defaultDeliveryText: s.default_delivery_text,
