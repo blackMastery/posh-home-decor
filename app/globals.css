@@ -1,26 +1,223 @@
 @import "tailwindcss";
+@source "./";
+@source "../components";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Posh design tokens (spec §2). Contrast-adjusted where noted (spec §10). */
+@theme {
+  --color-cream: #fbf7ef;
+  --color-cream-raised: #fffdf8;
+  --color-sand: #f1e6d0;
+  --color-sand-image: #efe4cf;
+  --color-line: #e8dcc4;
+  --color-line-strong: #d9c7a4;
+  --color-garnet: #6b0f1a;
+  --color-garnet-hover: #861726;
+  --color-garnet-deep: #3e0710;
+  --color-gold: #d9b36a;
+  --color-gold-light: #e3c07a;
+  --color-gold-light-hover: #e9c98a;
+  /* #9A7431 fails AA for small text on cream (4.0:1); darkened to 4.85:1. */
+  --color-bronze: #8a672b;
+  --color-ink: #2a1a16;
+  --color-ink-soft: #4a3a34;
+  /* #8A7766 fails AA at 12px on cream (4.0:1); darkened per spec §10 to 5.2:1. */
+  --color-muted: #76655a;
+  --color-error: #a3162a;
+  --color-whatsapp: #25d366;
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-jost), "Jost", system-ui, sans-serif;
+
+  --breakpoint-nav: 53.75rem; /* 860px — hamburger below */
+
+  --ease-spring: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067, 1.099 24.3%, 1.108 26%, 1.1, 1.084 30.6%, 1.019 39.1%, 1.002 42.4%, 0.993 47.4%, 1.001 63.2%, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-garnet-deep);
+  }
+  em {
+    font-style: italic;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Page container: 1320px max, fluid gutter. */
+@utility container-posh {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
+}
+
+/* Uppercase label. */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+@utility label-caps {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@utility tap {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Buttons */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 28px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+@utility btn-primary {
+  background: var(--color-garnet);
+  color: var(--color-cream);
+  &:hover:not(:disabled) {
+    background: var(--color-garnet-hover);
+  }
+}
+@utility btn-gold {
+  background: var(--color-gold);
+  color: var(--color-garnet-deep);
+  &:hover:not(:disabled) {
+    background: var(--color-gold-light-hover);
+  }
+}
+@utility btn-outline {
+  border: 1px solid var(--color-garnet);
+  color: var(--color-garnet);
+  &:hover:not(:disabled) {
+    background: var(--color-garnet);
+    color: var(--color-cream);
+  }
+}
+
+/* Form fields */
+@utility field {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  background: var(--color-cream-raised);
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-ink);
+  font-size: 16px; /* avoids iOS zoom */
+  border-radius: 0;
+  &::placeholder {
+    color: var(--color-muted);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--color-garnet);
+    box-shadow: 0 0 0 1px var(--color-garnet);
+  }
+  &[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
+}
+
+/* Hero parallax: progressive enhancement via scroll-driven animations. */
+@keyframes hero-parallax {
+  from {
+    transform: translateY(0) scale(1.08);
+  }
+  to {
+    transform: translateY(12%) scale(1.08);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-parallax {
+      animation: hero-parallax linear both;
+      animation-timeline: view();
+      animation-range: exit;
+    }
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
