@@ -43,7 +43,7 @@ export async function saveSettings(input: SettingsInputT): Promise<ActionResult>
       hero_eyebrow: v.heroEyebrow,
       hero_headline: v.heroHeadline,
       hero_headline_accent: v.heroHeadlineAccent,
-      hero_image_path: null, // hero background is now the static /images/hero.jpg
+      hero_image_path: null, // hero background is now the static public/images/hero-collage.jpg
       default_details_text: v.defaultDetailsText,
       default_care_text: v.defaultCareText,
       default_delivery_text: v.defaultDeliveryText,

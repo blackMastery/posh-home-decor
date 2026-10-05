@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import heroCollage from "@/public/images/hero-collage.jpg";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { saveSettings, type SettingsInputT } from "@/app/admin/actions/settings";
@@ -93,7 +94,7 @@ export function SettingsForm({ initial }: { initial: Values }) {
         <h2 className="text-[18px] font-medium text-brown-deep">Home page hero</h2>
         <p className="-mt-3 text-[13px] text-muted">The background image is fixed; only the text below can be changed.</p>
         <div className="relative aspect-[16/9] overflow-hidden bg-brown-deep">
-          <Image src="/images/hero.jpg" alt="" fill sizes="(max-width: 1024px) 100vw, 720px" className="object-cover opacity-80" />
+          <Image src={heroCollage} alt="" fill sizes="(max-width: 1024px) 100vw, 720px" className="object-cover opacity-80" />
           <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(59,35,20,0.85))] p-4 text-cream">
             <p className="text-[10px] tracking-[0.24em] text-gold uppercase">{v.heroEyebrow}</p>
             <p className="font-display text-[26px] leading-tight">

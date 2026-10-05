@@ -1,19 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import heroCollage from "@/public/images/hero-collage.jpg";
 import Link from "next/link";
 import { useRef } from "react";
-import {
-  MotionConfig,
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  type Variants,
-} from "motion/react";
+import { MotionConfig, motion, useReducedMotion, useScroll, useTransform, type Variants } from "motion/react";
 import { ArrowRight } from "@/components/ui/icons";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -32,45 +23,16 @@ const fadeUp: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE } },
 };
 
-// Fixed values (not Math.random) so server and client render identically.
-const MOTES = [
-  { x: 8, size: 3, dur: 14, delay: 0.5, sway: 14 },
-  { x: 19, size: 2, dur: 18, delay: 4, sway: -10 },
-  { x: 31, size: 4, dur: 16, delay: 2, sway: 18 },
-  { x: 44, size: 2, dur: 20, delay: 7, sway: -12 },
-  { x: 52, size: 3, dur: 15, delay: 1.2, sway: 10 },
-  { x: 61, size: 2, dur: 19, delay: 5.5, sway: -16 },
-  { x: 70, size: 4, dur: 17, delay: 3, sway: 12 },
-  { x: 79, size: 2, dur: 21, delay: 8, sway: -8 },
-  { x: 88, size: 3, dur: 15, delay: 2.5, sway: 16 },
-  { x: 95, size: 2, dur: 18, delay: 6, sway: -14 },
-];
-
 type Props = { eyebrow: string; headline: string; accent: string };
 
 export function HomeHero({ eyebrow, headline, accent }: Props) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
 
-  // Scroll: background drifts slower than the page, copy lifts and fades out.
+  // Scroll: copy lifts and fades out.
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", reduce ? "0%" : "18%"]);
   const copyY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -80]);
   const copyOpacity = useTransform(scrollYProgress, [0.15, 0.75], [1, reduce ? 1 : 0]);
-
-  // Pointer: a soft gold glow follows the cursor (fine pointers only).
-  const px = useMotionValue(70);
-  const py = useMotionValue(30);
-  const gx = useSpring(px, { stiffness: 60, damping: 20 });
-  const gy = useSpring(py, { stiffness: 60, damping: 20 });
-  const glow = useMotionTemplate`radial-gradient(600px circle at ${gx}% ${gy}%, rgba(227,192,122,0.22), transparent 60%)`;
-
-  function onPointerMove(e: React.PointerEvent<HTMLElement>) {
-    if (e.pointerType !== "mouse") return;
-    const r = e.currentTarget.getBoundingClientRect();
-    px.set(((e.clientX - r.left) / r.width) * 100);
-    py.set(((e.clientY - r.top) / r.height) * 100);
-  }
 
   const headWords = headline.split(/\s+/).filter(Boolean);
   const accentWords = accent.split(/\s+/).filter(Boolean);
@@ -79,38 +41,14 @@ export function HomeHero({ eyebrow, headline, accent }: Props) {
     <MotionConfig reducedMotion="user">
       <section
         ref={ref}
-        onPointerMove={onPointerMove}
         className="relative isolate flex min-h-[max(520px,min(calc(100svh-7.5rem),880px))] items-end overflow-hidden bg-brown-deep text-cream"
       >
-        {/* Static background: slow Ken Burns settle + scroll parallax */}
-        <motion.div className="absolute inset-x-0 -top-[18%] bottom-0 -z-30" style={{ y: bgY }}>
-          <motion.div
-            className="absolute inset-0"
-            initial={{ scale: 1.18, opacity: 0 }}
-            animate={{ scale: 1.06, opacity: 1 }}
-            transition={{ duration: 2.4, ease: EASE }}
-          >
-            <Image src="/images/hero.jpg" alt="" fill priority sizes="100vw" className="object-cover" />
-          </motion.div>
-        </motion.div>
+        {/* Background: chair, sideboard and box photos combined into one wide image (public/hero-section). */}
+        <Image src={heroCollage} alt="" fill priority sizes="100vw" className="-z-30 object-cover" />
 
-        {/* Garnet wash + cursor glow */}
-        <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(59,35,20,0.25)_0%,rgba(59,35,20,0.45)_45%,rgba(59,35,20,0.92)_100%)]" />
-        <motion.div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden md:block" style={{ background: glow }} />
-
-        {/* Candle-light motes drifting upward */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-          {MOTES.map((m, i) => (
-            <motion.span
-              key={i}
-              className="absolute bottom-0 rounded-full bg-gold-light shadow-[0_0_12px_2px_rgba(227,192,122,0.55)]"
-              style={{ left: `${m.x}%`, width: m.size, height: m.size }}
-              initial={{ y: 0, opacity: 0 }}
-              animate={reduce ? { opacity: 0 } : { y: "-85vh", opacity: [0, 0.9, 0.9, 0], x: [0, m.sway, -m.sway, 0] }}
-              transition={{ duration: m.dur, delay: m.delay, repeat: Infinity, ease: "linear" }}
-            />
-          ))}
-        </div>
+        {/* Brown wash: darker at the bottom and left so the copy stays legible over light photos */}
+        <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(59,35,20,0.15)_0%,rgba(59,35,20,0.4)_45%,rgba(59,35,20,0.9)_100%)]" />
+        <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(59,35,20,0.55)_0%,rgba(59,35,20,0)_65%)]" />
 
         <motion.div
           className="container-posh pt-24 pb-[clamp(48px,9vh,112px)]"

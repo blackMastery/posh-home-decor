@@ -194,31 +194,11 @@ async function seedProductImages() {
   console.log('• Product photos uploaded')
 }
 
-// Static brand imagery in /public/images (hero fallback, studio band, OG).
+// Studio band placeholders in /public/images. The hero (hero-collage.jpg) and OG image are real assets — don't regenerate them here.
 async function writeStaticImages() {
   await mkdir('public/images', { recursive: true })
-  const hero = `
-    <defs>
-      <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9DBC0"/><stop offset="1" stop-color="#CDB48A"/></linearGradient>
-      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F1D79C"/><stop offset="1" stop-color="#8E6A2A"/></linearGradient>
-    </defs>
-    <rect width="1600" height="2000" fill="url(#wall)"/>
-    <rect x="980" y="160" width="460" height="760" rx="230" fill="#F6EEDD" stroke="url(#g)" stroke-width="14"/>
-    <rect y="1380" width="1600" height="620" fill="#8C5A3C"/>
-    <rect y="1340" width="1600" height="60" fill="#6F4630"/>
-    <path d="M300 1340 C220 1100 240 900 380 820 L520 820 C660 900 680 1100 600 1340 Z" fill="#F7F0E1" stroke="url(#g)" stroke-width="8"/>
-    <rect x="740" y="1040" width="90" height="300" rx="10" fill="#FBF6EA"/><path d="M785 980 C805 1010 800 1030 785 1040 C770 1030 765 1010 785 980 Z" fill="#E9B25A"/>
-    <rect x="880" y="1120" width="90" height="220" rx="10" fill="#FBF6EA"/><path d="M925 1060 C945 1090 940 1110 925 1120 C910 1110 905 1090 925 1060 Z" fill="#E9B25A"/>
-    <circle cx="1220" cy="1170" r="170" fill="#B68A4E"/>
-    <path d="M420 820 C400 600 300 500 260 420 M460 820 C480 560 560 480 620 380" stroke="#5E6B3A" stroke-width="10" fill="none"/>
-    <ellipse cx="250" cy="400" rx="70" ry="110" fill="#E9C7B0"/><ellipse cx="630" cy="360" rx="60" ry="100" fill="#F0D6C2"/>`
-  await sharp(svg(hero, 2400, 1500)).resize(2400, 1500, { fit: 'cover' }).jpeg({ quality: 82, mozjpeg: true }).toFile('public/images/hero.jpg')
   await sharp(svg(art.lamp(1), 1200, 1500)).resize(1200, 1500).jpeg({ quality: 82, mozjpeg: true }).toFile('public/images/studio-1.jpg')
   await sharp(svg(art.jar(1), 1200, 1500)).resize(1200, 1500).jpeg({ quality: 82, mozjpeg: true }).toFile('public/images/studio-2.jpg')
-  const og = `<rect width="1600" height="2000" fill="#3E0710"/>
-    <text x="800" y="960" font-family="Georgia, serif" font-size="260" fill="#D9B36A" text-anchor="middle" letter-spacing="40">POSH</text>
-    <text x="800" y="1120" font-family="Helvetica, Arial, sans-serif" font-size="64" fill="#FBF7EF" text-anchor="middle" letter-spacing="14">HOME DECOR · GEORGETOWN</text>`
-  await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 685 1600 840">${og}</svg>`)).jpeg({ quality: 85 }).toFile('public/images/og-default.jpg')
   console.log('• Static images written to public/images')
 }
 
