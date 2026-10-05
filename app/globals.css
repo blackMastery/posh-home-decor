@@ -13,6 +13,9 @@
   --color-brown: #774622;
   --color-brown-hover: #8b5530;
   --color-brown-deep: #3b2314;
+  /* Primary button fill: light beige with brown-deep text (8.6:1). */
+  --color-beige: #dcc7a4;
+  --color-beige-hover: #d1b98f;
   --color-gold: #c49a52;
   --color-gold-light: #d6b06a;
   --color-gold-light-hover: #dfbd7d;
@@ -113,10 +116,10 @@
   }
 }
 @utility btn-primary {
-  background: var(--color-brown);
-  color: var(--color-cream);
+  background: var(--color-beige);
+  color: var(--color-brown-deep);
   &:hover:not(:disabled) {
-    background: var(--color-brown-hover);
+    background: var(--color-beige-hover);
   }
 }
 @utility btn-gold {

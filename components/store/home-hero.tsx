@@ -153,14 +153,6 @@ export function HomeHero({ eyebrow, headline, accent }: Props) {
                 <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </motion.div>
-            <Link
-              href="#styling-studio"
-              className="label-caps group inline-flex min-h-11 items-center gap-2 text-cream/90 hover:text-gold-light"
-            >
-              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-1 transition-[background-size] duration-500 group-hover:bg-[length:100%_1px]">
-                Book a stylist
-              </span>
-            </Link>
           </motion.div>
         </motion.div>
 

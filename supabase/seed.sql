@@ -4,7 +4,7 @@
 update public.settings set
   whatsapp_number = '5926748619',
   display_phone = '674 8619',
-  hero_eyebrow = 'The Autumn Edit',
+  hero_eyebrow = '',
   hero_headline = 'Taking your decorations to the',
   hero_headline_accent = 'next level.',
   default_details_text = 'Each piece is selected by our Georgetown studio. Dimensions are approximate; natural materials vary slightly from piece to piece.',
