@@ -52,7 +52,7 @@ export async function SiteFooter() {
       </div>
       <div className="border-t border-cream/10">
         <div className="container-posh flex flex-col gap-3 py-6 text-[12px] text-cream/60 md:flex-row md:items-center md:justify-between">
-          <p>© Posh Home Decor &amp; Styling Studio</p>
+          <p>© Posh Home Decor &amp; Home Styling Studio</p>
           <p className="max-w-xl md:text-right">
             Privacy: when you order, we keep your name, number and order details for up to 12 months to help with your
             purchase. Your bag and saved pieces stay on your device.

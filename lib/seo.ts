@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const BRAND_NAME = "Posh Home Decor & Styling Studio";
+export const BRAND_NAME = "Posh Home Decor & Home Styling Studio";
 
 export const DEFAULT_OG_IMAGE = { url: "/images/og-default.jpg", width: 1200, height: 630, alt: BRAND_NAME };
 
