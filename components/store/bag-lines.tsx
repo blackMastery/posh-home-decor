@@ -44,7 +44,7 @@ export function QtyStepper({
         type="button"
         onClick={() => onChange(value - 1)}
         disabled={value <= min}
-        className="inline-flex w-11 items-center justify-center text-garnet disabled:opacity-40"
+        className="inline-flex w-11 items-center justify-center text-brown disabled:opacity-40"
         aria-label={value <= 1 && min === 0 ? "Remove" : "Decrease quantity"}
       >
         <MinusIcon size={16} />
@@ -56,7 +56,7 @@ export function QtyStepper({
         type="button"
         onClick={() => onChange(value + 1)}
         disabled={value >= MAX_QTY}
-        className="inline-flex w-11 items-center justify-center text-garnet disabled:opacity-40"
+        className="inline-flex w-11 items-center justify-center text-brown disabled:opacity-40"
         aria-label="Increase quantity"
       >
         <PlusIcon size={16} />
@@ -85,13 +85,13 @@ export function BagLineItem({ line, onNavigate }: { line: BagLine; onNavigate?: 
             <Link
               href={`/products/${p.slug}`}
               onClick={onNavigate}
-              className="font-display text-[19px] leading-tight font-medium text-garnet-deep hover:text-garnet"
+              className="font-display text-[19px] leading-tight font-medium text-brown-deep hover:text-brown"
             >
               {p.name}
             </Link>
             {p.note && <p className="mt-0.5 text-[13px] text-muted">{p.note}</p>}
           </div>
-          <p className="shrink-0 text-[15px] font-medium text-garnet">{formatPrice(line.lineTotal, pricePrefix)}</p>
+          <p className="shrink-0 text-[15px] font-medium text-brown">{formatPrice(line.lineTotal, pricePrefix)}</p>
         </div>
         {!p.is_available && (
           <p className="mt-2 text-[13px] text-error">Sold out — we&apos;ll suggest alternatives in the chat</p>
@@ -101,7 +101,7 @@ export function BagLineItem({ line, onNavigate }: { line: BagLine; onNavigate?: 
           <button
             type="button"
             onClick={() => bag.remove(p.id)}
-            className="tap text-[12px] tracking-[0.14em] text-muted uppercase underline-offset-4 hover:text-garnet hover:underline"
+            className="tap text-[12px] tracking-[0.14em] text-muted uppercase underline-offset-4 hover:text-brown hover:underline"
           >
             Remove
           </button>
@@ -120,7 +120,7 @@ export function RemovedNotice() {
         {removedNotice} item{removedNotice === 1 ? " is" : "s are"} no longer listed and{" "}
         {removedNotice === 1 ? "was" : "were"} removed.
       </span>
-      <button type="button" onClick={clearRemovedNotice} className="label-caps shrink-0 text-garnet" aria-label="Dismiss notice">
+      <button type="button" onClick={clearRemovedNotice} className="label-caps shrink-0 text-brown" aria-label="Dismiss notice">
         OK
       </button>
     </div>

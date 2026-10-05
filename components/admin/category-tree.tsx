@@ -105,7 +105,7 @@ export function CategoryTree({ categories }: { categories: AdminCategory[] }) {
               <div className="flex items-center gap-2" style={{ paddingLeft: `${(c.depth - 1) * 20}px` }}>
                 {c.depth > 1 && <span className="text-line-strong" aria-hidden>└</span>}
                 <div className="min-w-0 flex-1 py-2">
-                  <p className={`truncate ${c.depth === 1 ? "text-[16px] font-medium text-garnet-deep" : "text-[15px]"}`}>{c.name}</p>
+                  <p className={`truncate ${c.depth === 1 ? "text-[16px] font-medium text-brown-deep" : "text-[15px]"}`}>{c.name}</p>
                   <p className="truncate text-[12px] text-muted">
                     /shop/{c.path} · {c.subtreeCount} product{c.subtreeCount === 1 ? "" : "s"}
                   </p>
@@ -205,7 +205,7 @@ function Action({ children, onClick, disabled, danger }: { children: React.React
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="my-2 border border-line-strong bg-cream-raised p-4">
-      <p className="mb-3 text-[14px] font-medium text-garnet-deep">{title}</p>
+      <p className="mb-3 text-[14px] font-medium text-brown-deep">{title}</p>
       {children}
     </div>
   );
@@ -258,7 +258,7 @@ function RenameForm({
       >
         <input autoFocus aria-label="New name" className="field" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} />
         <label className="flex min-h-11 items-start gap-3 text-[14px]">
-          <input type="checkbox" className="mt-1 h-5 w-5 accent-garnet" checked={updateSlug} onChange={(e) => setUpdateSlug(e.target.checked)} />
+          <input type="checkbox" className="mt-1 h-5 w-5 accent-brown" checked={updateSlug} onChange={(e) => setUpdateSlug(e.target.checked)} />
           <span>
             Also update the web address
             <span className="block text-[12px] text-muted">Old links will keep working — they redirect to the new address.</span>
@@ -369,7 +369,7 @@ function TileForm({ category, onDone }: { category: AdminCategory; onDone: (erro
             </button>
           )}
           {status && <p role="status">{status}</p>}
-          <button type="button" className="block min-h-11 text-garnet" onClick={() => onDone()}>
+          <button type="button" className="block min-h-11 text-brown" onClick={() => onDone()}>
             Close
           </button>
         </div>

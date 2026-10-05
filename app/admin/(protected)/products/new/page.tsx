@@ -14,10 +14,10 @@ export default async function NewProductPage() {
   const id = crypto.randomUUID();
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8 lg:py-10">
-      <Link href="/admin/products" className="inline-flex min-h-11 items-center text-[14px] text-garnet">
+      <Link href="/admin/products" className="inline-flex min-h-11 items-center text-[14px] text-brown">
         ← Products
       </Link>
-      <h1 className="mt-1 mb-6 text-[26px] font-medium text-garnet-deep">New product</h1>
+      <h1 className="mt-1 mb-6 text-[26px] font-medium text-brown-deep">New product</h1>
       <ProductForm
         key={id}
         productId={id}

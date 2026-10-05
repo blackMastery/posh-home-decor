@@ -19,10 +19,10 @@ export function AdminNav({ pathname }: { pathname: string }) {
     <>
       {/* Top bar (mobile) / rail header (desktop) */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-cream/95 px-4 backdrop-blur lg:hidden">
-        <Link href="/admin/inquiries" className="font-display text-[22px] font-semibold tracking-[0.24em] text-garnet-deep">
+        <Link href="/admin/inquiries" className="font-display text-[22px] font-semibold tracking-[0.24em] text-brown-deep">
           POSH <span className="font-sans text-[11px] font-medium tracking-[0.2em] text-bronze">ADMIN</span>
         </Link>
-        <Link href="/" target="_blank" className="label-caps inline-flex min-h-11 items-center text-garnet">
+        <Link href="/" target="_blank" className="label-caps inline-flex min-h-11 items-center text-brown">
           View site ↗
         </Link>
       </header>
@@ -32,7 +32,7 @@ export function AdminNav({ pathname }: { pathname: string }) {
         className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-cream-raised pb-[env(safe-area-inset-bottom)] lg:sticky lg:top-0 lg:h-dvh lg:w-60 lg:shrink-0 lg:border-t-0 lg:border-r lg:pb-0"
       >
         <div className="hidden px-6 pt-8 pb-10 lg:block">
-          <Link href="/admin/inquiries" className="font-display text-[26px] font-semibold tracking-[0.24em] text-garnet-deep">
+          <Link href="/admin/inquiries" className="font-display text-[26px] font-semibold tracking-[0.24em] text-brown-deep">
             POSH
           </Link>
           <p className="text-[11px] font-medium tracking-[0.2em] text-bronze">ADMIN</p>
@@ -46,7 +46,7 @@ export function AdminNav({ pathname }: { pathname: string }) {
                   href={t.href}
                   aria-current={active ? "page" : undefined}
                   className={`flex h-[64px] flex-col items-center justify-center gap-1 text-[11px] font-medium tracking-wide lg:h-12 lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:text-[14px] ${
-                    active ? "text-garnet lg:bg-sand" : "text-ink-soft hover:text-garnet"
+                    active ? "text-brown lg:bg-sand" : "text-ink-soft hover:text-brown"
                   }`}
                 >
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" aria-hidden>
@@ -59,7 +59,7 @@ export function AdminNav({ pathname }: { pathname: string }) {
           })}
         </ul>
         <div className="mt-auto hidden px-6 pt-10 lg:block">
-          <Link href="/" target="_blank" className="label-caps inline-flex min-h-11 items-center text-garnet">
+          <Link href="/" target="_blank" className="label-caps inline-flex min-h-11 items-center text-brown">
             View site ↗
           </Link>
         </div>

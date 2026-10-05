@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL } from "@/lib/env";
+import { BRAND_NAME, baseOpenGraph } from "@/lib/seo";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -19,25 +20,24 @@ const jost = Jost({
   display: "swap",
 });
 
+const title = `${BRAND_NAME} | Georgetown, Guyana`;
+const description = `Curated home decor, furniture and styling from ${BRAND_NAME} in Georgetown, Guyana. Build your bag and order on WhatsApp.`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  applicationName: "Posh Home Decor",
   title: {
-    default: "Posh Home Decor & Home Styling Studio | Georgetown, Guyana",
+    default: title,
     template: "%s | Posh Home Decor",
   },
-  description:
-    "Curated home decor, furniture and styling from Posh Home Decor & Home Styling Studio in Georgetown, Guyana. Build your bag and order on WhatsApp.",
-  openGraph: {
-    siteName: "Posh Home Decor",
-    type: "website",
-    locale: "en_GY",
-    images: [{ url: "/images/og-default.jpg", width: 1200, height: 630, alt: "Posh Home Decor" }],
-  },
-  twitter: { card: "summary_large_image" },
+  description,
+  alternates: { canonical: "/" },
+  openGraph: { ...baseOpenGraph, title, description, url: "/" },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FBF7EF",
+  themeColor: "#F9F5EE",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

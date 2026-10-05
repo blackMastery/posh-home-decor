@@ -37,7 +37,7 @@ export function AccountSection({ email }: { email: string }) {
 
   return (
     <section className="mt-12 space-y-6 border-t border-line pt-8 pb-10">
-      <h2 className="text-[18px] font-medium text-garnet-deep">Shared login</h2>
+      <h2 className="text-[18px] font-medium text-brown-deep">Shared login</h2>
       <p className="text-[14px] text-muted">Signed in as {email}</p>
       <form onSubmit={changePassword} className="space-y-3">
         <label htmlFor="new-pw" className="mb-2 block text-[13px] font-medium tracking-[0.08em] text-ink-soft uppercase">

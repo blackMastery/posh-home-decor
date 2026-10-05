@@ -41,18 +41,18 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8 lg:py-10">
-      <Link href="/admin/inquiries" className="inline-flex min-h-11 items-center text-[14px] text-garnet">
+      <Link href="/admin/inquiries" className="inline-flex min-h-11 items-center text-[14px] text-brown">
         ← Inquiries
       </Link>
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="font-mono text-[26px] font-medium tracking-wide text-garnet-deep">{inq.ref}</h1>
+        <h1 className="font-mono text-[26px] font-medium tracking-wide text-brown-deep">{inq.ref}</h1>
         <CopyButton text={inq.ref} label="Copy ref" />
       </div>
       <p className="mt-1 text-[14px] text-muted">{formatDateTime(inq.created_at)}</p>
 
       <section className={`${card} mt-6`}>
         <p className={label}>Customer</p>
-        <p className="mt-1 text-[18px] font-medium text-garnet-deep">{inq.customer_name}</p>
+        <p className="mt-1 text-[18px] font-medium text-brown-deep">{inq.customer_name}</p>
         <p className="mt-0.5 text-[15px]">
           <a href={`tel:${inq.phone_e164}`} className="underline-offset-4 hover:underline">
             {inq.phone_e164}
@@ -91,7 +91,7 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
       </section>
 
       <section className="mt-6">
-        <h2 className="text-[18px] font-medium text-garnet-deep">
+        <h2 className="text-[18px] font-medium text-brown-deep">
           Items <span className="text-muted">({inq.item_count})</span>
         </h2>
         <ul className="mt-3 divide-y divide-line border-y border-line">
@@ -111,7 +111,7 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
                   {i.image_path && <PoshImage path={i.image_path} alt="" fill sizes="64px" className="object-cover" />}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[15px] font-medium text-garnet-deep">{i.name}</p>
+                  <p className="text-[15px] font-medium text-brown-deep">{i.name}</p>
                   <p className="text-[13px] text-muted">
                     {i.qty} × {formatPrice(i.unit_price)}
                     {!i.was_available && " · marked sold out when sent"}
@@ -119,27 +119,27 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
                   {notes.length > 0 && (
                     <p className="mt-1 flex flex-wrap gap-1.5">
                       {notes.map((n) => (
-                        <span key={n} className="bg-gold/25 px-2 py-0.5 text-[12px] font-medium text-garnet-deep">
+                        <span key={n} className="bg-gold/25 px-2 py-0.5 text-[12px] font-medium text-brown-deep">
                           {n}
                         </span>
                       ))}
                     </p>
                   )}
                 </div>
-                <p className="shrink-0 text-[15px] font-medium text-garnet">{formatPrice(i.line_total)}</p>
+                <p className="shrink-0 text-[15px] font-medium text-brown">{formatPrice(i.line_total)}</p>
               </li>
             );
           })}
         </ul>
         <div className="mt-3 flex justify-between text-[16px]">
           <span className="text-ink-soft">Subtotal at the time</span>
-          <span className="font-medium text-garnet">{formatPrice(inq.subtotal)}</span>
+          <span className="font-medium text-brown">{formatPrice(inq.subtotal)}</span>
         </div>
       </section>
 
       <section className="mt-8">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-[18px] font-medium text-garnet-deep">Message sent to WhatsApp</h2>
+          <h2 className="text-[18px] font-medium text-brown-deep">Message sent to WhatsApp</h2>
           <CopyButton text={inq.message_text} label="Copy" />
         </div>
         <pre className="mt-3 overflow-x-auto bg-sand p-4 font-sans text-[14px] leading-relaxed whitespace-pre-wrap">

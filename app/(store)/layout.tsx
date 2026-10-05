@@ -13,7 +13,7 @@ export default async function StoreLayout({ children }: LayoutProps<"/">) {
     <StoreProvider whatsappNumber={settings.whatsapp_number} pricePrefix={settings.price_prefix}>
       <a
         href="#main"
-        className="sr-only z-[80] bg-garnet px-4 py-3 text-cream focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+        className="sr-only z-[80] bg-brown px-4 py-3 text-cream focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
       >
         Skip to content
       </a>

@@ -52,7 +52,7 @@ export function HeaderClient({ categories, showNew, showSale, pathname }: Header
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="tap -ml-2.5 inline-flex items-center justify-center text-garnet-deep nav:hidden"
+            className="tap -ml-2.5 inline-flex items-center justify-center text-brown-deep nav:hidden"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
             aria-expanded={menuOpen}
@@ -74,9 +74,9 @@ export function HeaderClient({ categories, showNew, showSale, pathname }: Header
                   <Link
                     href={l.href}
                     aria-current={active ? "page" : undefined}
-                    className={`label-caps relative inline-flex min-h-11 items-center transition-colors hover:text-garnet ${
+                    className={`label-caps relative inline-flex min-h-11 items-center transition-colors hover:text-brown ${
                       active
-                        ? "text-garnet after:absolute after:inset-x-0 after:bottom-2 after:h-px after:bg-garnet"
+                        ? "text-brown after:absolute after:inset-x-0 after:bottom-2 after:h-px after:bg-brown"
                         : "text-ink-soft"
                     }`}
                   >
@@ -91,12 +91,12 @@ export function HeaderClient({ categories, showNew, showSale, pathname }: Header
         <button
           type="button"
           onClick={openBag}
-          className="tap relative -mr-2.5 inline-flex items-center justify-center text-garnet-deep transition-colors hover:text-garnet"
+          className="tap relative -mr-2.5 inline-flex items-center justify-center text-brown-deep transition-colors hover:text-brown"
           aria-label={hydrated && count > 0 ? `Open bag, ${count} item${count === 1 ? "" : "s"}` : "Open bag"}
         >
           <BagIcon size={24} />
           {hydrated && count > 0 && (
-            <span className="absolute top-1 right-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-garnet px-1 text-[10px] font-medium text-cream">
+            <span className="absolute top-1 right-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brown px-1 text-[10px] font-medium text-cream">
               {count}
             </span>
           )}
@@ -151,7 +151,7 @@ function CategoryBar({
   };
 
   const linkClass = (active: boolean) =>
-    `label-caps inline-flex min-h-11 items-center gap-1 transition-colors hover:text-garnet ${active ? "text-garnet" : "text-ink-soft"}`;
+    `label-caps inline-flex min-h-11 items-center gap-1 transition-colors hover:text-brown ${active ? "text-brown" : "text-ink-soft"}`;
 
   return (
     <nav aria-label="Categories" className="relative hidden border-t border-line nav:block" onMouseLeave={scheduleClose}>
@@ -197,7 +197,7 @@ function CategoryBar({
         )}
         {showSale && (
           <li onMouseEnter={() => open(null)}>
-            <Link href="/shop/sale" className={`${linkClass(pathname === "/shop/sale")} !text-garnet`}>
+            <Link href="/shop/sale" className={`${linkClass(pathname === "/shop/sale")} !text-brown`}>
               Sale
             </Link>
           </li>
@@ -210,14 +210,14 @@ function CategoryBar({
 function MegaMenu({ category }: { category: NavCategory }) {
   const groups = category.children;
   return (
-    <div className="absolute inset-x-0 top-full z-30 border-t border-line border-b bg-cream-raised shadow-[0_24px_40px_-24px_rgba(62,7,16,0.25)] [animation:slide-down_.18s_ease-out]">
+    <div className="absolute inset-x-0 top-full z-30 border-t border-line border-b bg-cream-raised shadow-[0_24px_40px_-24px_rgba(59,35,20,0.25)] [animation:slide-down_.18s_ease-out]">
       <div className="container-posh grid grid-cols-[minmax(180px,220px)_1fr] gap-10 py-10">
         <div>
           <p className="eyebrow text-bronze">Shop</p>
-          <p className="mt-2 font-display text-[34px] leading-none font-medium text-garnet-deep">{category.name}</p>
+          <p className="mt-2 font-display text-[34px] leading-none font-medium text-brown-deep">{category.name}</p>
           <Link
             href={`/shop/${category.path}`}
-            className="label-caps mt-5 inline-flex min-h-11 items-center text-garnet underline-offset-4 hover:underline"
+            className="label-caps mt-5 inline-flex min-h-11 items-center text-brown underline-offset-4 hover:underline"
           >
             Shop all {category.name}
           </Link>
@@ -229,7 +229,7 @@ function MegaMenu({ category }: { category: NavCategory }) {
               <div key={g.path} className={wide ? "col-span-2" : ""}>
                 <Link
                   href={`/shop/${g.path}`}
-                  className="font-display text-[19px] font-medium text-garnet-deep hover:text-garnet"
+                  className="font-display text-[19px] font-medium text-brown-deep hover:text-brown"
                 >
                   {g.name}
                 </Link>
@@ -239,7 +239,7 @@ function MegaMenu({ category }: { category: NavCategory }) {
                       <li key={leaf.path} className="break-inside-avoid">
                         <Link
                           href={`/shop/${leaf.path}`}
-                          className="inline-flex min-h-9 items-center text-[14px] text-ink-soft hover:text-garnet"
+                          className="inline-flex min-h-9 items-center text-[14px] text-ink-soft hover:text-brown"
                         >
                           {leaf.name}
                         </Link>
@@ -290,7 +290,7 @@ function MobileMenu({
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-garnet-deep text-cream [animation:fade-in_.2s_ease-out] nav:hidden"
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-brown-deep text-cream [animation:fade-in_.2s_ease-out] nav:hidden"
     >
       <div className="container-posh flex h-[68px] shrink-0 items-center justify-between">
         <Logo tone="light" />

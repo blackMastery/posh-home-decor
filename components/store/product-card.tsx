@@ -29,7 +29,7 @@ export function ProductCard({ product, priority = false }: { product: ProductCar
         {!soldOut && <QuickAdd productId={product.id} name={product.name} />}
       </div>
       <div className="mt-3 space-y-1">
-        <h3 className="font-display text-[clamp(18px,1.6vw,21px)] leading-tight font-medium text-garnet-deep">
+        <h3 className="font-display text-[clamp(18px,1.6vw,21px)] leading-tight font-medium text-brown-deep">
           <Link href={`/products/${product.slug}`} className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-gold">
             {product.name}
           </Link>

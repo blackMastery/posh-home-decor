@@ -14,7 +14,7 @@ export function Toasts() {
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="pointer-events-auto flex max-w-md items-center gap-4 bg-garnet-deep px-5 py-3 text-sm text-cream shadow-lg [animation:toast-in_.3s_ease-out]"
+          className="pointer-events-auto flex max-w-md items-center gap-4 bg-brown-deep px-5 py-3 text-sm text-cream shadow-lg [animation:toast-in_.3s_ease-out]"
         >
           <span>{t.message}</span>
           {t.action &&

@@ -80,7 +80,7 @@ export function HomeHero({ eyebrow, headline, accent }: Props) {
       <section
         ref={ref}
         onPointerMove={onPointerMove}
-        className="relative isolate flex min-h-[max(520px,min(calc(100svh-7.5rem),880px))] items-end overflow-hidden bg-garnet-deep text-cream"
+        className="relative isolate flex min-h-[max(520px,min(calc(100svh-7.5rem),880px))] items-end overflow-hidden bg-brown-deep text-cream"
       >
         {/* Static background: slow Ken Burns settle + scroll parallax */}
         <motion.div className="absolute inset-x-0 -top-[18%] bottom-0 -z-30" style={{ y: bgY }}>
@@ -95,7 +95,7 @@ export function HomeHero({ eyebrow, headline, accent }: Props) {
         </motion.div>
 
         {/* Garnet wash + cursor glow */}
-        <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(62,7,16,0.25)_0%,rgba(62,7,16,0.45)_45%,rgba(62,7,16,0.92)_100%)]" />
+        <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(59,35,20,0.25)_0%,rgba(59,35,20,0.45)_45%,rgba(59,35,20,0.92)_100%)]" />
         <motion.div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden md:block" style={{ background: glow }} />
 
         {/* Candle-light motes drifting upward */}

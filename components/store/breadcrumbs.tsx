@@ -14,7 +14,7 @@ export function Breadcrumbs({ items }: { items: { href: string; label: string }[
                 </span>
               ) : (
                 <>
-                  <Link href={c.href} className="inline-flex min-h-8 items-center hover:text-garnet">
+                  <Link href={c.href} className="inline-flex min-h-8 items-center hover:text-brown">
                     {c.label}
                   </Link>
                   <span aria-hidden>/</span>

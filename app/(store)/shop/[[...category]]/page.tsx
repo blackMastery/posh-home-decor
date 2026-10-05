@@ -10,6 +10,7 @@ import { ShopControls } from "@/components/store/shop-controls";
 import { Breadcrumbs } from "@/components/store/breadcrumbs";
 import { JsonLd } from "@/components/store/json-ld";
 import { SITE_URL } from "@/lib/env";
+import { baseOpenGraph } from "@/lib/seo";
 
 type Props = PageProps<"/shop/[[...category]]">;
 
@@ -64,13 +65,16 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   if (!r) return { title: "Not found" };
   const { q, page } = parseSearch(sp);
   const name = title(r);
+  const pageTitle = r.kind === "all" ? "Shop" : name;
+  const description =
+    r.kind === "category"
+      ? `Shop ${name.toLowerCase()} at Posh Home Decor, Georgetown. Order on WhatsApp.`
+      : `${name} at Posh Home Decor, Georgetown. Build your bag and order on WhatsApp.`;
   return {
-    title: r.kind === "all" ? "Shop" : name,
-    description:
-      r.kind === "category"
-        ? `Shop ${name.toLowerCase()} at Posh Home Decor, Georgetown. Order on WhatsApp.`
-        : `${name} at Posh Home Decor, Georgetown. Build your bag and order on WhatsApp.`,
+    title: pageTitle,
+    description,
     alternates: { canonical: basePath(r) },
+    openGraph: { ...baseOpenGraph, title: `${pageTitle} | Posh Home Decor`, description, url: basePath(r) },
     robots: q || page > 1 ? { index: false, follow: true } : undefined,
   };
 }
@@ -158,14 +162,14 @@ async function ShopContent(props: Props) {
 
       <header className="mt-4">
         <p className="eyebrow text-bronze">Shop</p>
-        <h1 className="mt-3 font-display text-[clamp(38px,5vw,68px)] leading-none font-medium text-garnet-deep">{title(r)}</h1>
+        <h1 className="mt-3 font-display text-[clamp(38px,5vw,68px)] leading-none font-medium text-brown-deep">{title(r)}</h1>
         {children.length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-2">
             {children.map((c) => (
               <li key={c.id}>
                 <Link
                   href={`/shop/${c.path}`}
-                  className="inline-flex min-h-11 items-center border border-line-strong px-4 text-[14px] text-ink-soft hover:border-garnet hover:text-garnet"
+                  className="inline-flex min-h-11 items-center border border-line-strong px-4 text-[14px] text-ink-soft hover:border-brown hover:text-brown"
                 >
                   {c.name}
                 </Link>
@@ -186,8 +190,8 @@ async function ShopContent(props: Props) {
                   aria-current={c.active ? "page" : undefined}
                   className={`inline-flex min-h-11 items-center px-5 text-[13px] tracking-[0.12em] uppercase transition-colors ${
                     c.active
-                      ? "bg-garnet text-cream"
-                      : "border border-line-strong text-ink-soft hover:border-garnet hover:text-garnet"
+                      ? "bg-brown text-cream"
+                      : "border border-line-strong text-ink-soft hover:border-brown hover:text-brown"
                   }`}
                 >
                   {c.label}
@@ -210,7 +214,7 @@ async function ShopContent(props: Props) {
 
       {items.length === 0 ? (
         <div className="mt-8 flex flex-col items-center bg-sand px-6 py-20 text-center">
-          <p className="font-display text-[32px] leading-tight text-garnet-deep">
+          <p className="font-display text-[32px] leading-tight text-brown-deep">
             {q ? "Nothing matches that search" : "New pieces arriving soon"}
           </p>
           <p className="mt-3 max-w-sm text-[15px] text-ink-soft">

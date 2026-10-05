@@ -29,11 +29,11 @@ export function OrderConfirmation() {
 
   return (
     <div className="container-posh flex flex-col items-center py-20 text-center nav:py-28">
-      <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-garnet text-gold">
+      <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-brown text-gold">
         <WhatsAppIcon size={30} />
       </span>
       {safeRef && <p className="eyebrow mt-8 text-bronze">Order {safeRef}</p>}
-      <h1 className="mt-4 max-w-2xl font-display text-[clamp(38px,5vw,64px)] leading-[1.02] font-medium text-garnet-deep">
+      <h1 className="mt-4 max-w-2xl font-display text-[clamp(38px,5vw,64px)] leading-[1.02] font-medium text-brown-deep">
         {last?.firstName ? (
           <>
             Almost there, <em className="text-bronze">{last.firstName}.</em>

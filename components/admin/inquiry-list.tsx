@@ -93,7 +93,7 @@ export function InquiryList({ initial, q, range }: { initial: InquiryListItem[];
             onClick={() => navigate({ range: r.value })}
             aria-pressed={range === r.value}
             className={`min-h-11 flex-1 border text-[13px] ${
-              range === r.value ? "border-garnet bg-garnet text-cream" : "border-line-strong text-ink-soft"
+              range === r.value ? "border-brown bg-brown text-cream" : "border-line-strong text-ink-soft"
             }`}
           >
             {r.label}
@@ -113,13 +113,13 @@ export function InquiryList({ initial, q, range }: { initial: InquiryListItem[];
               <li key={i.id}>
                 <Link href={`/admin/inquiries/${i.id}`} className="flex items-center gap-3 py-4 hover:bg-cream-raised">
                   <span
-                    className={`h-2 w-2 shrink-0 rounded-full ${isNew ? "bg-garnet" : "bg-transparent"}`}
+                    className={`h-2 w-2 shrink-0 rounded-full ${isNew ? "bg-brown" : "bg-transparent"}`}
                     aria-label={isNew ? "New" : undefined}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-3">
-                      <p className="truncate text-[16px] font-medium text-garnet-deep">{i.customer_name}</p>
-                      <p className="shrink-0 text-[15px] font-medium text-garnet">{formatPrice(i.subtotal)}</p>
+                      <p className="truncate text-[16px] font-medium text-brown-deep">{i.customer_name}</p>
+                      <p className="shrink-0 text-[15px] font-medium text-brown">{formatPrice(i.subtotal)}</p>
                     </div>
                     <div className="mt-0.5 flex items-baseline justify-between gap-3 text-[13px] text-muted">
                       <span className="font-mono tracking-wide">

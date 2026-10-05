@@ -357,10 +357,10 @@ export function ProductForm({
             >
               <div className="relative aspect-[4/5] overflow-hidden bg-sand-image">
                 <PoshImage path={img.storagePath} alt="" fill sizes="200px" className="object-cover" />
-                {i === 0 && <span className="absolute top-2 left-2 bg-garnet px-2 py-0.5 text-[11px] text-cream">Cover</span>}
+                {i === 0 && <span className="absolute top-2 left-2 bg-brown px-2 py-0.5 text-[11px] text-cream">Cover</span>}
               </div>
               {aspectWarning(img.width, img.height) && (
-                <details className="border-t border-line px-2 py-1.5 text-[12px] text-garnet-deep">
+                <details className="border-t border-line px-2 py-1.5 text-[12px] text-brown-deep">
                   <summary className="cursor-pointer">⚠ Not 4:5 — preview crop</summary>
                   <p className="mt-1 text-muted">The shop shows photos at 4:5, centred. This is what customers will see:</p>
                   <div className="relative mt-1 aspect-[4/5] w-24 overflow-hidden">
@@ -406,7 +406,7 @@ export function ProductForm({
                     <>
                       <span className="text-error">{p.error}</span>
                       <span className="flex gap-2">
-                        <button type="button" className="min-h-10 bg-garnet px-3 text-cream" onClick={() => void upload(p.file, p.key)}>
+                        <button type="button" className="min-h-10 bg-brown px-3 text-cream" onClick={() => void upload(p.file, p.key)}>
                           Retry
                         </button>
                         <button
@@ -420,9 +420,9 @@ export function ProductForm({
                     </>
                   ) : (
                     <>
-                      <span className="text-garnet-deep">{p.status === "uploading" ? "Uploading…" : `Preparing ${p.progress}%`}</span>
+                      <span className="text-brown-deep">{p.status === "uploading" ? "Uploading…" : `Preparing ${p.progress}%`}</span>
                       <span className="h-1 w-3/4 bg-line">
-                        <span className="block h-full bg-garnet transition-all" style={{ width: `${p.status === "uploading" ? 100 : p.progress}%` }} />
+                        <span className="block h-full bg-brown transition-all" style={{ width: `${p.status === "uploading" ? 100 : p.progress}%` }} />
                       </span>
                     </>
                   )}
@@ -431,7 +431,7 @@ export function ProductForm({
             </li>
           ))}
           <li>
-            <label className="flex aspect-[4/5] cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-line-strong text-center text-[14px] text-garnet hover:bg-cream-raised has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold">
+            <label className="flex aspect-[4/5] cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-line-strong text-center text-[14px] text-brown hover:bg-cream-raised has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold">
               <span className="text-[28px] leading-none">+</span>
               Add photos
               <input
@@ -522,7 +522,7 @@ export function ProductForm({
       {/* 6. Available */}
       <div className="flex items-center justify-between gap-4 border-y border-line py-3">
         <div>
-          <p id={`${ids}-avail`} className="text-[15px] font-medium text-garnet-deep">
+          <p id={`${ids}-avail`} className="text-[15px] font-medium text-brown-deep">
             {v.isAvailable ? "Available" : "Sold out"}
           </p>
           <p className="text-[13px] text-muted">Switch off after it sells in the showroom.</p>
@@ -556,7 +556,7 @@ export function ProductForm({
                 {title}
               </label>
               {v[key] !== def && (
-                <button type="button" className="min-h-9 text-[13px] text-garnet underline-offset-4 hover:underline" onClick={() => set(key, def)}>
+                <button type="button" className="min-h-9 text-[13px] text-brown underline-offset-4 hover:underline" onClick={() => set(key, def)}>
                   Reset to default
                 </button>
               )}
@@ -572,7 +572,7 @@ export function ProductForm({
 
       {/* 9. Advanced */}
       <details className="border-t border-line pt-4">
-        <summary className="min-h-11 cursor-pointer text-[14px] font-medium text-garnet-deep">Advanced</summary>
+        <summary className="min-h-11 cursor-pointer text-[14px] font-medium text-brown-deep">Advanced</summary>
         <div className="mt-3 space-y-4">
           <div>
             <label htmlFor={`${ids}-slug`} className={label}>
@@ -645,7 +645,7 @@ export function ProductForm({
             </button>
           )}
           {status === "published" && savedMeta && (
-            <Link href={`/products/${savedMeta.slug}`} target="_blank" className="btn min-h-11 px-4 text-garnet">
+            <Link href={`/products/${savedMeta.slug}`} target="_blank" className="btn min-h-11 px-4 text-brown">
               View on site ↗
             </Link>
           )}
@@ -666,16 +666,16 @@ export function ProductForm({
             <span>{error.message}</span>
             {error.conflict && (
               <span className="flex gap-2">
-                <button type="button" className="min-h-10 border border-garnet px-3 text-garnet" onClick={() => window.location.reload()}>
+                <button type="button" className="min-h-10 border border-brown px-3 text-brown" onClick={() => window.location.reload()}>
                   Reload
                 </button>
-                <button type="button" className="min-h-10 bg-garnet px-3 text-cream" onClick={() => void save(status === "published" ? "keep" : "draft", { force: true })}>
+                <button type="button" className="min-h-10 bg-brown px-3 text-cream" onClick={() => void save(status === "published" ? "keep" : "draft", { force: true })}>
                   Overwrite
                 </button>
               </span>
             )}
             {error.retry && (
-              <button type="button" className="min-h-10 bg-garnet px-3 text-cream" onClick={error.retry}>
+              <button type="button" className="min-h-10 bg-brown px-3 text-cream" onClick={error.retry}>
                 Retry
               </button>
             )}
@@ -789,7 +789,7 @@ function CategoryPicker({
                     setOpen(false);
                     setQ("");
                   }}
-                  className={`flex min-h-11 w-full items-center px-3 text-left text-[14px] hover:bg-sand ${o.id === value ? "font-medium text-garnet" : ""}`}
+                  className={`flex min-h-11 w-full items-center px-3 text-left text-[14px] hover:bg-sand ${o.id === value ? "font-medium text-brown" : ""}`}
                 >
                   {o.label}
                 </button>

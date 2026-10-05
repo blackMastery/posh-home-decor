@@ -24,7 +24,7 @@ export function BagDrawer() {
 
   return createPortal(
     <div className="fixed inset-0 z-[60]">
-      <div className="absolute inset-0 bg-garnet-deep/40 [animation:fade-in_.2s_ease-out]" onClick={closeBag} aria-hidden />
+      <div className="absolute inset-0 bg-brown-deep/40 [animation:fade-in_.2s_ease-out]" onClick={closeBag} aria-hidden />
       <div
         ref={ref}
         role="dialog"
@@ -33,7 +33,7 @@ export function BagDrawer() {
         className="absolute inset-y-0 right-0 flex w-full max-w-[440px] flex-col bg-cream shadow-2xl [animation:slide-in-right_.28s_cubic-bezier(.2,.8,.2,1)]"
       >
         <div className="flex items-center justify-between border-b border-line px-6 py-4">
-          <h2 id="bag-title" className="font-display text-[28px] font-medium text-garnet-deep">
+          <h2 id="bag-title" className="font-display text-[28px] font-medium text-brown-deep">
             Your bag {count > 0 && <span className="text-[18px] text-muted">({count})</span>}
           </h2>
           <button type="button" onClick={closeBag} className="tap -mr-3 inline-flex items-center justify-center" aria-label="Close bag">
@@ -47,7 +47,7 @@ export function BagDrawer() {
           </div>
           {storedCount === 0 ? (
             <div className="flex flex-col items-center px-4 py-16 text-center">
-              <p className="font-display text-[26px] text-garnet-deep">Your bag is empty</p>
+              <p className="font-display text-[26px] text-brown-deep">Your bag is empty</p>
               <p className="mt-2 text-[14px] text-muted">Pieces you add will appear here.</p>
               <Link href="/shop" onClick={closeBag} className="btn btn-primary mt-8">
                 Browse the collection
@@ -69,7 +69,7 @@ export function BagDrawer() {
             <>
               <div className="flex items-baseline justify-between">
                 <span className="label-caps text-ink-soft">Subtotal</span>
-                <span className="text-[18px] font-medium text-garnet">{formatPrice(subtotal, pricePrefix)}</span>
+                <span className="text-[18px] font-medium text-brown">{formatPrice(subtotal, pricePrefix)}</span>
               </div>
               <p className="mt-1 text-[13px] text-muted">Delivery quoted on WhatsApp</p>
               <Link
@@ -91,7 +91,7 @@ export function BagDrawer() {
             <Link
               href="/saved"
               onClick={closeBag}
-              className="inline-flex min-h-11 items-center text-[13px] tracking-[0.14em] text-ink-soft uppercase underline-offset-4 hover:text-garnet hover:underline"
+              className="inline-flex min-h-11 items-center text-[13px] tracking-[0.14em] text-ink-soft uppercase underline-offset-4 hover:text-brown hover:underline"
             >
               Your saved pieces
             </Link>

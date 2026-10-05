@@ -16,7 +16,7 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
           // clipboard unavailable
         }
       }}
-      className="min-h-11 border border-line-strong px-4 text-[13px] text-ink-soft hover:border-garnet hover:text-garnet"
+      className="min-h-11 border border-line-strong px-4 text-[13px] text-ink-soft hover:border-brown hover:text-brown"
     >
       <span aria-live="polite">{copied ? "Copied ✓" : label}</span>
     </button>

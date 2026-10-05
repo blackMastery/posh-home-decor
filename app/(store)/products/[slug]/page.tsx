@@ -12,6 +12,7 @@ import { JsonLd } from "@/components/store/json-ld";
 import { ChevronDown } from "@/components/ui/icons";
 import { IMAGE_TRANSFORM, SITE_URL } from "@/lib/env";
 import { renderUrl, storageUrl } from "@/lib/images";
+import { baseOpenGraph } from "@/lib/seo";
 
 type Props = PageProps<"/products/[slug]">;
 
@@ -37,10 +38,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/products/${p.slug}` },
     openGraph: {
+      ...baseOpenGraph,
       title: `${p.name} | Posh Home Decor`,
       description,
       url: `/products/${p.slug}`,
-      images: image ? [{ url: ogImage(image.storage_path), width: 1200, height: 630, alt: image.alt || p.name }] : undefined,
+      images: image ? [{ url: ogImage(image.storage_path), width: 1200, height: 630, alt: image.alt || p.name }] : baseOpenGraph.images,
     },
   };
 }
@@ -121,7 +123,7 @@ async function ProductContent({ params }: Props) {
               <p className="eyebrow text-bronze">{product.category.name}</p>
               <ProductBadge available={product.is_available} onSale={product.is_on_sale} isNew={product.is_new} />
             </div>
-            <h1 className="mt-3 font-display text-[clamp(34px,4vw,54px)] leading-[1.02] font-medium text-garnet-deep">
+            <h1 className="mt-3 font-display text-[clamp(34px,4vw,54px)] leading-[1.02] font-medium text-brown-deep">
               {product.name}
             </h1>
             {product.note && <p className="mt-2 text-[15px] text-muted">{product.note}</p>}
@@ -149,7 +151,7 @@ async function ProductContent({ params }: Props) {
               <div className="mt-10 border-t border-line">
                 {accordions.map((a, i) => (
                   <details key={a.title} open={i === 0} className="group border-b border-line">
-                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 label-caps text-garnet-deep [&::-webkit-details-marker]:hidden">
+                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 label-caps text-brown-deep [&::-webkit-details-marker]:hidden">
                       {a.title}
                       <ChevronDown size={18} className="transition-transform group-open:rotate-180" />
                     </summary>
@@ -164,7 +166,7 @@ async function ProductContent({ params }: Props) {
         {related.length > 0 && (
           <section className="mt-24" aria-labelledby="style-heading">
             <p className="eyebrow text-bronze">Complete the look</p>
-            <h2 id="style-heading" className="mt-3 font-display text-[clamp(30px,3.4vw,44px)] leading-none font-medium text-garnet-deep">
+            <h2 id="style-heading" className="mt-3 font-display text-[clamp(30px,3.4vw,44px)] leading-none font-medium text-brown-deep">
               Style it <em className="text-bronze">with</em>
             </h2>
             <div className="mt-10">

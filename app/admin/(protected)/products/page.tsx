@@ -49,7 +49,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-10">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-[26px] font-medium text-garnet-deep">Products</h1>
+        <h1 className="text-[26px] font-medium text-brown-deep">Products</h1>
         <Link href="/admin/products/new" className="btn btn-primary px-5">
           + New
         </Link>
@@ -79,11 +79,11 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                   {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="56px" className="object-cover" />}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-[15px] font-medium text-garnet-deep">{p.name}</p>
+                  <p className="truncate text-[15px] font-medium text-brown-deep">{p.name}</p>
                   <p className="truncate text-[13px] text-muted">
                     {formatPrice(p.price!)}
                     {p.compare_at_price != null && p.compare_at_price > p.price! && (
-                      <span className="ml-1 text-garnet">· Sale</span>
+                      <span className="ml-1 text-brown">· Sale</span>
                     )}{" "}
                     · {p.category_name}
                   </p>
@@ -113,7 +113,7 @@ function StatusChip({ status }: { status: string }) {
     status === "published"
       ? "bg-[#E4EEDB] text-[#2F5320]"
       : status === "draft"
-        ? "bg-gold/25 text-garnet-deep"
+        ? "bg-gold/25 text-brown-deep"
         : "bg-line text-ink-soft";
   const label = status === "published" ? "Published" : status === "draft" ? "Draft" : "Archived";
   return <span className={`mt-1 inline-block px-2 py-0.5 text-[11px] font-medium tracking-wide ${tone}`}>{label}</span>;

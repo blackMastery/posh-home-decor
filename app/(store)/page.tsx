@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/store/json-ld";
 import { HomeHero } from "@/components/store/home-hero";
 import { waUrl } from "@/lib/whatsapp/message";
 import { SITE_URL } from "@/lib/env";
+import { BRAND_NAME } from "@/lib/seo";
 
 export default async function HomePage() {
   const [settings, categories, newest] = await Promise.all([getSettings(), getCategories(), getNewArrivals(4)]);
@@ -23,10 +24,11 @@ export default async function HomePage() {
         data={{
           "@context": "https://schema.org",
           "@type": "HomeAndConstructionBusiness",
-          name: "Posh Home Decor & Home Styling Studio",
+          name: BRAND_NAME,
           url: SITE_URL,
           telephone: `+${settings.whatsapp_number}`,
           image: `${SITE_URL}/images/og-default.jpg`,
+          logo: `${SITE_URL}/images/logo-full.png`,
           priceRange: "$$",
           currenciesAccepted: "GYD",
           address: {
@@ -47,11 +49,11 @@ export default async function HomePage() {
           <div className="flex items-end justify-between gap-6" data-reveal>
             <div>
               <p className="eyebrow text-bronze">Explore</p>
-              <h2 id="cat-heading" className="mt-3 font-display text-[clamp(32px,4vw,52px)] leading-none font-medium text-garnet-deep">
+              <h2 id="cat-heading" className="mt-3 font-display text-[clamp(32px,4vw,52px)] leading-none font-medium text-brown-deep">
                 Shop by <em className="text-bronze">category</em>
               </h2>
             </div>
-            <Link href="/shop" className="label-caps hidden min-h-11 items-center gap-2 text-garnet hover:underline sm:inline-flex">
+            <Link href="/shop" className="label-caps hidden min-h-11 items-center gap-2 text-brown hover:underline sm:inline-flex">
               All pieces <ArrowRight size={14} />
             </Link>
           </div>
@@ -76,7 +78,7 @@ export default async function HomePage() {
                           className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                         />
                       )}
-                      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,rgba(62,7,16,0.7)_100%)]" />
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,rgba(59,35,20,0.7)_100%)]" />
                       <div className="absolute inset-x-0 bottom-0 p-5 text-cream">
                         <p className="font-display text-[clamp(24px,2.4vw,32px)] leading-none font-medium">{c.name}</p>
                         <p className="mt-2 text-[12px] tracking-[0.18em] text-gold-light uppercase">
@@ -99,11 +101,11 @@ export default async function HomePage() {
             <div className="flex items-end justify-between gap-6" data-reveal>
               <div>
                 <p className="eyebrow text-bronze">Just arrived</p>
-                <h2 id="new-heading" className="mt-3 font-display text-[clamp(32px,4vw,52px)] leading-none font-medium text-garnet-deep">
+                <h2 id="new-heading" className="mt-3 font-display text-[clamp(32px,4vw,52px)] leading-none font-medium text-brown-deep">
                   New in the <em className="text-bronze">showroom</em>
                 </h2>
               </div>
-              <Link href="/shop/new" className="label-caps inline-flex min-h-11 items-center gap-2 text-garnet hover:underline">
+              <Link href="/shop/new" className="label-caps inline-flex min-h-11 items-center gap-2 text-brown hover:underline">
                 View all <ArrowRight size={14} />
               </Link>
             </div>
@@ -115,7 +117,7 @@ export default async function HomePage() {
       )}
 
       {/* 4. Styling Studio */}
-      <section id="styling-studio" className="scroll-mt-24 bg-garnet-deep text-cream" aria-labelledby="studio-heading">
+      <section id="styling-studio" className="scroll-mt-24 bg-brown-deep text-cream" aria-labelledby="studio-heading">
         <div className="container-posh grid items-center gap-12 py-[clamp(64px,10vw,120px)] md:grid-cols-2">
           <div data-reveal>
             <p className="eyebrow text-gold">Home Styling Studio</p>

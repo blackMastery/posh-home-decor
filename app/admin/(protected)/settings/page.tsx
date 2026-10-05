@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   if (!s) throw new Error("Settings row missing");
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8 lg:py-10">
-      <h1 className="text-[26px] font-medium text-garnet-deep">Settings</h1>
+      <h1 className="text-[26px] font-medium text-brown-deep">Settings</h1>
       <SettingsForm
         initial={{
           whatsappNumber: s.whatsapp_number,

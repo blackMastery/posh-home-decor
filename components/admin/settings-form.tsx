@@ -39,7 +39,7 @@ export function SettingsForm({ initial }: { initial: Values }) {
   return (
     <form onSubmit={onSubmit} className="mt-6 space-y-10">
       <section className="space-y-5">
-        <h2 className="text-[18px] font-medium text-garnet-deep">Shop</h2>
+        <h2 className="text-[18px] font-medium text-brown-deep">Shop</h2>
         <div>
           <label htmlFor={`${ids}-wa`} className={label}>
             WhatsApp number
@@ -90,11 +90,11 @@ export function SettingsForm({ initial }: { initial: Values }) {
       </section>
 
       <section className="space-y-5 border-t border-line pt-8">
-        <h2 className="text-[18px] font-medium text-garnet-deep">Home page hero</h2>
+        <h2 className="text-[18px] font-medium text-brown-deep">Home page hero</h2>
         <p className="-mt-3 text-[13px] text-muted">The background image is fixed; only the text below can be changed.</p>
-        <div className="relative aspect-[16/9] overflow-hidden bg-garnet-deep">
+        <div className="relative aspect-[16/9] overflow-hidden bg-brown-deep">
           <Image src="/images/hero.jpg" alt="" fill sizes="(max-width: 1024px) 100vw, 720px" className="object-cover opacity-80" />
-          <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(62,7,16,0.85))] p-4 text-cream">
+          <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(59,35,20,0.85))] p-4 text-cream">
             <p className="text-[10px] tracking-[0.24em] text-gold uppercase">{v.heroEyebrow}</p>
             <p className="font-display text-[26px] leading-tight">
               {v.heroHeadline} <em className="text-gold-light">{v.heroHeadlineAccent}</em>
@@ -123,7 +123,7 @@ export function SettingsForm({ initial }: { initial: Values }) {
       </section>
 
       <section className="space-y-5 border-t border-line pt-8">
-        <h2 className="text-[18px] font-medium text-garnet-deep">Product page defaults</h2>
+        <h2 className="text-[18px] font-medium text-brown-deep">Product page defaults</h2>
         <p className="-mt-3 text-[13px] text-muted">Pre-filled on new products. Existing products keep their own text.</p>
         {(
           [

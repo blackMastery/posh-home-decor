@@ -57,7 +57,7 @@ export function CheckoutView() {
     return (
       <div className="container-posh pt-10 pb-24 nav:pt-14">
         <div className="flex flex-col items-center bg-sand px-6 py-20 text-center">
-          <p className="font-display text-[32px] text-garnet-deep">Your bag is empty</p>
+          <p className="font-display text-[32px] text-brown-deep">Your bag is empty</p>
           <p className="mt-2 text-[15px] text-ink-soft">Add a few pieces, then send your order on WhatsApp.</p>
           <Link href="/shop" className="btn btn-primary mt-8">
             Browse the collection
@@ -126,7 +126,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
           win.opener = null;
           win.document.title = "Opening WhatsApp…";
           win.document.body.innerHTML =
-            '<p style="font-family:system-ui;padding:2rem;color:#3E0710">Opening WhatsApp…</p>';
+            '<p style="font-family:system-ui;padding:2rem;color:#3B2314">Opening WhatsApp…</p>';
         } catch {
           // ignore
         }
@@ -207,7 +207,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
   return (
     <div className="container-posh pt-10 pb-24 nav:pt-14">
       <StepLabel step={2} />
-      <h1 className="mt-3 font-display text-[clamp(38px,5vw,64px)] leading-none font-medium text-garnet-deep">
+      <h1 className="mt-3 font-display text-[clamp(38px,5vw,64px)] leading-none font-medium text-brown-deep">
         Send your order
       </h1>
       <p className="mt-3 max-w-xl text-[15px] text-ink-soft">
@@ -294,7 +294,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
                 <label
                   key={o.value}
                   className={`flex min-h-[72px] cursor-pointer flex-col justify-center border px-4 py-3 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold ${
-                    f.fulfilment === o.value ? "border-garnet bg-cream-raised" : "border-line-strong hover:border-garnet/60"
+                    f.fulfilment === o.value ? "border-brown bg-cream-raised" : "border-line-strong hover:border-brown/60"
                   }`}
                 >
                   <input
@@ -305,7 +305,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
                     onChange={() => set("fulfilment", o.value)}
                     className="sr-only"
                   />
-                  <span className="font-display text-[20px] leading-tight text-garnet-deep">{o.title}</span>
+                  <span className="font-display text-[20px] leading-tight text-brown-deep">{o.title}</span>
                   <span className="mt-0.5 text-[13px] text-muted">{o.desc}</span>
                 </label>
               ))}
@@ -355,7 +355,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
 
           <div className="flex items-center justify-between gap-4 border-y border-line py-4">
             <div>
-              <p id={`${ids}-styling`} className="text-[15px] text-garnet-deep">
+              <p id={`${ids}-styling`} className="text-[15px] text-brown-deep">
                 Include free styling advice
               </p>
               <p className="text-[13px] text-muted">Our stylists will suggest how to place your pieces.</p>
@@ -369,7 +369,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
               className="tap inline-flex shrink-0 items-center justify-center"
             >
               <span
-                className={`relative inline-block h-7 w-12 rounded-full transition-colors ${f.styling ? "bg-garnet" : "bg-line-strong"}`}
+                className={`relative inline-block h-7 w-12 rounded-full transition-colors ${f.styling ? "bg-brown" : "bg-line-strong"}`}
               >
                 <span
                   className={`absolute top-1 left-1 h-5 w-5 rounded-full bg-cream-raised shadow transition-transform ${
@@ -405,7 +405,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
           </div>
           <div className="mt-5 flex items-baseline justify-between">
             <span className="label-caps text-ink-soft">Subtotal</span>
-            <span className="text-[20px] font-medium text-garnet">{formatPrice(subtotal, pricePrefix)}</span>
+            <span className="text-[20px] font-medium text-brown">{formatPrice(subtotal, pricePrefix)}</span>
           </div>
           <p className="mt-1 text-[13px] text-muted">Delivery (if any) is confirmed in the chat. All prices in GYD.</p>
           {errors.bag && <p className={errCls}>{errors.bag}</p>}
@@ -413,7 +413,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
             <WhatsAppIcon size={18} />
             {pending ? "Opening WhatsApp…" : "Send order on WhatsApp"}
           </button>
-          <Link href="/cart" className="label-caps mt-4 inline-flex min-h-11 items-center text-garnet hover:underline">
+          <Link href="/cart" className="label-caps mt-4 inline-flex min-h-11 items-center text-brown hover:underline">
             ← Back to bag
           </Link>
         </aside>

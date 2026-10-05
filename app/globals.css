@@ -4,24 +4,25 @@
 
 /* Posh design tokens (spec §2). Contrast-adjusted where noted (spec §10). */
 @theme {
-  --color-cream: #fbf7ef;
-  --color-cream-raised: #fffdf8;
-  --color-sand: #f1e6d0;
-  --color-sand-image: #efe4cf;
-  --color-line: #e8dcc4;
-  --color-line-strong: #d9c7a4;
-  --color-garnet: #6b0f1a;
-  --color-garnet-hover: #861726;
-  --color-garnet-deep: #3e0710;
-  --color-gold: #d9b36a;
-  --color-gold-light: #e3c07a;
-  --color-gold-light-hover: #e9c98a;
+  --color-cream: #f9f5ee;
+  --color-cream-raised: #fffcf6;
+  --color-sand: #f1e9dc;
+  --color-sand-image: #ece2d1;
+  --color-line: #e6dbc8;
+  --color-line-strong: #d4c0a0;
+  --color-brown: #774622;
+  --color-brown-hover: #8b5530;
+  --color-brown-deep: #3b2314;
+  --color-gold: #c49a52;
+  --color-gold-light: #d6b06a;
+  --color-gold-light-hover: #dfbd7d;
   /* #9A7431 fails AA for small text on cream (4.0:1); darkened to 4.85:1. */
   --color-bronze: #8a672b;
-  --color-ink: #2a1a16;
-  --color-ink-soft: #4a3a34;
+  --color-ink: #2b1d14;
+  --color-ink-soft: #4a3a2e;
   /* #8A7766 fails AA at 12px on cream (4.0:1); darkened per spec §10 to 5.2:1. */
   --color-muted: #76655a;
+  --color-terracotta: #b5603a;
   --color-error: #a3162a;
   --color-whatsapp: #25d366;
 
@@ -50,7 +51,7 @@
   }
   ::selection {
     background: var(--color-gold);
-    color: var(--color-garnet-deep);
+    color: var(--color-brown-deep);
   }
   em {
     font-style: italic;
@@ -112,24 +113,24 @@
   }
 }
 @utility btn-primary {
-  background: var(--color-garnet);
+  background: var(--color-brown);
   color: var(--color-cream);
   &:hover:not(:disabled) {
-    background: var(--color-garnet-hover);
+    background: var(--color-brown-hover);
   }
 }
 @utility btn-gold {
   background: var(--color-gold);
-  color: var(--color-garnet-deep);
+  color: var(--color-brown-deep);
   &:hover:not(:disabled) {
     background: var(--color-gold-light-hover);
   }
 }
 @utility btn-outline {
-  border: 1px solid var(--color-garnet);
-  color: var(--color-garnet);
+  border: 1px solid var(--color-brown);
+  color: var(--color-brown);
   &:hover:not(:disabled) {
-    background: var(--color-garnet);
+    background: var(--color-brown);
     color: var(--color-cream);
   }
 }
@@ -149,8 +150,8 @@
   }
   &:focus {
     outline: none;
-    border-color: var(--color-garnet);
-    box-shadow: 0 0 0 1px var(--color-garnet);
+    border-color: var(--color-brown);
+    box-shadow: 0 0 0 1px var(--color-brown);
   }
   &[aria-invalid="true"] {
     border-color: var(--color-error);

@@ -79,7 +79,7 @@ export function ShopControls({ q, sort }: { q: string; sort: ShopSort }) {
               setValue("");
               push({ q: "" });
             }}
-            className="tap absolute top-1/2 right-0 inline-flex -translate-y-1/2 items-center justify-center text-muted hover:text-garnet"
+            className="tap absolute top-1/2 right-0 inline-flex -translate-y-1/2 items-center justify-center text-muted hover:text-brown"
             aria-label="Clear search"
           >
             <CloseIcon size={16} />

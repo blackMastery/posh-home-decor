@@ -40,7 +40,7 @@ export function ProductGallery({
                 aria-label={`Show image ${i + 1} of ${images.length}`}
                 aria-current={i === index ? "true" : undefined}
                 className={`relative block aspect-[4/5] w-[68px] overflow-hidden bg-sand-image md:w-full ${
-                  i === index ? "ring-1 ring-garnet ring-offset-2 ring-offset-cream" : "opacity-75 hover:opacity-100"
+                  i === index ? "ring-1 ring-brown ring-offset-2 ring-offset-cream" : "opacity-75 hover:opacity-100"
                 }`}
               >
                 <PoshImage path={img.storage_path} alt="" fill sizes="84px" className="object-cover" />
@@ -85,7 +85,7 @@ export function ProductGallery({
         {images.length > 1 && (
           <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center gap-1.5 md:hidden" aria-hidden>
             {images.map((img, i) => (
-              <span key={img.id} className={`h-1.5 w-1.5 rounded-full ${i === index ? "bg-garnet" : "bg-cream/80"}`} />
+              <span key={img.id} className={`h-1.5 w-1.5 rounded-full ${i === index ? "bg-brown" : "bg-cream/80"}`} />
             ))}
           </div>
         )}
@@ -106,7 +106,7 @@ function SaveButton({ productId, name }: { productId: string; name: string }) {
       }}
       aria-pressed={saved}
       aria-label={saved ? `Remove ${name} from wishlist` : `Save ${name} to wishlist`}
-      className="tap absolute top-3 right-3 inline-flex items-center justify-center rounded-full bg-cream-raised/95 text-garnet shadow-sm hover:bg-cream-raised"
+      className="tap absolute top-3 right-3 inline-flex items-center justify-center rounded-full bg-cream-raised/95 text-brown shadow-sm hover:bg-cream-raised"
     >
       <HeartIcon size={20} filled={saved} />
     </button>

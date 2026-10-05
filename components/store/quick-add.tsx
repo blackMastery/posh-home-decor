@@ -20,7 +20,7 @@ export function QuickAdd({ productId, name }: { productId: string; name: string 
       }}
       aria-label={inBag ? `${name} is in your bag — view bag` : `Add ${name} to bag`}
       className={`tap absolute z-10 right-3 bottom-3 inline-flex items-center justify-center rounded-full shadow-sm transition-colors ${
-        inBag ? "bg-garnet text-cream" : "bg-cream-raised/95 text-garnet hover:bg-garnet hover:text-cream"
+        inBag ? "bg-brown text-cream" : "bg-cream-raised/95 text-brown hover:bg-brown hover:text-cream"
       }`}
     >
       {inBag ? <CheckIcon size={18} /> : <PlusIcon size={18} />}

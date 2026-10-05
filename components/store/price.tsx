@@ -20,7 +20,7 @@ export function Price({
           {formatPrice(compareAt, prefix)}
         </s>
       )}
-      <span className="text-garnet">
+      <span className="text-brown">
         {onSale && <span className="sr-only">Now </span>}
         {formatPrice(price, prefix)}
       </span>
@@ -35,7 +35,7 @@ export function ProductBadge({ available, onSale, isNew }: { available: boolean;
   const tone = !available
     ? "bg-ink-soft text-cream"
     : onSale
-      ? "bg-garnet text-cream"
-      : "bg-cream-raised text-garnet-deep border border-line-strong";
+      ? "bg-brown text-cream"
+      : "bg-cream-raised text-brown-deep border border-line-strong";
   return <span className={`eyebrow px-2.5 py-1.5 text-[10px] ${tone}`}>{label}</span>;
 }
