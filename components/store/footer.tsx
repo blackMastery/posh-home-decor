@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { getCategories, getSettings } from "@/lib/data/catalog";
-import { WhatsAppIcon } from "@/components/ui/icons";
+import { PhoneIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { Logo } from "./logo";
+
+const LANDLINE = { display: "+592 223-9882", tel: "+5922239882" };
 
 export async function SiteFooter() {
   const [settings, categories] = await Promise.all([getSettings(), getCategories()]);
@@ -40,10 +42,14 @@ export async function SiteFooter() {
           <h2 className="eyebrow text-gold">Talk to us</h2>
           <a
             href={`https://wa.me/${settings.whatsapp_number}`}
-            className="mt-4 inline-flex min-h-11 items-center gap-2 text-[15px] hover:text-gold-light"
+            className="mt-4 flex min-h-11 items-center gap-2 text-[15px] hover:text-gold-light"
           >
             <WhatsAppIcon size={18} className="text-whatsapp" />
             WhatsApp {settings.display_phone}
+          </a>
+          <a href={`tel:${LANDLINE.tel}`} className="flex min-h-11 items-center gap-2 text-[15px] hover:text-gold-light">
+            <PhoneIcon size={18} className="text-gold" />
+            Landline {LANDLINE.display}
           </a>
           <p className="mt-2 text-[14px] text-cream/70">Showroom in Georgetown, Guyana</p>
           <p className="mt-6 text-[13px] text-cream/70">All prices in GYD. Delivery is quoted on WhatsApp.</p>
