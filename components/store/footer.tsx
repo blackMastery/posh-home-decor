@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { getCategories, getSettings } from "@/lib/data/catalog";
 import { PhoneIcon, WhatsAppIcon } from "@/components/ui/icons";
+import { ADDRESS, LANDLINE, MAPS_URL } from "@/lib/contact";
 import { Logo } from "./logo";
-
-const LANDLINE = { display: "+592 223-9882", tel: "+5922239882" };
 
 export async function SiteFooter() {
   const [settings, categories] = await Promise.all([getSettings(), getCategories()]);
@@ -36,6 +35,7 @@ export async function SiteFooter() {
           <ul className="mt-4">
             <li><Link href="/cart" className={link}>Your bag</Link></li>
             <li><Link href="/saved" className={link}>Saved pieces</Link></li>
+            <li><Link href="/about" className={link}>About us</Link></li>
           </ul>
         </div>
         <div>
@@ -51,7 +51,13 @@ export async function SiteFooter() {
             <PhoneIcon size={18} className="text-gold" />
             Landline {LANDLINE.display}
           </a>
-          <p className="mt-2 text-[14px] text-cream/70">Showroom in Georgetown, Guyana</p>
+          <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="mt-2 block text-[14px] text-cream/70 hover:text-gold-light">
+            <address className="not-italic">
+              {ADDRESS.street}
+              <br />
+              {ADDRESS.city}, {ADDRESS.country}
+            </address>
+          </a>
           <p className="mt-6 text-[13px] text-cream/70">All prices in GYD. Delivery is quoted on WhatsApp.</p>
         </div>
       </div>

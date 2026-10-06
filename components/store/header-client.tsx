@@ -17,6 +17,7 @@ const PRIMARY = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
   { href: "/cart", label: "Cart" },
+  { href: "/about", label: "About" },
 ];
 
 function isActive(pathname: string, href: string) {

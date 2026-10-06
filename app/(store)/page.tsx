@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/store/json-ld";
 import { HomeHero } from "@/components/store/home-hero";
 import { SITE_URL } from "@/lib/env";
 import { BRAND_NAME } from "@/lib/seo";
+import { ADDRESS } from "@/lib/contact";
 
 export default async function HomePage() {
   const [settings, categories, newest] = await Promise.all([getSettings(), getCategories(), getNewArrivals(4)]);
@@ -30,8 +31,9 @@ export default async function HomePage() {
           currenciesAccepted: "GYD",
           address: {
             "@type": "PostalAddress",
-            addressLocality: "Georgetown",
-            addressRegion: "Demerara-Mahaica",
+            streetAddress: ADDRESS.street,
+            addressLocality: ADDRESS.city,
+            addressRegion: ADDRESS.region,
             addressCountry: "GY",
           },
         }}
