@@ -7,10 +7,9 @@ update public.settings set
   hero_eyebrow = '',
   hero_headline = 'Taking your decorations to the',
   hero_headline_accent = 'next level.',
-  default_details_text = 'Each piece is selected by our Georgetown studio. Dimensions are approximate; natural materials vary slightly from piece to piece.',
+  default_details_text = 'Each piece is selected by our Georgetown team. Dimensions are approximate; natural materials vary slightly from piece to piece.',
   default_care_text = 'Dust with a soft, dry cloth. Keep out of direct sunlight and away from moisture. Avoid abrasive cleaners.',
-  default_delivery_text = 'Delivery within Georgetown and surrounding areas is quoted on WhatsApp once we confirm your order. Collection is free from the showroom during opening hours.',
-  styling_studio_message = 'Hello Posh! I''d love to book a session with the Styling Studio.'
+  default_delivery_text = 'Delivery within Georgetown and surrounding areas is quoted on WhatsApp once we confirm your order. Collection is free from the showroom during opening hours.'
 where id = 1;
 
 -- Category tree --------------------------------------------------------------

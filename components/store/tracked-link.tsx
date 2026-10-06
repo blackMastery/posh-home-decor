@@ -2,8 +2,6 @@
 
 import { track } from "@/lib/analytics";
 
-type EventName = "whatsapp_product_question" | "styling_studio_click";
-
 /** External WhatsApp link that records an analytics event. */
 export function TrackedWhatsAppLink({
   href,
@@ -13,7 +11,7 @@ export function TrackedWhatsAppLink({
   children,
 }: {
   href: string;
-  event: EventName;
+  event: "whatsapp_product_question";
   product?: string;
   className?: string;
   children: React.ReactNode;
@@ -24,9 +22,7 @@ export function TrackedWhatsAppLink({
       target="_blank"
       rel="noopener noreferrer"
       className={className}
-      onClick={() =>
-        event === "styling_studio_click" ? track(event, {}) : track(event, { product: product ?? "" })
-      }
+      onClick={() => track(event, { product: product ?? "" })}
     >
       {children}
     </a>

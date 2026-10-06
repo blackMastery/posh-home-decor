@@ -16,7 +16,6 @@ export type MessageInput = {
   phoneDisplay: string;
   address?: string | null;
   note?: string | null;
-  styling: boolean;
   pricePrefix?: string;
 };
 
@@ -46,7 +45,6 @@ function render(input: MessageInput, mode: Mode) {
   out.push(`Phone: ${input.phoneDisplay}`);
   if (input.fulfilment === "delivery" && input.address) out.push(`Address: ${input.address}`);
   if (mode === "full" && input.note) out.push(`Note: ${input.note}`);
-  if (input.styling) out.push("", "I'd love some free styling advice too ✨");
   return out.join("\n");
 }
 

@@ -13,7 +13,7 @@ export async function SiteFooter() {
         <div>
           <Logo tone="light" className="h-28" />
           <p className="mt-6 max-w-xs font-display text-[22px] leading-snug text-cream/90">
-            Home decor &amp; styling studio, <em className="text-gold-light">Georgetown, Guyana.</em>
+            Curated home decor, <em className="text-gold-light">Georgetown, Guyana.</em>
           </p>
         </div>
         <div>
@@ -34,7 +34,6 @@ export async function SiteFooter() {
           <ul className="mt-4">
             <li><Link href="/cart" className={link}>Your bag</Link></li>
             <li><Link href="/saved" className={link}>Saved pieces</Link></li>
-            <li><Link href="/#styling-studio" className={link}>Styling Studio</Link></li>
           </ul>
         </div>
         <div>
@@ -52,7 +51,7 @@ export async function SiteFooter() {
       </div>
       <div className="border-t border-cream/10">
         <div className="container-posh flex flex-col gap-3 py-6 text-[12px] text-cream/60 md:flex-row md:items-center md:justify-between">
-          <p>© Posh Home Decor &amp; Home Styling Studio</p>
+          <p>© Posh Home Decor</p>
           <p className="max-w-xl md:text-right">
             Privacy: when you order, we keep your name, number and order details for up to 12 months to help with your
             purchase. Your bag and saved pieces stay on your device.

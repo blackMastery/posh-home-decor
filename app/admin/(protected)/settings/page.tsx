@@ -23,7 +23,6 @@ export default async function SettingsPage() {
           defaultCareText: s.default_care_text,
           defaultDeliveryText: s.default_delivery_text,
           newWindowDays: s.new_window_days,
-          stylingStudioMessage: s.styling_studio_message,
         }}
       />
       <AccountSection email={user.email ?? ""} />

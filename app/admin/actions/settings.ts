@@ -20,7 +20,6 @@ const SettingsInput = z.object({
   defaultCareText: z.string().trim().max(4000),
   defaultDeliveryText: z.string().trim().max(4000),
   newWindowDays: z.number().int().min(1).max(365),
-  stylingStudioMessage: z.string().trim().min(1).max(500),
 });
 
 export type SettingsInputT = z.input<typeof SettingsInput>;
@@ -48,7 +47,6 @@ export async function saveSettings(input: SettingsInputT): Promise<ActionResult>
       default_care_text: v.defaultCareText,
       default_delivery_text: v.defaultDeliveryText,
       new_window_days: v.newWindowDays,
-      styling_studio_message: v.stylingStudioMessage,
     })
     .eq("id", 1);
   if (error) return { ok: false, error: error.message };

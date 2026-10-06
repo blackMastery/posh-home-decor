@@ -16,7 +16,6 @@ const InquirySchema = z
     fulfilment: z.enum(["delivery", "collection"]),
     address: z.string().trim().max(300).optional().default(""),
     note: z.string().trim().max(500).optional().default(""),
-    styling: z.boolean(),
     items: z
       .array(z.object({ productId: z.uuid(), qty: z.number().int().min(1).max(MAX_QTY) }))
       .min(1, "Your bag is empty")
@@ -152,7 +151,6 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
           phoneDisplay: phone.display,
           address,
           note,
-          styling: v.styling,
           pricePrefix: settings.price_prefix,
         },
         settings.whatsapp_number,
@@ -166,7 +164,7 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
         fulfilment: v.fulfilment,
         address,
         note,
-        styling_advice: v.styling,
+        styling_advice: false, // column kept for old inquiries; the option is gone
         items,
         item_count: itemCount,
         subtotal,

@@ -21,7 +21,7 @@ const jost = Jost({
 });
 
 const title = `${BRAND_NAME} | Georgetown, Guyana`;
-const description = `Curated home decor, furniture and styling from ${BRAND_NAME} in Georgetown, Guyana. Build your bag and order on WhatsApp.`;
+const description = `Curated home decor, furniture and accent pieces from ${BRAND_NAME} in Georgetown, Guyana. Build your bag and order on WhatsApp.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

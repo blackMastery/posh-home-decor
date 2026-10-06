@@ -82,12 +82,6 @@ export function SettingsForm({ initial }: { initial: Values }) {
             onChange={(e) => set("newWindowDays", Math.max(1, Math.min(365, Number(e.target.value.replace(/\D/g, "")) || 1)))}
           />
         </div>
-        <div>
-          <label htmlFor={`${ids}-ss`} className={label}>
-            Styling Studio WhatsApp message
-          </label>
-          <textarea id={`${ids}-ss`} className="field min-h-[80px]" value={v.stylingStudioMessage} onChange={(e) => set("stylingStudioMessage", e.target.value)} />
-        </div>
       </section>
 
       <section className="space-y-5 border-t border-line pt-8">

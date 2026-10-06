@@ -7,7 +7,6 @@ type Events = {
   begin_checkout: { items: number };
   inquiry_sent: { fallback: boolean; items: number };
   whatsapp_product_question: { product: string };
-  styling_studio_click: Record<string, never>;
 };
 
 export function track<E extends keyof Events>(event: E, props?: Events[E]) {

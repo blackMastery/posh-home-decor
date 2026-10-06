@@ -22,7 +22,7 @@ function isMobileDevice() {
   return /Android|iPhone|iPad|iPod|Mobile|Silk/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
 }
 
-type Fields = CustomerDetails & { note: string; styling: boolean; website: string };
+type Fields = CustomerDetails & { note: string; website: string };
 type Errors = Partial<Record<"name" | "phone" | "address" | "bag", string>>;
 
 function validate(f: Fields, lines: BagLine[]): Errors {
@@ -74,7 +74,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
   const router = useRouter();
   const { whatsappNumber, pricePrefix } = useStore();
   const { lines, subtotal, count } = useBagLines();
-  const [f, setF] = useState<Fields>({ ...initial, note: "", styling: true, website: "" });
+  const [f, setF] = useState<Fields>({ ...initial, note: "", website: "" });
   const [tried, setTried] = useState(false);
   const [pending, setPending] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -100,7 +100,6 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
       phoneDisplay: phone?.display ?? (f.phone.trim() || "Your WhatsApp number"),
       address: f.address.trim() || (f.fulfilment === "delivery" ? "Your address" : null),
       note: f.note.trim() || null,
-      styling: f.styling,
       pricePrefix,
     },
     whatsappNumber,
@@ -149,7 +148,6 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
         fulfilment: f.fulfilment,
         address: f.fulfilment === "delivery" ? f.address : "",
         note: f.note,
-        styling: f.styling,
         items: lines.map((l) => ({ productId: l.product.id, qty: l.qty })),
         website: f.website,
       });
@@ -180,7 +178,6 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
           phoneDisplay: normalisePhone(f.phone)?.display ?? f.phone.trim(),
           address: f.fulfilment === "delivery" ? f.address.trim() : null,
           note: f.note.trim() || null,
-          styling: f.styling,
           pricePrefix,
         },
         whatsappNumber,
@@ -351,33 +348,6 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
             <p id={`${ids}-note-count`} className="mt-2 text-right text-[12px] text-muted" aria-live="polite">
               {f.note.length}/{NOTE_MAX}
             </p>
-          </div>
-
-          <div className="flex items-center justify-between gap-4 border-y border-line py-4">
-            <div>
-              <p id={`${ids}-styling`} className="text-[15px] text-brown-deep">
-                Include free styling advice
-              </p>
-              <p className="text-[13px] text-muted">Our stylists will suggest how to place your pieces.</p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={f.styling}
-              aria-labelledby={`${ids}-styling`}
-              onClick={() => set("styling", !f.styling)}
-              className="tap inline-flex shrink-0 items-center justify-center"
-            >
-              <span
-                className={`relative inline-block h-7 w-12 rounded-full transition-colors ${f.styling ? "bg-brown" : "bg-line-strong"}`}
-              >
-                <span
-                  className={`absolute top-1 left-1 h-5 w-5 rounded-full bg-cream-raised shadow transition-transform ${
-                    f.styling ? "translate-x-5" : ""
-                  }`}
-                />
-              </span>
-            </button>
           </div>
 
           {/* Honeypot: hidden from people, tempting to bots. */}

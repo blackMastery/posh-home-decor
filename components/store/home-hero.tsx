@@ -23,9 +23,13 @@ const fadeUp: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE } },
 };
 
-type Props = { eyebrow: string; headline: string; accent: string };
+// Hero copy is hard-coded rather than read from the settings table.
+const EYEBROW = "BEAUTIFUL SPACES";
+const HEADLINE = "Inspired Living";
+const DESCRIPTION =
+  "Curated home decor and unique accent pieces to help you create spaces you love.";
 
-export function HomeHero({ eyebrow, headline, accent }: Props) {
+export function HomeHero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
 
@@ -34,8 +38,7 @@ export function HomeHero({ eyebrow, headline, accent }: Props) {
   const copyY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -80]);
   const copyOpacity = useTransform(scrollYProgress, [0.15, 0.75], [1, reduce ? 1 : 0]);
 
-  const headWords = headline.split(/\s+/).filter(Boolean);
-  const accentWords = accent.split(/\s+/).filter(Boolean);
+  const headWords = HEADLINE.split(/\s+/).filter(Boolean);
 
   return (
     <MotionConfig reducedMotion="user">
@@ -57,8 +60,7 @@ export function HomeHero({ eyebrow, headline, accent }: Props) {
           initial="hidden"
           animate="show"
         >
-          {eyebrow && (
-            <motion.div variants={fadeUp} className="flex items-center gap-4">
+          <motion.div variants={fadeUp} className="flex items-center gap-4">
               <motion.span
                 aria-hidden
                 className="h-px w-12 origin-left bg-gold"
@@ -66,23 +68,21 @@ export function HomeHero({ eyebrow, headline, accent }: Props) {
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1, delay: 0.3, ease: EASE }}
               />
-              <p className="eyebrow text-gold">{eyebrow}</p>
+              <p className="eyebrow text-gold">{EYEBROW}</p>
             </motion.div>
-          )}
 
           <h1
-            aria-label={`${headline} ${accent}`.trim()}
+            aria-label={HEADLINE}
             className="mt-5 max-w-[14ch] font-display text-[clamp(44px,min(7vw,12svh),108px)] leading-[0.98] font-medium"
           >
             {headWords.map((w, i) => (
               <Word key={`h${i}`}>{w}</Word>
             ))}
-            {accentWords.map((w, i) => (
-              <Word key={`a${i}`}>
-                <em className="hero-shimmer font-normal">{w}</em>
-              </Word>
-            ))}
           </h1>
+
+          <motion.p variants={fadeUp} className="mt-6 max-w-[46ch] text-[clamp(16px,1.4vw,19px)] leading-relaxed text-cream/85">
+            {DESCRIPTION}
+          </motion.p>
 
           <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
             <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>

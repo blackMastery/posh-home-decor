@@ -1,13 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getCategories, getNewArrivals, getSettings } from "@/lib/data/catalog";
 import { ProductGrid } from "@/components/store/product-card";
 import { PoshImage } from "@/components/ui/posh-image";
-import { ArrowRight, WhatsAppIcon } from "@/components/ui/icons";
-import { TrackedWhatsAppLink } from "@/components/store/tracked-link";
+import { ArrowRight } from "@/components/ui/icons";
 import { JsonLd } from "@/components/store/json-ld";
 import { HomeHero } from "@/components/store/home-hero";
-import { waUrl } from "@/lib/whatsapp/message";
 import { SITE_URL } from "@/lib/env";
 import { BRAND_NAME } from "@/lib/seo";
 
@@ -41,7 +38,7 @@ export default async function HomePage() {
       />
 
       {/* 1. Hero */}
-      <HomeHero eyebrow={settings.hero_eyebrow} headline={settings.hero_headline} accent={settings.hero_headline_accent} />
+      <HomeHero />
 
       {/* 2. Shop by category */}
       {tiles.length > 0 && (
@@ -116,36 +113,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 4. Styling Studio */}
-      <section id="styling-studio" className="scroll-mt-24 bg-brown-deep text-cream" aria-labelledby="studio-heading">
-        <div className="container-posh grid items-center gap-12 py-[clamp(64px,10vw,120px)] md:grid-cols-2">
-          <div data-reveal>
-            <p className="eyebrow text-gold">Home Styling Studio</p>
-            <h2 id="studio-heading" className="mt-4 font-display text-[clamp(34px,4.4vw,60px)] leading-[1.02] font-medium">
-              Let us style it <em className="text-gold-light">for you.</em>
-            </h2>
-            <p className="mt-6 max-w-md text-[16px] leading-relaxed font-light text-cream/85">
-              From a single console to a whole living room, our stylists help you choose, place and layer pieces so
-              your home feels finished. Tell us about your space and we&apos;ll take it from there.
-            </p>
-            <TrackedWhatsAppLink
-              href={waUrl(settings.whatsapp_number, settings.styling_studio_message)}
-              event="styling_studio_click"
-              className="btn btn-gold mt-10"
-            >
-              <WhatsAppIcon size={18} /> Chat on WhatsApp
-            </TrackedWhatsAppLink>
-          </div>
-          <div className="grid grid-cols-2 gap-4" data-reveal>
-            <div className="relative mt-12 aspect-[4/5] overflow-hidden">
-              <Image src="/images/studio-1.jpg" alt="A styled reading corner with a brass lamp" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
-            </div>
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <Image src="/images/studio-2.jpg" alt="A gilded ginger jar styled on a console" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   );
 }

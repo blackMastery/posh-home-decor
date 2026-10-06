@@ -8,7 +8,6 @@
 
 import { createClient } from '@supabase/supabase-js'
 import sharp from 'sharp'
-import { mkdir } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -194,15 +193,6 @@ async function seedProductImages() {
   console.log('• Product photos uploaded')
 }
 
-// Studio band placeholders in /public/images. The hero (hero-collage.jpg) and OG image are real assets — don't regenerate them here.
-async function writeStaticImages() {
-  await mkdir('public/images', { recursive: true })
-  await sharp(svg(art.lamp(1), 1200, 1500)).resize(1200, 1500).jpeg({ quality: 82, mozjpeg: true }).toFile('public/images/studio-1.jpg')
-  await sharp(svg(art.jar(1), 1200, 1500)).resize(1200, 1500).jpeg({ quality: 82, mozjpeg: true }).toFile('public/images/studio-2.jpg')
-  console.log('• Static images written to public/images')
-}
-
 await ensureAdmin()
 await seedProductImages()
-await writeStaticImages()
 console.log('Done.')

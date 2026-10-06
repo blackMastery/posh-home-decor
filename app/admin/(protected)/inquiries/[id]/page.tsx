@@ -78,10 +78,6 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
           <p className="mt-1 text-[15px]">{inq.fulfilment === "delivery" ? "Delivery" : "Collection from the showroom"}</p>
           {inq.address && <p className="mt-1 text-[15px] whitespace-pre-line text-ink-soft">{inq.address}</p>}
         </div>
-        <div>
-          <p className={label}>Styling advice</p>
-          <p className="mt-1 text-[15px]">{inq.styling_advice ? "Yes please ✨" : "No"}</p>
-        </div>
         {inq.note && (
           <div className="sm:col-span-2">
             <p className={label}>Note</p>

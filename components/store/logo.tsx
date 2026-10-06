@@ -7,7 +7,7 @@ export function Logo({ tone = "dark", className = "h-14 nav:h-16" }: { tone?: "d
   return (
     <Image
       src={tone === "dark" ? logoFull : logoFullLight}
-      alt="Posh Home Decor & Home Styling Studio"
+      alt="Posh Home Decor"
       loading="eager"
       sizes="240px"
       className={`w-auto shrink-0 ${className}`}
