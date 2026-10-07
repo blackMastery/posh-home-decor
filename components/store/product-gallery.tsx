@@ -57,14 +57,14 @@ export function ProductGallery({
             const i = Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
             if (i !== index) setIndex(i);
           }}
-          className={`no-scrollbar flex snap-x snap-mandatory overflow-x-auto ${soldOut ? "opacity-80" : ""}`}
+          className={`no-scrollbar flex items-center snap-x snap-mandatory overflow-x-auto bg-sand-image ${soldOut ? "opacity-80" : ""}`}
           aria-roledescription="carousel"
           aria-label={`${name} images`}
         >
           {(images.length ? images : [null]).map((img, i) => (
             <div
               key={img?.id ?? "empty"}
-              className="relative aspect-[4/5] w-full shrink-0 snap-center bg-sand-image"
+              className={`relative w-full shrink-0 snap-center ${img ? "" : "aspect-[4/5]"}`}
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${Math.max(images.length, 1)}`}
             >
@@ -72,10 +72,11 @@ export function ProductGallery({
                 <PoshImage
                   path={img.storage_path}
                   alt={img.alt || name}
-                  fill
+                  width={1200}
+                  height={1500}
                   priority={i === 0}
                   sizes="(max-width: 860px) 100vw, 55vw"
-                  className="object-cover"
+                  className="block h-auto w-full"
                 />
               )}
             </div>
