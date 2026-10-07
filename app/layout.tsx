@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL } from "@/lib/env";
-import { BRAND_NAME, baseOpenGraph } from "@/lib/seo";
+import { BRAND_NAME, DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_KEYWORDS, baseOpenGraph } from "@/lib/seo";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -21,7 +21,7 @@ const jost = Jost({
 });
 
 const title = `${BRAND_NAME} | Georgetown, Guyana`;
-const description = `Curated home decor, furniture and accent pieces from ${BRAND_NAME} in Georgetown, Guyana. Build your bag and order on WhatsApp.`;
+const description = SITE_DESCRIPTION;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -31,9 +31,21 @@ export const metadata: Metadata = {
     template: "%s | Posh Home Decor",
   },
   description,
+  keywords: SITE_KEYWORDS,
+  authors: [{ name: BRAND_NAME, url: SITE_URL }],
+  creator: BRAND_NAME,
+  publisher: BRAND_NAME,
+  category: "Home decor",
   alternates: { canonical: "/" },
+  formatDetection: { telephone: false, address: false, email: false },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
   openGraph: { ...baseOpenGraph, title, description, url: "/" },
-  twitter: { card: "summary_large_image", title, description },
+  twitter: { card: "summary_large_image", title, description, images: [DEFAULT_OG_IMAGE] },
+  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
 };
 
 export const viewport: Viewport = {

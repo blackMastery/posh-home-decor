@@ -6,8 +6,8 @@ import { ArrowRight } from "@/components/ui/icons";
 import { JsonLd } from "@/components/store/json-ld";
 import { HomeHero } from "@/components/store/home-hero";
 import { SITE_URL } from "@/lib/env";
-import { BRAND_NAME } from "@/lib/seo";
-import { ADDRESS } from "@/lib/contact";
+import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/seo";
+import { ADDRESS, LANDLINE, MAPS_URL } from "@/lib/contact";
 
 export default async function HomePage() {
   const [settings, categories, newest] = await Promise.all([getSettings(), getCategories(), getNewArrivals(4)]);
@@ -21,10 +21,19 @@ export default async function HomePage() {
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "HomeAndConstructionBusiness",
+          "@type": "HomeGoodsStore",
+          "@id": `${SITE_URL}/#business`,
           name: BRAND_NAME,
+          description: SITE_DESCRIPTION,
           url: SITE_URL,
-          telephone: `+${settings.whatsapp_number}`,
+          telephone: LANDLINE.tel,
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: `+${settings.whatsapp_number}`,
+            contactType: "sales",
+            areaServed: "GY",
+          },
+          hasMap: MAPS_URL,
           image: `${SITE_URL}/images/og-default.jpg`,
           logo: `${SITE_URL}/images/logo-full.png`,
           priceRange: "$$",
@@ -35,6 +44,22 @@ export default async function HomePage() {
             addressLocality: ADDRESS.city,
             addressRegion: ADDRESS.region,
             addressCountry: "GY",
+          },
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          name: BRAND_NAME,
+          url: SITE_URL,
+          inLanguage: "en-GY",
+          publisher: { "@id": `${SITE_URL}/#business` },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: `${SITE_URL}/shop?q={search_term_string}`,
+            "query-input": "required name=search_term_string",
           },
         }}
       />

@@ -81,6 +81,8 @@ async function ProductContent({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "Product",
           name: product.name,
+          url,
+          brand: { "@type": "Brand", name: "Posh Home Decor" },
           description: product.description ?? product.note ?? undefined,
           image: product.images.map((i) => storageUrl(i.storage_path)),
           category: trail.map((c) => c.name).join(" > "),
@@ -90,7 +92,7 @@ async function ProductContent({ params }: Props) {
             priceCurrency: "GYD",
             price: product.price,
             availability: product.is_available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-            seller: { "@type": "Organization", name: "Posh Home Decor" },
+            seller: { "@id": `${SITE_URL}/#business` },
           },
         }}
       />
