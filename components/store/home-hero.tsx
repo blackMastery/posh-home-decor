@@ -91,6 +91,11 @@ export function HomeHero() {
                 <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </motion.div>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
+              <Link href="/gallery" className="btn border border-cream/60 text-cream backdrop-blur-sm hover:border-cream hover:bg-cream/10">
+                View the gallery
+              </Link>
+            </motion.div>
           </motion.div>
         </motion.div>
 
