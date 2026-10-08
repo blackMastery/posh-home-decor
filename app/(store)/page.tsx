@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCategories, getNewArrivals, getSettings } from "@/lib/data/catalog";
+import { getCategories, getComingSoon, getNewArrivals, getSettings } from "@/lib/data/catalog";
 import { ProductGrid } from "@/components/store/product-card";
 import { PoshImage } from "@/components/ui/posh-image";
 import { ArrowRight } from "@/components/ui/icons";
@@ -10,7 +10,12 @@ import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/seo";
 import { ADDRESS, LANDLINE, MAPS_URL } from "@/lib/contact";
 
 export default async function HomePage() {
-  const [settings, categories, newest] = await Promise.all([getSettings(), getCategories(), getNewArrivals(4)]);
+  const [settings, categories, newest, comingSoon] = await Promise.all([
+    getSettings(),
+    getCategories(),
+    getNewArrivals(4),
+    getComingSoon(4),
+  ]);
   const tiles = categories
     .filter((c) => c.depth === 1 && c.productCount > 0)
     .sort((a, b) => a.sort_order - b.sort_order)
@@ -136,6 +141,26 @@ export default async function HomePage() {
             <div className="mt-10">
               <ProductGrid products={newest} />
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* 4. Coming soon (hidden when empty) */}
+      {comingSoon.length > 0 && (
+        <section className="container-posh py-[clamp(64px,10vw,120px)]" aria-labelledby="soon-heading">
+          <div className="flex items-end justify-between gap-6" data-reveal>
+            <div>
+              <p className="eyebrow text-bronze">Pre-order now</p>
+              <h2 id="soon-heading" className="mt-3 font-display text-[clamp(32px,4vw,52px)] leading-none font-medium text-brown-deep">
+                Coming <em className="text-bronze">soon</em>
+              </h2>
+            </div>
+            <Link href="/shop/coming-soon" className="label-caps inline-flex min-h-11 items-center gap-2 text-brown hover:underline">
+              View all <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="mt-10">
+            <ProductGrid products={comingSoon} />
           </div>
         </section>
       )}

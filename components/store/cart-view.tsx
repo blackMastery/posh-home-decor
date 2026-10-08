@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { formatPrice } from "@/lib/format/money";
 import { useHydrated } from "@/lib/bag/local-store";
 import { track } from "@/lib/analytics";
-import { BagLineItem, RemovedNotice, useBagLines } from "./bag-lines";
+import { BagLineItem, RemovedNotice, SubtotalValue, UnpricedNote, useBagLines } from "./bag-lines";
 import { useStore } from "./store-provider";
 
 export const HOW_IT_WORKS = [
@@ -24,8 +23,9 @@ export function StepLabel({ step }: { step: 1 | 2 }) {
 
 export function CartView() {
   const hydrated = useHydrated();
-  const { refreshBag, pricePrefix } = useStore();
-  const { lines, subtotal, count, ready, storedCount } = useBagLines();
+  const { refreshBag } = useStore();
+  const { lines, subtotal, count, unpricedCount, ready, storedCount } = useBagLines();
+  const allUnpriced = unpricedCount > 0 && unpricedCount === lines.length;
 
   useEffect(() => {
     refreshBag();
@@ -70,7 +70,10 @@ export function CartView() {
                 <dt className="text-ink-soft">
                   Subtotal ({count} {count === 1 ? "item" : "items"})
                 </dt>
-                <dd className="font-medium text-brown">{formatPrice(subtotal, pricePrefix)}</dd>
+                <dd className="text-right font-medium text-brown">
+                  <SubtotalValue subtotal={subtotal} allUnpriced={allUnpriced} />
+                  <UnpricedNote count={unpricedCount} allUnpriced={allUnpriced} />
+                </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-ink-soft">Delivery</dt>

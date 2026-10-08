@@ -6,12 +6,11 @@ import { useEffect, useId, useRef, useState } from "react";
 import { submitInquiry } from "@/app/actions/inquiry";
 import { bag, customerStore, saveLastInquiry, type CustomerDetails } from "@/lib/bag/stores";
 import { useHydrated } from "@/lib/bag/local-store";
-import { formatPrice } from "@/lib/format/money";
 import { normalisePhone, PHONE_ERROR } from "@/lib/phone/normalize";
 import { buildOrderMessage } from "@/lib/whatsapp/message";
 import { track } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { useBagLines, type BagLine } from "./bag-lines";
+import { SubtotalValue, UnpricedNote, useBagLines, type BagLine } from "./bag-lines";
 import { StepLabel } from "./cart-view";
 import { useStore } from "./store-provider";
 
@@ -73,7 +72,8 @@ export function CheckoutView() {
 function CheckoutForm({ initial }: { initial: CustomerDetails }) {
   const router = useRouter();
   const { whatsappNumber, pricePrefix } = useStore();
-  const { lines, subtotal, count } = useBagLines();
+  const { lines, subtotal, count, unpricedCount } = useBagLines();
+  const allUnpriced = unpricedCount > 0 && unpricedCount === lines.length;
   const [f, setF] = useState<Fields>({ ...initial, note: "", website: "" });
   const [tried, setTried] = useState(false);
   const [pending, setPending] = useState(false);
@@ -93,7 +93,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
   const preview = buildOrderMessage(
     {
       ref: "PH-•••••",
-      lines: lines.map((l) => ({ name: l.product.name, qty: l.qty, lineTotal: l.lineTotal, soldOut: !l.product.is_available })),
+      lines: lines.map((l) => ({ name: l.product.name, qty: l.qty, lineTotal: l.lineTotal, availability: l.product.availability })),
       subtotal,
       fulfilment: f.fulfilment,
       name: f.name.trim() || "Your name",
@@ -171,7 +171,7 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
       url = buildOrderMessage(
         {
           ref,
-          lines: lines.map((l) => ({ name: l.product.name, qty: l.qty, lineTotal: l.lineTotal, soldOut: !l.product.is_available })),
+          lines: lines.map((l) => ({ name: l.product.name, qty: l.qty, lineTotal: l.lineTotal, availability: l.product.availability })),
           subtotal,
           fulfilment: f.fulfilment,
           name: f.name.trim(),
@@ -375,8 +375,11 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
           </div>
           <div className="mt-5 flex items-baseline justify-between">
             <span className="label-caps text-ink-soft">Subtotal</span>
-            <span className="text-[20px] font-medium text-brown">{formatPrice(subtotal, pricePrefix)}</span>
+            <span className="text-[20px] font-medium text-brown">
+              <SubtotalValue subtotal={subtotal} allUnpriced={allUnpriced} />
+            </span>
           </div>
+          <UnpricedNote count={unpricedCount} allUnpriced={allUnpriced} />
           <p className="mt-1 text-[13px] text-muted">Delivery (if any) is confirmed in the chat. All prices in GYD.</p>
           {errors.bag && <p className={errCls}>{errors.bag}</p>}
           <button type="submit" disabled={pending} className="btn btn-gold mt-5 w-full" aria-busy={pending}>

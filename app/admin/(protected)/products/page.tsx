@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/admin/auth";
-import { formatPrice } from "@/lib/format/money";
+import { formatPriceOrRequest } from "@/lib/format/money";
+import { toAvailability } from "@/lib/catalog/types";
 import { PoshImage } from "@/components/ui/posh-image";
 import { AvailabilitySwitch } from "@/components/admin/availability-switch";
 import { ProductFilters } from "@/components/admin/product-filters";
@@ -16,7 +17,9 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
   const one = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
   const q = one("q").trim().slice(0, 60);
   const status = ["draft", "published", "archived", "all"].includes(one("status")) ? one("status") : "active";
-  const avail = ["available", "soldout"].includes(one("avail")) ? one("avail") : "all";
+  // "soldout" kept so old bookmarks still work.
+  const availRaw = one("avail") === "soldout" ? "sold_out" : one("avail");
+  const avail = ["available", "coming_soon", "sold_out"].includes(availRaw) ? availRaw : "all";
   const cat = one("cat");
   const sort = ["name", "newest"].includes(one("sort")) ? one("sort") : "edited";
   const page = Math.max(1, Math.min(40, Number.parseInt(one("page"), 10) || 1));
@@ -26,13 +29,12 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
 
   let query = supabase
     .from("product_cards")
-    .select("id, name, slug, price, compare_at_price, is_available, status, image_path, category_name, category_path, updated_at", {
+    .select("id, name, slug, price, compare_at_price, availability, status, image_path, category_name, category_path, updated_at", {
       count: "exact",
     });
   if (status === "active") query = query.neq("status", "archived");
   else if (status !== "all") query = query.eq("status", status);
-  if (avail === "available") query = query.eq("is_available", true);
-  if (avail === "soldout") query = query.eq("is_available", false);
+  if (avail !== "all") query = query.eq("availability", avail);
   if (catPath) query = query.or(`category_path.eq.${catPath},category_path.like.${catPath}/%`);
   if (q) query = query.ilike("name", `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`);
   query =
@@ -81,8 +83,8 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                 <div className="min-w-0">
                   <p className="truncate text-[15px] font-medium text-brown-deep">{p.name}</p>
                   <p className="truncate text-[13px] text-muted">
-                    {formatPrice(p.price!)}
-                    {p.compare_at_price != null && p.compare_at_price > p.price! && (
+                    {formatPriceOrRequest(p.price)}
+                    {p.price != null && p.compare_at_price != null && p.compare_at_price > p.price && (
                       <span className="ml-1 text-brown">· Sale</span>
                     )}{" "}
                     · {p.category_name}
@@ -91,7 +93,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                 </div>
               </Link>
               {p.status !== "archived" && (
-                <AvailabilitySwitch id={p.id!} name={p.name!} initial={Boolean(p.is_available)} />
+                <AvailabilitySwitch id={p.id!} name={p.name!} initial={toAvailability(p.availability)} />
               )}
             </li>
           ))}

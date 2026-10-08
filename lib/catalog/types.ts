@@ -10,15 +10,27 @@ export type Category = CategoryRow & {
 
 export type CategoryNode = Category & { children: CategoryNode[] };
 
+export type Availability = "available" | "coming_soon" | "sold_out";
+export const AVAILABILITIES: { value: Availability; label: string }[] = [
+  { value: "available", label: "Available" },
+  { value: "coming_soon", label: "Coming soon" },
+  { value: "sold_out", label: "Sold out" },
+];
+
+export function toAvailability(value: unknown): Availability {
+  return value === "coming_soon" || value === "sold_out" ? value : "available";
+}
+
 /** What a product card needs. Field names mirror the product_cards view. */
 export type ProductCardData = {
   id: string;
   slug: string;
   name: string;
   note: string | null;
-  price: number;
+  /** null = "Price on request" (priced on WhatsApp). */
+  price: number | null;
   compare_at_price: number | null;
-  is_available: boolean;
+  availability: Availability;
   is_new: boolean;
   is_on_sale: boolean;
   image_path: string | null;

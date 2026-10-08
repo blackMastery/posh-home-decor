@@ -33,7 +33,7 @@ export default async function NewProductPage() {
           categoryId: null,
           note: "",
           description: "",
-          isAvailable: true,
+          availability: "available",
           detailsText: defaults.details,
           careText: defaults.care,
           deliveryText: defaults.delivery,

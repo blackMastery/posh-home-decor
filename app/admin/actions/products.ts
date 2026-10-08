@@ -4,6 +4,7 @@ import { updateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/auth";
 import { TAGS } from "@/lib/data/catalog";
+import type { Availability } from "@/lib/catalog/types";
 import { SLUG_RE, slugify } from "@/lib/slug";
 
 export type ActionResult<T = object> = ({ ok: true } & T) | { ok: false; error: string; fieldErrors?: Record<string, string>; conflict?: boolean };
@@ -33,7 +34,7 @@ const ProductInput = z.object({
   price: z.number().int().positive("Price must be more than 0").nullable(),
   compareAtPrice: z.number().int().positive().nullable(),
   categoryId: z.uuid().nullable(),
-  isAvailable: z.boolean(),
+  availability: z.enum(["available", "coming_soon", "sold_out"]),
   detailsText: optionalText,
   careText: optionalText,
   deliveryText: optionalText,
@@ -86,10 +87,12 @@ export async function saveProduct(
 
   // Draft saves are lenient; publishing requires the essentials.
   const fieldErrors: Record<string, string> = {};
-  if (v.price == null) fieldErrors.price = "Price is required";
   if (!v.categoryId) fieldErrors.categoryId = "Choose a category";
   if (status === "published" && v.images.length === 0) fieldErrors.images = "Add at least one photo to publish";
-  if (v.compareAtPrice != null && v.price != null && v.compareAtPrice <= v.price) {
+  // No price is fine ("Price on request"), but a Sale needs a price to compare against.
+  if (v.compareAtPrice != null && v.price == null) {
+    fieldErrors.compareAtPrice = "Add a price to show a Was price";
+  } else if (v.compareAtPrice != null && v.price != null && v.compareAtPrice <= v.price) {
     fieldErrors.compareAtPrice = "Was price must be higher to show as Sale";
   }
   if (Object.keys(fieldErrors).length) {
@@ -121,10 +124,10 @@ export async function saveProduct(
     name: v.name,
     note: v.note,
     description: v.description,
-    price: v.price!,
+    price: v.price,
     compare_at_price: v.compareAtPrice,
     category_id: v.categoryId!,
-    is_available: v.isAvailable,
+    availability: v.availability,
     status,
     details_text: v.detailsText,
     care_text: v.careText,
@@ -180,12 +183,13 @@ export async function saveProduct(
   return { ok: true, id: saved.id, slug: saved.slug, updatedAt: final?.updated_at ?? saved.updated_at, status: saved.status };
 }
 
-export async function setAvailability(id: string, isAvailable: boolean): Promise<ActionResult> {
+export async function setAvailability(id: string, availability: Availability): Promise<ActionResult> {
   const { supabase } = await requireAdmin();
   if (!z.uuid().safeParse(id).success) return { ok: false, error: "Invalid product" };
+  if (!["available", "coming_soon", "sold_out"].includes(availability)) return { ok: false, error: "Invalid availability" };
   const { data, error } = await supabase
     .from("products")
-    .update({ is_available: isAvailable })
+    .update({ availability })
     .eq("id", id)
     .select("slug")
     .single();
@@ -229,7 +233,7 @@ export async function duplicateProduct(id: string): Promise<ActionResult<{ id: s
       price: p.price,
       compare_at_price: p.compare_at_price,
       category_id: p.category_id,
-      is_available: p.is_available,
+      availability: p.availability,
       status: "draft",
       details_text: p.details_text,
       care_text: p.care_text,

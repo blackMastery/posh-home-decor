@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { createPublicClient } from "@/lib/supabase/public";
-import type { Category, ProductCardData, Settings, ShopSort } from "@/lib/catalog/types";
+import { toAvailability, type Availability, type Category, type ProductCardData, type Settings, type ShopSort } from "@/lib/catalog/types";
 
 // Cache tags (spec §6.5). Admin mutations call updateTag() with these.
 export const TAGS = {
@@ -14,7 +14,7 @@ export const TAGS = {
 } as const;
 
 const CARD_COLUMNS =
-  "id, slug, name, note, price, compare_at_price, is_available, is_new, is_on_sale, image_path, image_width, image_height, image_alt";
+  "id, slug, name, note, price, compare_at_price, availability, is_new, is_on_sale, image_path, image_width, image_height, image_alt";
 
 function card(row: Record<string, unknown>): ProductCardData {
   return {
@@ -22,9 +22,9 @@ function card(row: Record<string, unknown>): ProductCardData {
     slug: row.slug as string,
     name: row.name as string,
     note: (row.note as string | null) ?? null,
-    price: row.price as number,
+    price: (row.price as number | null) ?? null,
     compare_at_price: (row.compare_at_price as number | null) ?? null,
-    is_available: Boolean(row.is_available),
+    availability: toAvailability(row.availability),
     is_new: Boolean(row.is_new),
     is_on_sale: Boolean(row.is_on_sale),
     image_path: (row.image_path as string | null) ?? null,
@@ -63,9 +63,11 @@ export async function getCategories(): Promise<Category[]> {
   }));
 }
 
+export type ShopFilter = "new" | "sale" | "coming-soon";
+
 export type ShopQuery = {
   categoryPath?: string | null;
-  filter?: "new" | "sale" | null;
+  filter?: ShopFilter | null;
   q?: string | null;
   sort?: ShopSort;
   limit: number;
@@ -90,23 +92,25 @@ export async function getShopProducts(query: ShopQuery): Promise<{ items: Produc
   };
 }
 
-/** Counts for the virtual New / Sale filters (hidden when empty). */
+/** Counts for the virtual New / Sale / Coming soon filters (hidden when empty). */
 export async function getVirtualCounts() {
   "use cache";
   cacheLife("days");
   cacheTag(TAGS.products);
   const db = createPublicClient();
-  const [n, s] = await Promise.all([
+  const [n, s, c] = await Promise.all([
     db.rpc("shop_products", { p_filter: "new", p_limit: 1 }),
     db.rpc("shop_products", { p_filter: "sale", p_limit: 1 }),
+    db.rpc("shop_products", { p_filter: "coming-soon", p_limit: 1 }),
   ]);
   return {
     newCount: Number(n.data?.[0]?.total_count ?? 0),
     saleCount: Number(s.data?.[0]?.total_count ?? 0),
+    comingSoonCount: Number(c.data?.[0]?.total_count ?? 0),
   };
 }
 
-/** Home: 4 newest published, available first. */
+/** Home: 4 newest published (excluding Coming soon), available first. */
 export async function getNewArrivals(limit = 4): Promise<ProductCardData[]> {
   "use cache";
   cacheLife("days");
@@ -115,7 +119,25 @@ export async function getNewArrivals(limit = 4): Promise<ProductCardData[]> {
     .from("product_cards")
     .select(CARD_COLUMNS)
     .eq("status", "published")
-    .order("is_available", { ascending: false })
+    .neq("availability", "coming_soon")
+    .order("availability_rank", { ascending: true })
+    .order("first_available_at", { ascending: false, nullsFirst: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []).map((r) => card(r as Record<string, unknown>));
+}
+
+/** Home: published Coming soon pieces, newest first. */
+export async function getComingSoon(limit = 4): Promise<ProductCardData[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.products, TAGS.home);
+  const { data, error } = await createPublicClient()
+    .from("product_cards")
+    .select(CARD_COLUMNS)
+    .eq("status", "published")
+    .eq("availability", "coming_soon")
+    .order("featured_rank", { ascending: true, nullsFirst: false })
     .order("first_published_at", { ascending: false, nullsFirst: false })
     .limit(limit);
   if (error) throw error;
@@ -128,9 +150,9 @@ export type ProductDetail = {
   name: string;
   note: string | null;
   description: string | null;
-  price: number;
+  price: number | null;
   compare_at_price: number | null;
-  is_available: boolean;
+  availability: Availability;
   is_new: boolean;
   is_on_sale: boolean;
   details_text: string | null;
@@ -149,7 +171,7 @@ export async function getProductBySlug(slug: string): Promise<ProductDetail | nu
   const { data: p, error } = await db
     .from("products")
     .select(
-      "id, slug, name, note, description, price, compare_at_price, is_available, details_text, care_text, delivery_text, updated_at, category:categories(id, name, path), images:product_images(id, storage_path, width, height, alt, sort_order)",
+      "id, slug, name, note, description, price, compare_at_price, availability, details_text, care_text, delivery_text, updated_at, category:categories(id, name, path), images:product_images(id, storage_path, width, height, alt, sort_order)",
     )
     .eq("slug", slug)
     .eq("status", "published")
@@ -159,6 +181,7 @@ export async function getProductBySlug(slug: string): Promise<ProductDetail | nu
   const { data: flags } = await db.from("product_cards").select("is_new, is_on_sale").eq("id", p.id).single();
   return {
     ...p,
+    availability: toAvailability(p.availability),
     is_new: Boolean(flags?.is_new),
     is_on_sale: Boolean(flags?.is_on_sale),
     category: p.category as ProductDetail["category"],

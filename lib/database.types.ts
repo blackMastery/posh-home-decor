@@ -106,7 +106,7 @@ export type Database = {
           id: string
           ip_hash: string | null
           item_count: number
-          items: Json
+          items: NonNullable<Json>
           message_text: string
           note: string | null
           phone_e164: string
@@ -124,7 +124,7 @@ export type Database = {
           id?: string
           ip_hash?: string | null
           item_count: number
-          items: Json
+          items: NonNullable<Json>
           message_text: string
           note?: string | null
           phone_e164: string
@@ -142,7 +142,7 @@ export type Database = {
           id?: string
           ip_hash?: string | null
           item_count?: number
-          items?: Json
+          items?: NonNullable<Json>
           message_text?: string
           note?: string | null
           phone_e164?: string
@@ -250,6 +250,7 @@ export type Database = {
       }
       products: {
         Row: {
+          availability: string
           care_text: string | null
           category_id: string
           compare_at_price: number | null
@@ -258,18 +259,19 @@ export type Database = {
           description: string | null
           details_text: string | null
           featured_rank: number | null
+          first_available_at: string | null
           first_published_at: string | null
           id: string
-          is_available: boolean
           name: string
           note: string | null
-          price: number
+          price: number | null
           search: unknown
           slug: string
           status: string
           updated_at: string
         }
         Insert: {
+          availability?: string
           care_text?: string | null
           category_id: string
           compare_at_price?: number | null
@@ -278,18 +280,19 @@ export type Database = {
           description?: string | null
           details_text?: string | null
           featured_rank?: number | null
+          first_available_at?: string | null
           first_published_at?: string | null
           id?: string
-          is_available?: boolean
           name: string
           note?: string | null
-          price: number
-          search?: unknown
+          price?: number | null
+          search?: never
           slug: string
           status?: string
           updated_at?: string
         }
         Update: {
+          availability?: string
           care_text?: string | null
           category_id?: string
           compare_at_price?: number | null
@@ -298,13 +301,13 @@ export type Database = {
           description?: string | null
           details_text?: string | null
           featured_rank?: number | null
+          first_available_at?: string | null
           first_published_at?: string | null
           id?: string
-          is_available?: boolean
           name?: string
           note?: string | null
-          price?: number
-          search?: unknown
+          price?: number | null
+          search?: never
           slug?: string
           status?: string
           updated_at?: string
@@ -392,19 +395,21 @@ export type Database = {
     Views: {
       product_cards: {
         Row: {
+          availability: string | null
+          availability_rank: number | null
           category_id: string | null
           category_name: string | null
           category_path: string | null
           compare_at_price: number | null
           created_at: string | null
           featured_rank: number | null
+          first_available_at: string | null
           first_published_at: string | null
           id: string | null
           image_alt: string | null
           image_height: number | null
           image_path: string | null
           image_width: number | null
-          is_available: boolean | null
           is_new: boolean | null
           is_on_sale: boolean | null
           name: string | null
@@ -438,7 +443,7 @@ export type Database = {
           product_count: number
         }[]
       }
-      is_admin: { Args: never; Returns: boolean }
+      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
       shop_products: {
         Args: {
           p_category_path?: string
@@ -449,6 +454,7 @@ export type Database = {
           p_sort?: string
         }
         Returns: {
+          availability: string
           category_path: string
           compare_at_price: number
           first_published_at: string
@@ -457,7 +463,6 @@ export type Database = {
           image_height: number
           image_path: string
           image_width: number
-          is_available: boolean
           is_new: boolean
           is_on_sale: boolean
           name: string
@@ -470,19 +475,21 @@ export type Database = {
       style_it_with: {
         Args: { p_limit?: number; p_product_id: string }
         Returns: {
+          availability: string | null
+          availability_rank: number | null
           category_id: string | null
           category_name: string | null
           category_path: string | null
           compare_at_price: number | null
           created_at: string | null
           featured_rank: number | null
+          first_available_at: string | null
           first_published_at: string | null
           id: string | null
           image_alt: string | null
           image_height: number | null
           image_path: string | null
           image_width: number | null
-          is_available: boolean | null
           is_new: boolean | null
           is_on_sale: boolean | null
           name: string | null
@@ -517,12 +524,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -544,13 +551,12 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -569,13 +575,12 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -594,13 +599,12 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -613,11 +617,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -634,4 +638,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

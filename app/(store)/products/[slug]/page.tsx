@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getCategories, getProductBySlug, getPublishedSlugs, getSettings, getStyleItWith } from "@/lib/data/catalog";
 import { ancestry } from "@/lib/catalog/tree";
+import type { Availability } from "@/lib/catalog/types";
 import { Breadcrumbs } from "@/components/store/breadcrumbs";
 import { ProductGallery } from "@/components/store/product-gallery";
 import { ProductPurchase } from "@/components/store/product-purchase";
@@ -15,6 +16,12 @@ import { renderUrl, storageUrl } from "@/lib/images";
 import { baseOpenGraph } from "@/lib/seo";
 
 type Props = PageProps<"/products/[slug]">;
+
+const SCHEMA_AVAILABILITY: Record<Availability, string> = {
+  available: "https://schema.org/InStock",
+  coming_soon: "https://schema.org/PreOrder",
+  sold_out: "https://schema.org/OutOfStock",
+};
 
 export async function generateStaticParams() {
   const slugs = await getPublishedSlugs();
@@ -89,9 +96,9 @@ async function ProductContent({ params }: Props) {
           offers: {
             "@type": "Offer",
             url,
-            priceCurrency: "GYD",
-            price: product.price,
-            availability: product.is_available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            // "Price on request" products omit price rather than publishing a fake one.
+            ...(product.price != null ? { priceCurrency: "GYD", price: product.price } : {}),
+            availability: SCHEMA_AVAILABILITY[product.availability],
             seller: { "@id": `${SITE_URL}/#business` },
           },
         }}
@@ -117,13 +124,13 @@ async function ProductContent({ params }: Props) {
             images={product.images}
             name={product.name}
             productId={product.id}
-            soldOut={!product.is_available}
+            soldOut={product.availability === "sold_out"}
           />
 
           <div className="nav:sticky nav:top-[150px] nav:self-start">
             <div className="flex items-center gap-3">
               <p className="eyebrow text-bronze">{product.category.name}</p>
-              <ProductBadge available={product.is_available} onSale={product.is_on_sale} isNew={product.is_new} />
+              <ProductBadge availability={product.availability} onSale={product.is_on_sale} isNew={product.is_new} />
             </div>
             <h1 className="mt-3 font-display text-[clamp(34px,4vw,54px)] leading-[1.02] font-medium text-brown-deep">
               {product.name}
@@ -141,7 +148,7 @@ async function ProductContent({ params }: Props) {
                 productId={product.id}
                 name={product.name}
                 price={product.price}
-                available={product.is_available}
+                availability={product.availability}
                 productUrl={url}
               />
               <p className="mt-3 text-[13px] text-muted">

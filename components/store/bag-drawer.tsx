@@ -3,17 +3,17 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { formatPrice } from "@/lib/format/money";
 import { useDialog } from "@/components/ui/use-dialog";
 import { CloseIcon } from "@/components/ui/icons";
 import { track } from "@/lib/analytics";
 import { useStore } from "./store-provider";
-import { BagLineItem, RemovedNotice, useBagLines } from "./bag-lines";
+import { BagLineItem, RemovedNotice, SubtotalValue, UnpricedNote, useBagLines } from "./bag-lines";
 
 export function BagDrawer() {
-  const { bagOpen, closeBag, refreshBag, pricePrefix } = useStore();
+  const { bagOpen, closeBag, refreshBag } = useStore();
   const ref = useDialog<HTMLDivElement>(bagOpen, closeBag);
-  const { lines, subtotal, count, ready, storedCount } = useBagLines();
+  const { lines, subtotal, count, unpricedCount, ready, storedCount } = useBagLines();
+  const allUnpriced = unpricedCount > 0 && unpricedCount === lines.length;
 
   // Always show current prices when opened.
   useEffect(() => {
@@ -69,8 +69,11 @@ export function BagDrawer() {
             <>
               <div className="flex items-baseline justify-between">
                 <span className="label-caps text-ink-soft">Subtotal</span>
-                <span className="text-[18px] font-medium text-brown">{formatPrice(subtotal, pricePrefix)}</span>
+                <span className="text-[18px] font-medium text-brown">
+                  <SubtotalValue subtotal={subtotal} allUnpriced={allUnpriced} />
+                </span>
               </div>
+              <UnpricedNote count={unpricedCount} allUnpriced={allUnpriced} />
               <p className="mt-1 text-[13px] text-muted">Delivery quoted on WhatsApp</p>
               <Link
                 href="/checkout"

@@ -119,7 +119,7 @@ export function InquiryList({ initial, q, range }: { initial: InquiryListItem[];
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="truncate text-[16px] font-medium text-brown-deep">{i.customer_name}</p>
-                      <p className="shrink-0 text-[15px] font-medium text-brown">{formatPrice(i.subtotal)}</p>
+                      <p className="shrink-0 text-[15px] font-medium text-brown">{i.subtotal > 0 ? formatPrice(i.subtotal) : "On request"}</p>
                     </div>
                     <div className="mt-0.5 flex items-baseline justify-between gap-3 text-[13px] text-muted">
                       <span className="font-mono tracking-wide">

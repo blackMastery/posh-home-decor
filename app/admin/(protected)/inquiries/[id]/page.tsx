@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/admin/auth";
-import { formatPrice } from "@/lib/format/money";
+import { formatPrice, formatPriceOrRequest } from "@/lib/format/money";
+import { toAvailability, type Availability } from "@/lib/catalog/types";
 import { formatDateTime } from "@/lib/format/time";
 import { CopyButton } from "@/components/admin/copy-button";
 import { waUrl } from "@/lib/whatsapp/message";
@@ -15,11 +16,19 @@ type Item = {
   slug: string;
   name: string;
   note: string | null;
-  unit_price: number;
+  unit_price: number | null;
   qty: number;
-  line_total: number;
+  line_total: number | null;
+  /** Absent on inquiries sent before "Coming soon" existed. */
+  availability?: Availability;
   was_available: boolean;
   image_path: string | null;
+};
+
+const NOW_LABEL: Record<Availability, string> = {
+  available: "Now available",
+  coming_soon: "Now coming soon",
+  sold_out: "Now sold out",
 };
 
 export default async function InquiryDetail({ params }: PageProps<"/admin/inquiries/[id]">) {
@@ -32,7 +41,7 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
   const items = (inq.items as unknown as Item[]) ?? [];
   const { data: current } = await supabase
     .from("products")
-    .select("id, price, is_available, status, slug")
+    .select("id, price, availability, status, slug")
     .in("id", items.map((i) => i.product_id));
   const now = new Map((current ?? []).map((p) => [p.id, p]));
 
@@ -97,9 +106,10 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
             if (!live || live.status === "archived") notes.push("No longer listed");
             else {
               if (live.status === "draft") notes.push("Now unpublished");
-              if (i.was_available && !live.is_available) notes.push("Now sold out");
-              if (!i.was_available && live.is_available) notes.push("Now available");
-              if (live.price !== i.unit_price) notes.push(`Now ${formatPrice(live.price)}`);
+              const sent = i.availability ?? (i.was_available ? "available" : "sold_out");
+              const liveAvailability = toAvailability(live.availability);
+              if (liveAvailability !== sent) notes.push(NOW_LABEL[liveAvailability]);
+              if (live.price !== i.unit_price) notes.push(live.price == null ? "Now price on request" : `Now ${formatPrice(live.price)}`);
             }
             return (
               <li key={i.product_id} className="flex gap-3 py-4">
@@ -109,8 +119,10 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
                 <div className="min-w-0 flex-1">
                   <p className="text-[15px] font-medium text-brown-deep">{i.name}</p>
                   <p className="text-[13px] text-muted">
-                    {i.qty} × {formatPrice(i.unit_price)}
-                    {!i.was_available && " · marked sold out when sent"}
+                    {i.qty} × {formatPriceOrRequest(i.unit_price)}
+                    {(i.availability ?? (i.was_available ? "available" : "sold_out")) === "sold_out" &&
+                      " · marked sold out when sent"}
+                    {i.availability === "coming_soon" && " · pre-order (coming soon)"}
                   </p>
                   {notes.length > 0 && (
                     <p className="mt-1 flex flex-wrap gap-1.5">
@@ -122,15 +134,20 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
                     </p>
                   )}
                 </div>
-                <p className="shrink-0 text-[15px] font-medium text-brown">{formatPrice(i.line_total)}</p>
+                <p className="shrink-0 text-[15px] font-medium text-brown">{i.line_total == null ? "On request" : formatPrice(i.line_total)}</p>
               </li>
             );
           })}
         </ul>
         <div className="mt-3 flex justify-between text-[16px]">
-          <span className="text-ink-soft">Subtotal at the time</span>
+          <span className="text-ink-soft">
+            {items.some((i) => i.unit_price == null) ? "Subtotal of priced items at the time" : "Subtotal at the time"}
+          </span>
           <span className="font-medium text-brown">{formatPrice(inq.subtotal)}</span>
         </div>
+        {items.some((i) => i.unit_price == null) && (
+          <p className="mt-1 text-[13px] text-muted">Items marked “On request” need a price quoted on WhatsApp.</p>
+        )}
       </section>
 
       <section className="mt-8">

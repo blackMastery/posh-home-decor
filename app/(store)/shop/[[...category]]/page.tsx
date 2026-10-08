@@ -20,12 +20,14 @@ type Resolved =
   | { kind: "all" }
   | { kind: "new" }
   | { kind: "sale" }
+  | { kind: "coming-soon" }
   | { kind: "category"; category: Category; trail: Category[] };
 
 async function resolve(segments: string[] | undefined): Promise<Resolved | null> {
   if (!segments || segments.length === 0) return { kind: "all" };
   if (segments.length === 1 && segments[0] === "new") return { kind: "new" };
   if (segments.length === 1 && segments[0] === "sale") return { kind: "sale" };
+  if (segments.length === 1 && segments[0] === "coming-soon") return { kind: "coming-soon" };
   const path = segments.map((s) => decodeURIComponent(s).toLowerCase()).join("/");
   const categories = await getCategories();
   const category = categories.find((c) => c.path === path);
@@ -50,6 +52,8 @@ function title(r: Resolved) {
       return "New arrivals";
     case "sale":
       return "Sale";
+    case "coming-soon":
+      return "Coming soon";
     case "category":
       return r.category.name;
   }
@@ -96,7 +100,7 @@ async function ShopContent(props: Props) {
   const [{ items, total }, categories, counts] = await Promise.all([
     getShopProducts({
       categoryPath: r.kind === "category" ? r.category.path : null,
-      filter: r.kind === "new" || r.kind === "sale" ? r.kind : null,
+      filter: r.kind === "all" || r.kind === "category" ? null : r.kind,
       q: q || null,
       sort,
       limit: page * PAGE_SIZE,
@@ -129,6 +133,9 @@ async function ShopContent(props: Props) {
     ...topLevel.map((c) => ({ href: `/shop/${c.path}`, label: c.name, active: activeTop === c.path })),
     ...(counts.newCount > 0 ? [{ href: "/shop/new", label: "New", active: r.kind === "new" }] : []),
     ...(counts.saleCount > 0 ? [{ href: "/shop/sale", label: "Sale", active: r.kind === "sale" }] : []),
+    ...(counts.comingSoonCount > 0
+      ? [{ href: "/shop/coming-soon", label: "Coming soon", active: r.kind === "coming-soon" }]
+      : []),
   ];
 
   const crumbs =

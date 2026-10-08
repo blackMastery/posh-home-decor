@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/browser";
 import { formatNumber, parseMoney } from "@/lib/format/money";
 import { relativeTime } from "@/lib/format/time";
 import { slugify } from "@/lib/slug";
+import { AVAILABILITIES, type Availability } from "@/lib/catalog/types";
 import { storageUrl } from "@/lib/images";
 import { PoshImage } from "@/components/ui/posh-image";
 import { prepareImage, type PreparedImage } from "./image-prep";
@@ -24,7 +25,7 @@ export type ProductFormValues = {
   categoryId: string | null;
   note: string;
   description: string;
-  isAvailable: boolean;
+  availability: Availability;
   detailsText: string;
   careText: string;
   deliveryText: string;
@@ -210,6 +211,7 @@ export function ProductForm({
   const price = parseMoney(v.price);
   const compareAt = parseMoney(v.compareAtPrice);
   const compareWarning = compareAt != null && price != null && compareAt <= price;
+  const compareNeedsPrice = compareAt != null && price == null;
   const uploading = pending.some((p) => p.status !== "error");
 
   async function save(intent: "draft" | "publish" | "keep", opts: { force?: boolean; then?: "another" } = {}) {
@@ -234,7 +236,7 @@ export function ProductForm({
         price,
         compareAtPrice: compareAt,
         categoryId: v.categoryId,
-        isAvailable: v.isAvailable,
+        availability: v.availability,
         detailsText: v.detailsText,
         careText: v.careText,
         deliveryText: v.deliveryText,
@@ -473,15 +475,28 @@ export function ProductForm({
           <label htmlFor={`${ids}-price`} className={label}>
             Price (GYD)
           </label>
-          <MoneyInput id={`${ids}-price`} value={v.price} onChange={(val) => set("price", val)} invalid={!!fieldErrors.price} />
-          {err("price")}
+          <MoneyInput
+            id={`${ids}-price`}
+            value={v.price}
+            onChange={(val) => set("price", val)}
+            invalid={!!fieldErrors.price}
+            placeholder="Optional"
+            aria-describedby={`${ids}-price-hint`}
+          />
+          {err("price") ?? (
+            <p id={`${ids}-price-hint`} className="mt-1.5 text-[13px] text-muted">
+              {price == null ? "Blank shows “Price on request” — customers ask on WhatsApp" : "Shown to customers"}
+            </p>
+          )}
         </div>
         <div>
           <label htmlFor={`${ids}-was`} className={label}>
             Was price
           </label>
-          <MoneyInput id={`${ids}-was`} value={v.compareAtPrice} onChange={(val) => set("compareAtPrice", val)} invalid={compareWarning} placeholder="Optional" />
-          {compareWarning ? (
+          <MoneyInput id={`${ids}-was`} value={v.compareAtPrice} onChange={(val) => set("compareAtPrice", val)} invalid={compareWarning || compareNeedsPrice} placeholder="Optional" />
+          {compareNeedsPrice ? (
+            <p className="mt-1.5 text-[13px] text-error">Add a price to show a Was price</p>
+          ) : compareWarning ? (
             <p className="mt-1.5 text-[13px] text-error">Was price must be higher to show as Sale</p>
           ) : compareAt != null && price != null ? (
             <p className="mt-1.5 text-[13px] text-[#2F5320]">Shows as Sale</p>
@@ -519,27 +534,36 @@ export function ProductForm({
         <textarea id={`${ids}-desc`} className="field min-h-[120px]" value={v.description} onChange={(e) => set("description", e.target.value)} />
       </div>
 
-      {/* 6. Available */}
-      <div className="flex items-center justify-between gap-4 border-y border-line py-3">
-        <div>
-          <p id={`${ids}-avail`} className="text-[15px] font-medium text-brown-deep">
-            {v.isAvailable ? "Available" : "Sold out"}
-          </p>
-          <p className="text-[13px] text-muted">Switch off after it sells in the showroom.</p>
+      {/* 6. Availability */}
+      <fieldset className="border-y border-line py-3">
+        <legend className="sr-only">Availability</legend>
+        <div className="grid grid-cols-3 gap-1 bg-sand p-1" role="radiogroup" aria-label="Availability">
+          {AVAILABILITIES.map((a) => {
+            const active = v.availability === a.value;
+            return (
+              <button
+                key={a.value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => set("availability", a.value)}
+                className={`min-h-11 px-2 text-[14px] font-medium transition-colors ${
+                  active ? "bg-cream-raised text-brown-deep shadow" : "text-ink-soft hover:text-brown"
+                }`}
+              >
+                {a.label}
+              </button>
+            );
+          })}
         </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={v.isAvailable}
-          aria-labelledby={`${ids}-avail`}
-          onClick={() => set("isAvailable", !v.isAvailable)}
-          className="tap inline-flex items-center justify-center"
-        >
-          <span className={`relative inline-block h-7 w-12 rounded-full transition-colors ${v.isAvailable ? "bg-[#3E7B2A]" : "bg-line-strong"}`}>
-            <span className={`absolute top-1 left-1 h-5 w-5 rounded-full bg-cream-raised shadow transition-transform ${v.isAvailable ? "translate-x-5" : ""}`} />
-          </span>
-        </button>
-      </div>
+        <p className="mt-2 text-[13px] text-muted">
+          {v.availability === "available"
+            ? "Customers can add it to their bag."
+            : v.availability === "coming_soon"
+              ? "Shown with a Coming soon badge. Customers can pre-order."
+              : "Switch to Sold out after it sells in the showroom."}
+        </p>
+      </fieldset>
 
       {/* 7. Accordions */}
       <div className="space-y-5">
@@ -708,12 +732,14 @@ function MoneyInput({
   onChange,
   invalid,
   placeholder,
+  "aria-describedby": describedBy,
 }: {
   id: string;
   value: string;
   onChange: (v: string) => void;
   invalid?: boolean;
   placeholder?: string;
+  "aria-describedby"?: string;
 }) {
   return (
     <div className="relative">
@@ -726,6 +752,7 @@ function MoneyInput({
         placeholder={placeholder}
         value={value}
         aria-invalid={invalid ? true : undefined}
+        aria-describedby={describedBy}
         onChange={(e) => {
           const n = parseMoney(e.target.value);
           onChange(n == null ? "" : formatNumber(Math.min(n, 99_999_999)));

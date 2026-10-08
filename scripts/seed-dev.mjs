@@ -165,6 +165,8 @@ const products = [
   ['a0000000-0000-4000-8000-000000000006', 'tray', 'Marble Serving Tray'],
   ['a0000000-0000-4000-8000-000000000007', 'cushion', 'Garnet Velvet Cushion'],
   ['a0000000-0000-4000-8000-000000000008', 'lamp', 'Arched Brass Table Lamp'],
+  ['a0000000-0000-4000-8000-000000000009', 'tray', 'Carved Teak Console'],
+  ['a0000000-0000-4000-8000-000000000010', 'lamp', 'Pleated Silk Floor Lamp'],
 ]
 
 function svg(body, w = W, h = H) {

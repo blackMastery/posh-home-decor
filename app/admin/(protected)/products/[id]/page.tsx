@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { loadCategoryOptions, loadDefaults } from "@/lib/admin/product-loader";
 import { formatNumber } from "@/lib/format/money";
+import { toAvailability } from "@/lib/catalog/types";
 import { ProductForm } from "@/components/admin/product-form";
 
 export const metadata: Metadata = { title: "Edit product" };
@@ -46,12 +47,12 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
           name: p.name,
           slug: p.slug,
           slugEdited: false,
-          price: formatNumber(p.price),
+          price: p.price != null ? formatNumber(p.price) : "",
           compareAtPrice: p.compare_at_price != null ? formatNumber(p.compare_at_price) : "",
           categoryId: p.category_id,
           note: p.note ?? "",
           description: p.description ?? "",
-          isAvailable: p.is_available,
+          availability: toAvailability(p.availability),
           detailsText: p.details_text ?? "",
           careText: p.care_text ?? "",
           deliveryText: p.delivery_text ?? "",

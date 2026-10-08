@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { bag, MAX_QTY, useBag } from "@/lib/bag/stores";
-import { formatPrice } from "@/lib/format/money";
+import { formatPrice, PRICE_ON_REQUEST } from "@/lib/format/money";
 import { PoshImage } from "@/components/ui/posh-image";
 import { MinusIcon, PlusIcon } from "@/components/ui/icons";
 import type { ProductCardData } from "@/lib/catalog/types";
 import { useStore } from "./store-provider";
 
-export type BagLine = { product: ProductCardData; qty: number; lineTotal: number };
+/** lineTotal is null when the product is "Price on request". */
+export type BagLine = { product: ProductCardData; qty: number; lineTotal: number | null };
 
 /** Joins stored ids/qty with fresh product data. */
 export function useBagLines() {
@@ -17,11 +18,30 @@ export function useBagLines() {
   const lines: BagLine[] = [];
   for (const i of items) {
     const product = products.get(i.productId);
-    if (product) lines.push({ product, qty: i.qty, lineTotal: product.price * i.qty });
+    if (product) lines.push({ product, qty: i.qty, lineTotal: product.price == null ? null : product.price * i.qty });
   }
-  const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0);
+  // Subtotal covers priced lines only; the rest are priced on WhatsApp.
+  const subtotal = lines.reduce((s, l) => s + (l.lineTotal ?? 0), 0);
   const count = lines.reduce((s, l) => s + l.qty, 0);
-  return { lines, subtotal, count, ready: bagReady, storedCount: items.length };
+  const unpricedCount = lines.filter((l) => l.lineTotal == null).length;
+  return { lines, subtotal, count, unpricedCount, ready: bagReady, storedCount: items.length };
+}
+
+/** Subtotal amount; "Price on request" when nothing in the bag has a price. */
+export function SubtotalValue({ subtotal, allUnpriced }: { subtotal: number; allUnpriced: boolean }) {
+  const { pricePrefix } = useStore();
+  return <>{allUnpriced ? PRICE_ON_REQUEST : formatPrice(subtotal, pricePrefix)}</>;
+}
+
+export function UnpricedNote({ count, allUnpriced }: { count: number; allUnpriced: boolean }) {
+  if (count === 0) return null;
+  return (
+    <p className="mt-1 text-[13px] text-muted">
+      {allUnpriced
+        ? "We'll confirm prices on WhatsApp"
+        : `+ ${count} ${count === 1 ? "item" : "items"} priced on WhatsApp`}
+    </p>
+  );
 }
 
 export function QtyStepper({
@@ -73,7 +93,7 @@ export function BagLineItem({ line, onNavigate }: { line: BagLine; onNavigate?: 
       <Link
         href={`/products/${p.slug}`}
         onClick={onNavigate}
-        className={`relative block aspect-[4/5] w-[84px] shrink-0 overflow-hidden bg-sand-image ${p.is_available ? "" : "opacity-70"}`}
+        className={`relative block aspect-[4/5] w-[84px] shrink-0 overflow-hidden bg-sand-image ${p.availability === "sold_out" ? "opacity-70" : ""}`}
         tabIndex={-1}
         aria-hidden
       >
@@ -91,10 +111,15 @@ export function BagLineItem({ line, onNavigate }: { line: BagLine; onNavigate?: 
             </Link>
             {p.note && <p className="mt-0.5 text-[13px] text-muted">{p.note}</p>}
           </div>
-          <p className="shrink-0 text-[15px] font-medium text-brown">{formatPrice(line.lineTotal, pricePrefix)}</p>
+          <p className={`shrink-0 text-[15px] font-medium ${line.lineTotal == null ? "text-ink-soft" : "text-brown"}`}>
+            {line.lineTotal == null ? PRICE_ON_REQUEST : formatPrice(line.lineTotal, pricePrefix)}
+          </p>
         </div>
-        {!p.is_available && (
+        {p.availability === "sold_out" && (
           <p className="mt-2 text-[13px] text-error">Sold out — we&apos;ll suggest alternatives in the chat</p>
+        )}
+        {p.availability === "coming_soon" && (
+          <p className="mt-2 text-[13px] text-bronze">Coming soon — pre-order</p>
         )}
         <div className="mt-auto flex items-center justify-between gap-3 pt-3">
           <QtyStepper value={line.qty} onChange={(n) => bag.setQty(p.id, n)} label={`Quantity of ${p.name}`} />

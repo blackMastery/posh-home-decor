@@ -5,7 +5,8 @@ import { bag } from "@/lib/bag/stores";
 import { formatPrice } from "@/lib/format/money";
 import { track } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { productQuestionMessage, similarPiecesMessage, waUrl } from "@/lib/whatsapp/message";
+import { priceQuestionMessage, productQuestionMessage, similarPiecesMessage, waUrl } from "@/lib/whatsapp/message";
+import type { Availability } from "@/lib/catalog/types";
 import { QtyStepper } from "./bag-lines";
 import { useStore } from "./store-provider";
 
@@ -13,21 +14,28 @@ export function ProductPurchase({
   productId,
   name,
   price,
-  available,
+  availability,
   productUrl,
 }: {
   productId: string;
   name: string;
-  price: number;
-  available: boolean;
+  /** null = price on request. */
+  price: number | null;
+  availability: Availability;
   productUrl: string;
 }) {
   const [qty, setQty] = useState(1);
   const { toast, openBag, whatsappNumber, pricePrefix } = useStore();
+  const available = availability !== "sold_out";
   const askHref = waUrl(
     whatsappNumber,
-    available ? productQuestionMessage(name, productUrl) : similarPiecesMessage(name, productUrl),
+    !available
+      ? similarPiecesMessage(name, productUrl)
+      : price == null
+        ? priceQuestionMessage(name, productUrl)
+        : productQuestionMessage(name, productUrl),
   );
+  const action = availability === "coming_soon" ? "Pre-order" : "Add to bag";
 
   return (
     <div className="space-y-3">
@@ -44,7 +52,7 @@ export function ProductPurchase({
               setQty(1);
             }}
           >
-            Add to bag · {formatPrice(price * qty, pricePrefix)}
+            {price == null ? action : `${action} · ${formatPrice(price * qty, pricePrefix)}`}
           </button>
         </div>
       ) : (
@@ -60,7 +68,7 @@ export function ProductPurchase({
         className="btn btn-outline w-full"
       >
         <WhatsAppIcon size={18} className="text-whatsapp" />
-        {available ? "Ask about this piece" : "Ask about similar pieces"}
+        {!available ? "Ask about similar pieces" : price == null ? "Ask for price on WhatsApp" : "Ask about this piece"}
       </a>
     </div>
   );

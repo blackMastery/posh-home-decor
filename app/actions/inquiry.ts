@@ -7,6 +7,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { normalisePhone, PHONE_ERROR } from "@/lib/phone/normalize";
 import { buildOrderMessage, waUrl } from "@/lib/whatsapp/message";
 import { MAX_QTY } from "@/lib/inquiry-limits";
+import { toAvailability } from "@/lib/catalog/types";
 
 const InquirySchema = z
   .object({
@@ -109,7 +110,7 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
     for (const i of v.items) qtyById.set(i.productId, Math.min(MAX_QTY, (qtyById.get(i.productId) ?? 0) + i.qty));
     const { data: products, error: productsError } = await db
       .from("product_cards")
-      .select("id, slug, name, note, price, is_available, image_path")
+      .select("id, slug, name, note, price, availability, image_path")
       .in("id", [...qtyById.keys()])
       .eq("status", "published");
     if (productsError) throw productsError;
@@ -118,15 +119,17 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
       .filter(([id]) => byId.has(id))
       .map(([id, qty]) => {
         const p = byId.get(id)!;
+        const availability = toAvailability(p.availability);
         return {
           product_id: id,
           slug: p.slug!,
           name: p.name!,
           note: p.note,
-          unit_price: p.price!,
+          unit_price: p.price,
           qty,
-          line_total: p.price! * qty,
-          was_available: Boolean(p.is_available),
+          line_total: p.price == null ? null : p.price * qty,
+          availability,
+          was_available: availability !== "sold_out",
           image_path: p.image_path,
         };
       });
@@ -134,7 +137,8 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
       return { ok: false, code: "validation", error: "These pieces are no longer listed" };
     }
 
-    const subtotal = items.reduce((s, i) => s + i.line_total, 0);
+    // Priced lines only; "price on request" lines are confirmed on WhatsApp.
+    const subtotal = items.reduce((s, i) => s + (i.line_total ?? 0), 0);
     const itemCount = items.reduce((s, i) => s + i.qty, 0);
     const address = v.fulfilment === "delivery" ? v.address : null;
     const note = v.note || null;
@@ -144,7 +148,7 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
       const message = buildOrderMessage(
         {
           ref,
-          lines: items.map((i) => ({ name: i.name, qty: i.qty, lineTotal: i.line_total, soldOut: !i.was_available })),
+          lines: items.map((i) => ({ name: i.name, qty: i.qty, lineTotal: i.line_total, availability: i.availability })),
           subtotal,
           fulfilment: v.fulfilment,
           name: v.name,

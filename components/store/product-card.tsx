@@ -7,7 +7,7 @@ import { QuickAdd } from "./quick-add";
 export const CARD_SIZES = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw";
 
 export function ProductCard({ product, priority = false }: { product: ProductCardData; priority?: boolean }) {
-  const soldOut = !product.is_available;
+  const soldOut = product.availability === "sold_out";
   return (
     <article className="group relative" data-reveal>
       <div className="relative">
@@ -24,7 +24,7 @@ export function ProductCard({ product, priority = false }: { product: ProductCar
             )}
         </div>
         <div className="pointer-events-none absolute top-3 left-3">
-          <ProductBadge available={product.is_available} onSale={product.is_on_sale} isNew={product.is_new} />
+          <ProductBadge availability={product.availability} onSale={product.is_on_sale} isNew={product.is_new} />
         </div>
         {!soldOut && <QuickAdd productId={product.id} name={product.name} />}
       </div>
