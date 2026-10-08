@@ -7,6 +7,8 @@ type Events = {
   begin_checkout: { items: number };
   inquiry_sent: { fallback: boolean; items: number };
   whatsapp_product_question: { product: string };
+  whatsapp_look_question: { photo: string };
+  gallery_share: { photo: string };
 };
 
 export function track<E extends keyof Events>(event: E, props?: Events[E]) {

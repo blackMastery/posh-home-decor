@@ -88,6 +88,10 @@ export function productQuestionMessage(name: string, url: string) {
   return `Hello Posh! I'd like to ask about the ${name} (${url}).`;
 }
 
+export function lookQuestionMessage(url: string) {
+  return `Hello Posh! I love this look from your gallery (${url}) — can you help me recreate it?`;
+}
+
 export function priceQuestionMessage(name: string, url: string) {
   return `Hello Posh! Could you tell me the price of the ${name} (${url})?`;
 }

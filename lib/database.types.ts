@@ -96,6 +96,85 @@ export type Database = {
           },
         ]
       }
+      gallery_photo_products: {
+        Row: {
+          photo_id: string
+          product_id: string
+          sort_order: number
+        }
+        Insert: {
+          photo_id: string
+          product_id: string
+          sort_order?: number
+        }
+        Update: {
+          photo_id?: string
+          product_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_photo_products_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photo_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photo_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_photos: {
+        Row: {
+          alt: string | null
+          caption: string | null
+          created_at: string
+          height: number | null
+          id: string
+          is_visible: boolean
+          sort_order: number
+          storage_path: string
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          alt?: string | null
+          caption?: string | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          is_visible?: boolean
+          sort_order?: number
+          storage_path: string
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          alt?: string | null
+          caption?: string | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          is_visible?: boolean
+          sort_order?: number
+          storage_path?: string
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           address: string | null

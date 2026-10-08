@@ -11,12 +11,13 @@ export const TAGS = {
   settings: "settings",
   home: "home",
   redirects: "redirects",
+  gallery: "gallery",
 } as const;
 
-const CARD_COLUMNS =
+export const CARD_COLUMNS =
   "id, slug, name, note, price, compare_at_price, availability, is_new, is_on_sale, image_path, image_width, image_height, image_alt";
 
-function card(row: Record<string, unknown>): ProductCardData {
+export function card(row: Record<string, unknown>): ProductCardData {
   return {
     id: row.id as string,
     slug: row.slug as string,

@@ -12,6 +12,7 @@ import { AVAILABILITIES, type Availability } from "@/lib/catalog/types";
 import { storageUrl } from "@/lib/images";
 import { PoshImage } from "@/components/ui/posh-image";
 import { prepareImage, type PreparedImage } from "./image-prep";
+import { ImageLightbox } from "./image-lightbox";
 
 export type CategoryOption = { id: string; label: string };
 export type RelatedItem = { id: string; name: string; imagePath: string | null };
@@ -206,6 +207,7 @@ export function ProductForm({
   }
 
   const dragFrom = useRef<number | null>(null);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   // --- Save -----------------------------------------------------------------
   const price = parseMoney(v.price);
@@ -357,10 +359,18 @@ export function ProductForm({
               }}
               className="border border-line bg-cream-raised"
             >
-              <div className="relative aspect-[4/5] overflow-hidden bg-sand-image">
+              <button
+                type="button"
+                onClick={() => setPreviewIndex(i)}
+                aria-label={`Preview photo ${i + 1} full size`}
+                className="group relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden bg-sand-image"
+              >
                 <PoshImage path={img.storagePath} alt="" fill sizes="200px" className="object-cover" />
                 {i === 0 && <span className="absolute top-2 left-2 bg-brown px-2 py-0.5 text-[11px] text-cream">Cover</span>}
-              </div>
+                <span className="absolute right-2 bottom-2 bg-ink/70 px-2 py-0.5 text-[11px] text-cream opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                  View full size
+                </span>
+              </button>
               {aspectWarning(img.width, img.height) && (
                 <details className="border-t border-line px-2 py-1.5 text-[12px] text-brown-deep">
                   <summary className="cursor-pointer">⚠ Not 4:5 — preview crop</summary>
@@ -451,6 +461,7 @@ export function ProductForm({
         </ul>
         <p className="mt-2 text-[12px] text-muted">First photo is the cover. Drag, or use ↑ ↓, to reorder.</p>
         {err("images")}
+        <ImageLightbox images={v.images} index={previewIndex} onIndex={setPreviewIndex} onClose={() => setPreviewIndex(null)} />
       </section>
 
       {/* 2. Name */}

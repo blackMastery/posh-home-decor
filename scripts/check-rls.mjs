@@ -25,6 +25,15 @@ await expectBlocked('call add_redirect', () => db.rpc('add_redirect', { p_from: 
 await expectBlocked('upload to product-images', () =>
   db.storage.from('product-images').upload(`products/x/${Date.now()}.jpg`, new Blob(['x'], { type: 'image/jpeg' })))
 await expectBlocked('read draft products', () => db.from('products').select('id').neq('status', 'published'))
+await expectBlocked('read hidden gallery photos', () => db.from('gallery_photos').select('id').eq('is_visible', false))
+await expectBlocked('insert gallery photo', () =>
+  db.from('gallery_photos').insert({ storage_path: 'gallery/00000000-0000-0000-0000-000000000000.jpg' }).select())
+await expectBlocked('update gallery photo', () =>
+  db.from('gallery_photos').update({ is_visible: true }).neq('id', '00000000-0000-0000-0000-000000000000').select())
+await expectBlocked('link gallery product', () =>
+  db.from('gallery_photo_products').insert({ photo_id: '00000000-0000-0000-0000-000000000000', product_id: '00000000-0000-0000-0000-000000000000' }).select())
+await expectBlocked('upload to site/gallery', () =>
+  db.storage.from('site').upload(`gallery/${Date.now()}.jpg`, new Blob(['x'], { type: 'image/jpeg' })))
 
 const { data: pub } = await db.from('products').select('id').eq('status', 'published')
 results.push([pub?.length ? 'PASS' : 'FAIL', 'can read published products', `rows: ${pub?.length ?? 0}`])

@@ -5,6 +5,9 @@ import { useEffect, useRef } from "react";
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/** Open dialogs, innermost last. Only the top one handles Escape and Tab. */
+const stack: object[] = [];
+
 /**
  * Modal behaviour for drawers/menus: traps focus, closes on Escape,
  * locks body scroll, and restores focus to the opener on close.
@@ -18,6 +21,8 @@ export function useDialog<T extends HTMLElement>(open: boolean, onClose: () => v
 
   useEffect(() => {
     if (!open) return;
+    const token = {};
+    stack.push(token);
     const opener = document.activeElement as HTMLElement | null;
     const el = ref.current;
     const prevOverflow = document.body.style.overflow;
@@ -30,6 +35,7 @@ export function useDialog<T extends HTMLElement>(open: boolean, onClose: () => v
     });
 
     function onKey(e: KeyboardEvent) {
+      if (stack[stack.length - 1] !== token) return;
       if (e.key === "Escape") {
         e.preventDefault();
         onCloseRef.current();
@@ -51,6 +57,7 @@ export function useDialog<T extends HTMLElement>(open: boolean, onClose: () => v
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
+      stack.splice(stack.indexOf(token), 1);
       document.body.style.overflow = prevOverflow;
       if (opener && document.contains(opener)) opener.focus();
     };

@@ -195,6 +195,41 @@ async function seedProductImages() {
   console.log('• Product photos uploaded')
 }
 
+// Showroom gallery: mixed portrait/landscape, linked to a few products.
+const gallery = [
+  ['lamp', 1600, 1067, 'A reading corner with the arched brass lamp', ['a0000000-0000-4000-8000-000000000008']],
+  ['jar', 1600, 2000, 'Ginger jars styled in pairs on a console', ['a0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002']],
+  ['tray', 1600, 1200, 'Marble tray on the ottoman', ['a0000000-0000-4000-8000-000000000006']],
+  ['cushion', 1600, 2000, 'Garnet velvet on a linen sofa', ['a0000000-0000-4000-8000-000000000007', 'a0000000-0000-4000-8000-000000000003']],
+  ['basket', 1600, 1067, null, []],
+  ['bud', 1600, 1800, 'Smoked glass in afternoon light', ['a0000000-0000-4000-8000-000000000005']],
+]
+
+async function seedGallery() {
+  const { count } = await db.from('gallery_photos').select('id', { count: 'exact', head: true })
+  if (count) return
+  for (const [i, [kind, w, h, caption, productIds]] of gallery.entries()) {
+    const body = await jpeg(svg(art[kind](i % 2), w, h), w, h)
+    const path = `gallery/${randomUUID()}.jpg`
+    const { error: upErr } = await db.storage.from('site').upload(path, body, { contentType: 'image/jpeg', upsert: true })
+    if (upErr) throw upErr
+    const { data, error } = await db
+      .from('gallery_photos')
+      .insert({ storage_path: path, width: w, height: h, caption, alt: caption, is_visible: i < 5, sort_order: i })
+      .select('id')
+      .single()
+    if (error) throw error
+    if (productIds.length) {
+      const { error: linkErr } = await db
+        .from('gallery_photo_products')
+        .insert(productIds.map((product_id, sort_order) => ({ photo_id: data.id, product_id, sort_order })))
+      if (linkErr) throw linkErr
+    }
+  }
+  console.log('• Gallery photos uploaded')
+}
+
 await ensureAdmin()
 await seedProductImages()
+await seedGallery()
 console.log('Done.')

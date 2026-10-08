@@ -16,6 +16,7 @@ export type NavCategory = { name: string; path: string; children: NavCategory[] 
 const PRIMARY = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/cart", label: "Cart" },
   { href: "/about", label: "About" },
 ];
