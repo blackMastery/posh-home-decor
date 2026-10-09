@@ -42,11 +42,11 @@ export function ProductGallery({
                   onClick={() => goTo(i)}
                   aria-label={`Show image ${i + 1} of ${images.length}`}
                   aria-current={i === index ? "true" : undefined}
-                  className={`relative block aspect-[4/5] w-[68px] overflow-hidden bg-sand-image md:w-full ${
+                  className={`relative block aspect-[4/5] w-[68px] overflow-hidden bg-white md:w-full ${
                     i === index ? "ring-1 ring-brown ring-offset-2 ring-offset-cream" : "opacity-75 hover:opacity-100"
                   }`}
                 >
-                  <PoshImage path={img.storage_path} alt="" fill sizes="84px" className="object-cover" />
+                  <PoshImage path={img.storage_path} alt="" fill sizes="84px" className="object-contain p-1" />
                 </button>
               </li>
             ))}
@@ -61,7 +61,7 @@ export function ProductGallery({
             const i = Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
             if (i !== index) setIndex(i);
           }}
-          className={`no-scrollbar flex snap-x snap-mandatory overflow-x-auto bg-sand-image ${soldOut ? "opacity-80" : ""}`}
+          className={`no-scrollbar flex snap-x snap-mandatory overflow-x-auto ${images.length ? "bg-white" : "bg-sand-image"} ${soldOut ? "opacity-80" : ""}`}
           aria-roledescription="carousel"
           aria-label={`${name} images`}
         >

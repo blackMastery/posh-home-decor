@@ -93,11 +93,11 @@ export function BagLineItem({ line, onNavigate }: { line: BagLine; onNavigate?: 
       <Link
         href={`/products/${p.slug}`}
         onClick={onNavigate}
-        className={`relative block aspect-[4/5] w-[84px] shrink-0 overflow-hidden bg-sand-image ${p.availability === "sold_out" ? "opacity-70" : ""}`}
+        className={`relative block aspect-[4/5] w-[84px] shrink-0 overflow-hidden ${p.image_path ? "bg-white" : "bg-sand-image"} ${p.availability === "sold_out" ? "opacity-70" : ""}`}
         tabIndex={-1}
         aria-hidden
       >
-        {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="96px" className="object-cover" />}
+        {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="96px" className="object-contain p-1" />}
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">

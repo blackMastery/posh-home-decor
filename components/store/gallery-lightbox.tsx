@@ -158,8 +158,8 @@ function LookPanel({ photo }: { photo: GalleryPhoto }) {
               {photo.products.map((p) => (
                 <li key={p.id} className="w-[148px] shrink-0">
                   <Link href={`/products/${p.slug}`} className="block">
-                    <div className={`relative aspect-[4/5] overflow-hidden bg-sand-image ${p.availability === "sold_out" ? "opacity-70" : ""}`}>
-                      {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="148px" className="object-cover" />}
+                    <div className={`relative aspect-[4/5] overflow-hidden ${p.image_path ? "bg-white" : "bg-sand-image"} ${p.availability === "sold_out" ? "opacity-70" : ""}`}>
+                      {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="148px" className="object-contain p-2" />}
                       <span className="absolute top-2 left-2">
                         <ProductBadge availability={p.availability} onSale={p.is_on_sale} isNew={false} />
                       </span>

@@ -11,7 +11,8 @@ export function ProductCard({ product, priority = false }: { product: ProductCar
   return (
     <article className="group relative" data-reveal>
       <div className="relative">
-        <div className={`relative aspect-[4/5] overflow-hidden bg-sand-image ${soldOut ? "opacity-70" : ""}`}>
+        {/* object-contain: show the whole product photo; white blends with supplier shots' white backgrounds. */}
+        <div className={`relative aspect-[4/5] overflow-hidden ${product.image_path ? "bg-white" : "bg-sand-image"} ${soldOut ? "opacity-70" : ""}`}>
             {product.image_path && (
               <PoshImage
                 path={product.image_path}
@@ -19,7 +20,7 @@ export function ProductCard({ product, priority = false }: { product: ProductCar
                 fill
                 sizes={CARD_SIZES}
                 priority={priority}
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                className="object-contain p-3 transition-transform duration-700 ease-out group-hover:scale-[1.03] sm:p-5"
               />
             )}
         </div>
