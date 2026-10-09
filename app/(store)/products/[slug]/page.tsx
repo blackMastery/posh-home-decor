@@ -117,9 +117,9 @@ async function ProductContent({ params }: Props) {
       />
 
       <div className="container-posh pt-6 pb-20 nav:pt-10">
-        <Breadcrumbs items={crumbs} />
+        <Breadcrumbs items={crumbs} hideCurrentOnMobile />
 
-        <div className="mt-6 grid gap-10 nav:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] nav:gap-14 lg:gap-20">
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-10 nav:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] nav:gap-14 lg:gap-20">
           <ProductGallery
             images={product.images}
             name={product.name}
@@ -192,7 +192,7 @@ function ProductSkeleton() {
   return (
     <div className="container-posh pt-6 pb-20 nav:pt-10" aria-busy="true">
       <div className="h-4 w-60 bg-sand" />
-      <div className="mt-6 grid gap-10 nav:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] nav:gap-14 lg:gap-20">
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-10 nav:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] nav:gap-14 lg:gap-20">
         <div className="aspect-[4/5] animate-pulse bg-sand-image" />
         <div className="space-y-4">
           <div className="h-3 w-24 bg-sand" />

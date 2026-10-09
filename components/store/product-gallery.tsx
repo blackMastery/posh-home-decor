@@ -31,23 +31,27 @@ export function ProductGallery({
   return (
     <div className="flex flex-col-reverse gap-3 md:flex-row md:gap-4">
       {images.length > 1 && (
-        <ul className="no-scrollbar flex gap-3 overflow-x-auto md:w-[84px] md:shrink-0 md:flex-col md:overflow-visible" aria-label="Choose image">
-          {images.map((img, i) => (
-            <li key={img.id} className="shrink-0">
-              <button
-                type="button"
-                onClick={() => goTo(i)}
-                aria-label={`Show image ${i + 1} of ${images.length}`}
-                aria-current={i === index ? "true" : undefined}
-                className={`relative block aspect-[4/5] w-[68px] overflow-hidden bg-sand-image md:w-full ${
-                  i === index ? "ring-1 ring-brown ring-offset-2 ring-offset-cream" : "opacity-75 hover:opacity-100"
-                }`}
-              >
-                <PoshImage path={img.storage_path} alt="" fill sizes="84px" className="object-cover" />
-              </button>
-            </li>
-          ))}
-        </ul>
+        // From md the strip sits beside the image: the absolute list adds no height, so it scrolls within the image's height.
+        <div className="relative -mx-[3px] md:mx-0 md:w-[84px] md:shrink-0">
+          {/* Padding leaves room for the active ring, which the scroll container would otherwise clip. */}
+          <ul className="no-scrollbar flex gap-3 overflow-x-auto p-[3px] md:absolute md:inset-0 md:flex-col md:overflow-x-hidden md:overflow-y-auto" aria-label="Choose image">
+            {images.map((img, i) => (
+              <li key={img.id} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => goTo(i)}
+                  aria-label={`Show image ${i + 1} of ${images.length}`}
+                  aria-current={i === index ? "true" : undefined}
+                  className={`relative block aspect-[4/5] w-[68px] overflow-hidden bg-sand-image md:w-full ${
+                    i === index ? "ring-1 ring-brown ring-offset-2 ring-offset-cream" : "opacity-75 hover:opacity-100"
+                  }`}
+                >
+                  <PoshImage path={img.storage_path} alt="" fill sizes="84px" className="object-cover" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
       <div className="relative min-w-0 flex-1">
         <div
@@ -57,14 +61,14 @@ export function ProductGallery({
             const i = Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
             if (i !== index) setIndex(i);
           }}
-          className={`no-scrollbar flex items-center snap-x snap-mandatory overflow-x-auto bg-sand-image ${soldOut ? "opacity-80" : ""}`}
+          className={`no-scrollbar flex snap-x snap-mandatory overflow-x-auto bg-sand-image ${soldOut ? "opacity-80" : ""}`}
           aria-roledescription="carousel"
           aria-label={`${name} images`}
         >
           {(images.length ? images : [null]).map((img, i) => (
             <div
               key={img?.id ?? "empty"}
-              className={`relative w-full shrink-0 snap-center ${img ? "" : "aspect-[4/5]"}`}
+              className="relative aspect-[4/5] w-full shrink-0 snap-center"
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${Math.max(images.length, 1)}`}
             >
@@ -72,11 +76,10 @@ export function ProductGallery({
                 <PoshImage
                   path={img.storage_path}
                   alt={img.alt || name}
-                  width={1200}
-                  height={1500}
+                  fill
                   priority={i === 0}
                   sizes="(max-width: 860px) 100vw, 55vw"
-                  className="block h-auto w-full"
+                  className="object-contain"
                 />
               )}
             </div>
