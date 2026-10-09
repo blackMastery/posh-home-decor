@@ -57,6 +57,8 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
           careText: p.care_text ?? "",
           deliveryText: p.delivery_text ?? "",
           featuredRank: p.featured_rank != null ? String(p.featured_rank) : "",
+          itemCode: p.item_code ?? "",
+          itemUpcCode: p.item_upc_code ?? "",
           related: relatedRows
             .filter((r) => r.product)
             .map((r) => ({ id: r.product!.id, name: r.product!.name, imagePath: imageById.get(r.product!.id) ?? null })),

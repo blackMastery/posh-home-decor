@@ -31,6 +31,8 @@ export type ProductFormValues = {
   careText: string;
   deliveryText: string;
   featuredRank: string;
+  itemCode: string;
+  itemUpcCode: string;
   related: RelatedItem[];
   images: SavedImage[];
 };
@@ -243,6 +245,8 @@ export function ProductForm({
         careText: v.careText,
         deliveryText: v.deliveryText,
         featuredRank: v.featuredRank.trim() ? Number.parseInt(v.featuredRank, 10) : null,
+        itemCode: v.itemCode ?? "",
+        itemUpcCode: v.itemUpcCode ?? "",
         images: v.images.map((i) => ({ storagePath: i.storagePath, width: i.width, height: i.height, alt: i.alt || null })),
         relatedIds: v.related.map((r) => r.id),
       });
@@ -319,7 +323,7 @@ export function ProductForm({
         <div role="status" className="flex flex-wrap items-center justify-between gap-3 border border-gold bg-gold/15 px-4 py-3 text-[14px]">
           <span>Restore unsaved changes from this device?</span>
           <span className="flex gap-2">
-            <button type="button" className="btn btn-primary min-h-10 px-4" onClick={() => (setV(restore), setRestore(null))}>
+            <button type="button" className="btn btn-primary min-h-10 px-4" onClick={() => (setV({ ...initial, ...restore }), setRestore(null))}>
               Restore
             </button>
             <button
@@ -512,6 +516,45 @@ export function ProductForm({
           ) : compareAt != null && price != null ? (
             <p className="mt-1.5 text-[13px] text-[#2F5320]">Shows as Sale</p>
           ) : null}
+        </div>
+      </div>
+
+      {/* Codes */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label htmlFor={`${ids}-code`} className={label}>
+            Item code
+          </label>
+          <input
+            id={`${ids}-code`}
+            className="field"
+            autoComplete="off"
+            autoCapitalize="characters"
+            spellCheck={false}
+            maxLength={40}
+            placeholder="Optional"
+            value={v.itemCode ?? ""}
+            onChange={(e) => set("itemCode", e.target.value.replace(/\s/g, ""))}
+            aria-invalid={fieldErrors.itemCode ? true : undefined}
+          />
+          {err("itemCode")}
+        </div>
+        <div>
+          <label htmlFor={`${ids}-upc`} className={label}>
+            UPC / barcode
+          </label>
+          <input
+            id={`${ids}-upc`}
+            className="field"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={14}
+            placeholder="Optional"
+            value={v.itemUpcCode ?? ""}
+            onChange={(e) => set("itemUpcCode", e.target.value.replace(/\D/g, "").slice(0, 14))}
+            aria-invalid={fieldErrors.itemUpcCode ? true : undefined}
+          />
+          {err("itemUpcCode") ?? <p className="mt-1.5 text-[13px] text-muted">8–14 digits. Not shown to customers.</p>}
         </div>
       </div>
 

@@ -41,8 +41,8 @@ export function ProductFilters({
     <div className="mt-5 space-y-3">
       <input
         type="search"
-        aria-label="Search products by name"
-        placeholder="Search by name"
+        aria-label="Search products by name, item code or UPC"
+        placeholder="Search by name or code"
         className="field"
         value={search}
         onChange={(e) => {

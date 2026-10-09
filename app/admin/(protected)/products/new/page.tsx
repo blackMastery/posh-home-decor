@@ -38,6 +38,8 @@ export default async function NewProductPage() {
           careText: defaults.care,
           deliveryText: defaults.delivery,
           featuredRank: "",
+          itemCode: "",
+          itemUpcCode: "",
           related: [],
           images: [],
         }}

@@ -341,6 +341,8 @@ export type Database = {
           first_available_at: string | null
           first_published_at: string | null
           id: string
+          item_code: string | null
+          item_upc_code: string | null
           name: string
           note: string | null
           price: number | null
@@ -362,6 +364,8 @@ export type Database = {
           first_available_at?: string | null
           first_published_at?: string | null
           id?: string
+          item_code?: string | null
+          item_upc_code?: string | null
           name: string
           note?: string | null
           price?: number | null
@@ -383,6 +387,8 @@ export type Database = {
           first_available_at?: string | null
           first_published_at?: string | null
           id?: string
+          item_code?: string | null
+          item_upc_code?: string | null
           name?: string
           note?: string | null
           price?: number | null
@@ -491,6 +497,8 @@ export type Database = {
           image_width: number | null
           is_new: boolean | null
           is_on_sale: boolean | null
+          item_code: string | null
+          item_upc_code: string | null
           name: string | null
           note: string | null
           price: number | null
@@ -571,6 +579,8 @@ export type Database = {
           image_width: number | null
           is_new: boolean | null
           is_on_sale: boolean | null
+          item_code: string | null
+          item_upc_code: string | null
           name: string | null
           note: string | null
           price: number | null

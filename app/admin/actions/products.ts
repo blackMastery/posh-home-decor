@@ -39,6 +39,20 @@ const ProductInput = z.object({
   careText: optionalText,
   deliveryText: optionalText,
   featuredRank: z.number().int().min(0).max(100000).nullable(),
+  itemCode: z
+    .string()
+    .trim()
+    .transform((v) => v || null)
+    .pipe(
+      z
+        .string()
+        .regex(/^[A-Za-z0-9][A-Za-z0-9._/-]{0,39}$/, "Item code: letters, numbers, . _ / - only (max 40)")
+        .nullable(),
+    ),
+  itemUpcCode: z
+    .string()
+    .transform((v) => v.replace(/\D/g, "") || null)
+    .pipe(z.string().regex(/^\d{8,14}$/, "UPC must be 8–14 digits").nullable()),
   images: z
     .array(
       z.object({
@@ -133,12 +147,22 @@ export async function saveProduct(
     care_text: v.careText,
     delivery_text: v.deliveryText,
     featured_rank: v.featuredRank,
+    item_code: v.itemCode,
+    item_upc_code: v.itemUpcCode,
   };
 
   const { data: saved, error: saveError } = existing
     ? await supabase.from("products").update(row).eq("id", v.id).select("id, slug, updated_at, status").single()
     : await supabase.from("products").insert(row).select("id, slug, updated_at, status").single();
-  if (saveError) return { ok: false, error: saveError.message };
+  if (saveError) {
+    if (saveError.code === "23505" && saveError.message.includes("item_code")) {
+      return { ok: false, error: "Another product already uses that item code", fieldErrors: { itemCode: "Already in use" } };
+    }
+    if (saveError.code === "23505" && saveError.message.includes("item_upc_code")) {
+      return { ok: false, error: "Another product already uses that UPC", fieldErrors: { itemUpcCode: "Already in use" } };
+    }
+    return { ok: false, error: saveError.message };
+  }
 
   // Images: replace the set; delete storage objects no longer referenced.
   const { data: oldImages } = await supabase.from("product_images").select("storage_path").eq("product_id", v.id);

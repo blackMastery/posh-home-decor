@@ -29,14 +29,18 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
 
   let query = supabase
     .from("product_cards")
-    .select("id, name, slug, price, compare_at_price, availability, status, image_path, category_name, category_path, updated_at", {
+    .select("id, name, slug, price, compare_at_price, availability, status, image_path, category_name, category_path, updated_at, item_code", {
       count: "exact",
     });
   if (status === "active") query = query.neq("status", "archived");
   else if (status !== "all") query = query.eq("status", status);
   if (avail !== "all") query = query.eq("availability", avail);
   if (catPath) query = query.or(`category_path.eq.${catPath},category_path.like.${catPath}/%`);
-  if (q) query = query.ilike("name", `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`);
+  if (q) {
+    // Name, item code or UPC. Strip characters that are special in PostgREST filters.
+    const term = q.replace(/[%_\\,()*]/g, " ").trim();
+    if (term) query = query.or(`name.ilike.*${term}*,item_code.ilike.*${term}*,item_upc_code.ilike.*${term}*`);
+  }
   query =
     sort === "name"
       ? query.order("name")
@@ -81,7 +85,10 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                   {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="56px" className="object-cover" />}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-[15px] font-medium text-brown-deep">{p.name}</p>
+                  <p className="truncate text-[15px] font-medium text-brown-deep">
+                    {p.name}
+                    {p.item_code && <span className="ml-2 font-mono text-[12px] font-normal text-muted">{p.item_code}</span>}
+                  </p>
                   <p className="truncate text-[13px] text-muted">
                     {formatPriceOrRequest(p.price)}
                     {p.price != null && p.compare_at_price != null && p.compare_at_price > p.price && (
