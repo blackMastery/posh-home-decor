@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCategories, getComingSoon, getNewArrivals, getSettings } from "@/lib/data/catalog";
+import { getCategories, getComingSoon, getNewArrivals } from "@/lib/data/catalog";
 import { ProductGrid } from "@/components/store/product-card";
 import { PoshImage } from "@/components/ui/posh-image";
 import { ArrowRight } from "@/components/ui/icons";
@@ -7,11 +7,10 @@ import { JsonLd } from "@/components/store/json-ld";
 import { HomeHero } from "@/components/store/home-hero";
 import { SITE_URL } from "@/lib/env";
 import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/seo";
-import { ADDRESS, LANDLINE, MAPS_URL } from "@/lib/contact";
+import { ADDRESS, LANDLINE, MAPS_URL, WHATSAPP } from "@/lib/contact";
 
 export default async function HomePage() {
-  const [settings, categories, newest, comingSoon] = await Promise.all([
-    getSettings(),
+  const [categories, newest, comingSoon] = await Promise.all([
     getCategories(),
     getNewArrivals(4),
     getComingSoon(4),
@@ -34,7 +33,7 @@ export default async function HomePage() {
           telephone: LANDLINE.tel,
           contactPoint: {
             "@type": "ContactPoint",
-            telephone: `+${settings.whatsapp_number}`,
+            telephone: `+${WHATSAPP.digits}`,
             contactType: "sales",
             areaServed: "GY",
           },

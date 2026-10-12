@@ -1,5 +1,8 @@
-/** Showroom landline. WhatsApp lives in the settings table; this number is fixed. */
+/** Showroom landline. */
 export const LANDLINE = { display: "+592 223-9882", tel: "+5922239882" };
+
+/** WhatsApp number shown in contact details. `digits` is the wa.me format (country code, no +). */
+export const WHATSAPP = { display: "+592 674-8619", digits: "5926748619" };
 
 export const ADDRESS = {
   street: "240 Joseph Pollydore Street",

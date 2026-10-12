@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getCategories, getSettings } from "@/lib/data/catalog";
+import { getCategories } from "@/lib/data/catalog";
 import { PhoneIcon, WhatsAppIcon } from "@/components/ui/icons";
-import { ADDRESS, LANDLINE, MAPS_URL } from "@/lib/contact";
+import { ADDRESS, LANDLINE, MAPS_URL, WHATSAPP } from "@/lib/contact";
 import { Logo } from "./logo";
 
 export async function SiteFooter() {
-  const [settings, categories] = await Promise.all([getSettings(), getCategories()]);
+  const categories = await getCategories();
   const top = categories.filter((c) => c.depth === 1 && c.productCount > 0).sort((a, b) => a.sort_order - b.sort_order);
   const link = "inline-flex min-h-10 items-center text-[14px] text-cream/80 hover:text-gold-light";
   return (
@@ -41,11 +41,11 @@ export async function SiteFooter() {
         <div>
           <h2 className="eyebrow text-gold">Talk to us</h2>
           <a
-            href={`https://wa.me/${settings.whatsapp_number}`}
+            href={`https://wa.me/${WHATSAPP.digits}`}
             className="mt-4 flex min-h-11 items-center gap-2 text-[15px] hover:text-gold-light"
           >
             <WhatsAppIcon size={18} className="text-whatsapp" />
-            WhatsApp {settings.display_phone}
+            WhatsApp {WHATSAPP.display}
           </a>
           <a href={`tel:${LANDLINE.tel}`} className="flex min-h-11 items-center gap-2 text-[15px] hover:text-gold-light">
             <PhoneIcon size={18} className="text-gold" />
