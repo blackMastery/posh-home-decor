@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { Fragment, Suspense, type ReactNode } from "react";
 import { getCategories, getProductBySlug, getPublishedSlugs, getSettings, getStyleItWith } from "@/lib/data/catalog";
 import { ancestry } from "@/lib/catalog/tree";
-import type { Availability } from "@/lib/catalog/types";
+import { formatDimensions, type Availability } from "@/lib/catalog/types";
 import { Breadcrumbs } from "@/components/store/breadcrumbs";
 import { ProductGallery } from "@/components/store/product-gallery";
 import { ProductPurchase } from "@/components/store/product-purchase";
@@ -75,11 +76,48 @@ async function ProductContent({ params }: Props) {
     ...trail.map((c) => ({ href: `/shop/${c.path}`, label: c.name })),
     { href: `/products/${product.slug}`, label: product.name },
   ];
-  const accordions = [
-    { title: "Details", body: product.details_text },
-    { title: "Care", body: product.care_text },
-    { title: "Delivery & collection", body: product.delivery_text },
-  ].filter((a) => a.body && a.body.trim());
+  const dimensions = formatDimensions(product.dimensions);
+  // Spec values link to the department filtered by that value ("More in Rattan").
+  const department = trail[0]?.path ?? product.category.path;
+  const specs =
+    dimensions || product.specs.length > 0 ? (
+      <dl className="grid grid-cols-[minmax(0,8rem)_1fr] gap-x-6 gap-y-3">
+        {dimensions && (
+          <>
+            <dt className="text-muted">Dimensions</dt>
+            <dd>{dimensions}</dd>
+          </>
+        )}
+        {product.specs.map((s) => (
+          <Fragment key={s.attribute.slug}>
+            <dt className="text-muted">{s.attribute.name}</dt>
+            <dd>
+              {s.values.map((v, i) => (
+                <Fragment key={v.slug}>
+                  {i > 0 && ", "}
+                  <Link
+                    href={`/shop/${department}?${s.attribute.slug}=${v.slug}`}
+                    className="underline decoration-line-strong underline-offset-4 hover:text-brown hover:decoration-brown"
+                  >
+                    {v.name}
+                  </Link>
+                </Fragment>
+              ))}
+            </dd>
+          </Fragment>
+        ))}
+      </dl>
+    ) : null;
+  const accordions: { title: string; body: ReactNode; pre?: boolean }[] = [
+    ...(specs ? [{ title: "Specifications", body: specs }] : []),
+    ...[
+      { title: "Details", body: product.details_text },
+      { title: "Care", body: product.care_text },
+      { title: "Delivery & collection", body: product.delivery_text },
+    ]
+      .filter((a) => a.body && a.body.trim())
+      .map((a) => ({ ...a, pre: true })),
+  ];
 
   return (
     <>
@@ -164,7 +202,7 @@ async function ProductContent({ params }: Props) {
                       {a.title}
                       <ChevronDown size={18} className="transition-transform group-open:rotate-180" />
                     </summary>
-                    <div className="pb-6 text-[15px] leading-relaxed whitespace-pre-line text-ink-soft">{a.body}</div>
+                    <div className={`pb-6 text-[15px] leading-relaxed text-ink-soft ${a.pre ? "whitespace-pre-line" : ""}`}>{a.body}</div>
                   </details>
                 ))}
               </div>

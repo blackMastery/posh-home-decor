@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Categories" };
 export default async function CategoriesPage() {
   const { supabase } = await requireAdminPage();
   const [{ data: cats }, { data: stats }, { data: products }] = await Promise.all([
-    supabase.from("categories").select("id, parent_id, name, slug, path, depth, sort_order, tile_image_path").order("sort_order").order("name"),
+    supabase.from("categories").select("id, parent_id, name, slug, path, depth, sort_order, tile_image_path, filter_dims, primary_dim").order("sort_order").order("name"),
     supabase.rpc("category_stats", { p_published_only: false }),
     supabase.from("products").select("category_id"),
   ]);

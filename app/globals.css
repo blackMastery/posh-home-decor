@@ -221,6 +221,102 @@
   }
 }
 
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Colour swatches. Metallic/multi values get a sheen or a spectrum. */
+.swatch {
+  display: inline-block;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--swatch, var(--color-sand));
+  box-shadow: inset 0 0 0 1px rgb(59 35 20 / 0.18);
+}
+.swatch[data-swatch="metallic"] {
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 0.55) 0%, rgb(255 255 255 / 0) 45%, rgb(0 0 0 / 0.18) 100%),
+    var(--swatch, var(--color-gold));
+}
+.swatch[data-swatch="multi"] {
+  background: conic-gradient(#c0392b, #e6b23a, #3f8f5b, #2f5d8c, #7a3f8f, #c0392b);
+}
+
+/* Dual-thumb range: two stacked inputs; only the thumbs take pointer events. */
+.range-dual {
+  position: relative;
+  height: 28px;
+}
+.range-dual::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: var(--color-line-strong);
+}
+.range-dual .range-fill {
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: var(--color-brown);
+}
+.range-dual input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.range-dual input[type="range"]::-webkit-slider-runnable-track {
+  background: none;
+  height: 28px;
+}
+.range-dual input[type="range"]::-moz-range-track {
+  background: none;
+}
+.range-dual input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: 22px;
+  height: 22px;
+  margin-top: 3px;
+  border-radius: 9999px;
+  background: var(--color-cream-raised);
+  border: 2px solid var(--color-brown);
+  cursor: grab;
+}
+.range-dual input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--color-cream-raised);
+  border: 2px solid var(--color-brown);
+  cursor: grab;
+}
+.range-dual input[type="range"]:focus-visible {
+  outline: none;
+}
+.range-dual input[type="range"]:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+.range-dual input[type="range"]:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

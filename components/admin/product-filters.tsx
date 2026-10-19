@@ -10,6 +10,7 @@ export function ProductFilters({
   status,
   avail,
   cat,
+  data,
   sort,
   categories,
 }: {
@@ -17,6 +18,7 @@ export function ProductFilters({
   status: string;
   avail: string;
   cat: string;
+  data: string;
   sort: string;
   categories: Opt[];
 }) {
@@ -52,7 +54,7 @@ export function ProductFilters({
           timer.current = window.setTimeout(() => update("q", v.trim(), ""), 300);
         }}
       />
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         <select aria-label="Status" className={select} value={status} onChange={(e) => update("status", e.target.value, "active")}>
           <option value="active">Draft + published</option>
           <option value="published">Published</option>
@@ -73,6 +75,10 @@ export function ProductFilters({
               {c.label}
             </option>
           ))}
+        </select>
+        <select aria-label="Shop filter data" className={select} value={data} onChange={(e) => update("data", e.target.value, "")}>
+          <option value="">Any filter data</option>
+          <option value="missing">Missing attributes or sizes</option>
         </select>
         <select aria-label="Sort" className={select} value={sort} onChange={(e) => update("sort", e.target.value, "edited")}>
           <option value="edited">Recently edited</option>

@@ -6,6 +6,7 @@ import { toAvailability } from "@/lib/catalog/types";
 import { PoshImage } from "@/components/ui/posh-image";
 import { AvailabilitySwitch } from "@/components/admin/availability-switch";
 import { ProductFilters } from "@/components/admin/product-filters";
+import { MISSING_DATA_FILTER } from "@/lib/admin/missing-data";
 
 export const metadata: Metadata = { title: "Products" };
 
@@ -21,6 +22,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
   const availRaw = one("avail") === "soldout" ? "sold_out" : one("avail");
   const avail = ["available", "coming_soon", "sold_out"].includes(availRaw) ? availRaw : "all";
   const cat = one("cat");
+  const data = one("data") === "missing" ? "missing" : "";
   const sort = ["name", "newest"].includes(one("sort")) ? one("sort") : "edited";
   const page = Math.max(1, Math.min(40, Number.parseInt(one("page"), 10) || 1));
 
@@ -36,6 +38,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
   else if (status !== "all") query = query.eq("status", status);
   if (avail !== "all") query = query.eq("availability", avail);
   if (catPath) query = query.or(`category_path.eq.${catPath},category_path.like.${catPath}/%`);
+  if (data === "missing") query = query.or(MISSING_DATA_FILTER);
   if (q) {
     // Name, item code or UPC. Strip characters that are special in PostgREST filters.
     const term = q.replace(/[%_\\,()*]/g, " ").trim();
@@ -56,9 +59,14 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
     <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-10">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-[26px] font-medium text-brown-deep">Products</h1>
-        <Link href="/admin/products/new" className="btn btn-primary px-5">
-          + New
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/products/bulk" className="btn btn-outline px-4">
+            Bulk edit
+          </Link>
+          <Link href="/admin/products/new" className="btn btn-primary px-5">
+            + New
+          </Link>
+        </div>
       </div>
 
       <ProductFilters
@@ -66,6 +74,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
         status={status}
         avail={avail}
         cat={cat}
+        data={data}
         sort={sort}
         categories={(categories ?? []).map((c) => ({ id: c.id, label: `${"— ".repeat(c.depth - 1)}${c.name}` }))}
       />

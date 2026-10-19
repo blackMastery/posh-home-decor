@@ -144,3 +144,22 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   invalidate();
   return { ok: true };
 }
+
+const DimKey = z.enum(["height", "width", "depth", "diameter"]);
+
+/** Shop filter dimensions + size-sort dimension. null = inherit from the parent category. */
+export async function setCategoryFilters(id: string, filterDims: string[] | null, primaryDim: string | null): Promise<ActionResult> {
+  const { supabase } = await requireAdmin();
+  if (!z.uuid().safeParse(id).success) return { ok: false, error: "Invalid category" };
+  const dims = filterDims === null ? null : z.array(DimKey).max(4).safeParse([...new Set(filterDims)]);
+  if (dims && !dims.success) return { ok: false, error: "Invalid dimensions" };
+  const primary = primaryDim === null ? null : DimKey.safeParse(primaryDim);
+  if (primary && !primary.success) return { ok: false, error: "Invalid size dimension" };
+  const { error } = await supabase
+    .from("categories")
+    .update({ filter_dims: dims ? dims.data : null, primary_dim: primary ? primary.data : null })
+    .eq("id", id);
+  if (error) return { ok: false, error: friendly(error) };
+  invalidate();
+  return { ok: true };
+}

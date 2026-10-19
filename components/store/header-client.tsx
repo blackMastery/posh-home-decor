@@ -6,10 +6,11 @@ import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBagCount } from "@/lib/bag/stores";
 import { useHydrated } from "@/lib/bag/local-store";
-import { BagIcon, ChevronDown, CloseIcon, MenuIcon } from "@/components/ui/icons";
+import { BagIcon, ChevronDown, CloseIcon, MenuIcon, SearchIcon } from "@/components/ui/icons";
 import { useDialog } from "@/components/ui/use-dialog";
 import { useStore } from "./store-provider";
 import { Logo } from "./logo";
+import { SearchOverlay } from "./search-overlay";
 
 export type NavCategory = { name: string; path: string; children: NavCategory[] };
 
@@ -37,6 +38,7 @@ export function HeaderWithPathname(props: HeaderProps) {
 /** Without a pathname (static shell / Suspense fallback) nothing is marked active. */
 export function HeaderClient({ categories, showNew, showSale, pathname }: HeaderProps & { pathname: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { openBag } = useStore();
   const count = useBagCount();
   const hydrated = useHydrated();
@@ -46,6 +48,7 @@ export function HeaderClient({ categories, showNew, showSale, pathname }: Header
   if (pathname !== lastPath) {
     setLastPath(pathname);
     setMenuOpen(false);
+    setSearchOpen(false);
   }
 
   return (
@@ -90,20 +93,33 @@ export function HeaderClient({ categories, showNew, showSale, pathname }: Header
           </ul>
         </nav>
 
-        <button
-          type="button"
-          onClick={openBag}
-          className="tap relative -mr-2.5 inline-flex items-center justify-center text-brown-deep transition-colors hover:text-brown"
-          aria-label={hydrated && count > 0 ? `Open bag, ${count} item${count === 1 ? "" : "s"}` : "Open bag"}
-        >
-          <BagIcon size={24} />
-          {hydrated && count > 0 && (
-            <span className="absolute top-1 right-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brown px-1 text-[10px] font-medium text-cream">
-              {count}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="tap inline-flex items-center justify-center text-brown-deep transition-colors hover:text-brown"
+            aria-label="Search"
+            aria-haspopup="dialog"
+          >
+            <SearchIcon size={22} />
+          </button>
+          <button
+            type="button"
+            onClick={openBag}
+            className="tap relative -mr-2.5 inline-flex items-center justify-center text-brown-deep transition-colors hover:text-brown"
+            aria-label={hydrated && count > 0 ? `Open bag, ${count} item${count === 1 ? "" : "s"}` : "Open bag"}
+          >
+            <BagIcon size={24} />
+            {hydrated && count > 0 && (
+              <span className="absolute top-1 right-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brown px-1 text-[10px] font-medium text-cream">
+                {count}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
+
+      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
 
       <CategoryBar categories={categories} showNew={showNew} showSale={showSale} pathname={pathname} />
 

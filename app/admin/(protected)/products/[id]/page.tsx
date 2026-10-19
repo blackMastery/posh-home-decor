@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/admin/auth";
-import { loadCategoryOptions, loadDefaults } from "@/lib/admin/product-loader";
+import { loadAttributes, loadCategoryOptions, loadDefaults } from "@/lib/admin/product-loader";
 import { formatNumber } from "@/lib/format/money";
 import { toAvailability } from "@/lib/catalog/types";
 import { ProductForm } from "@/components/admin/product-form";
@@ -13,13 +13,14 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
   const { supabase } = await requireAdminPage();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const [{ data: p }, categories, defaults] = await Promise.all([
+  const [{ data: p }, categories, attributes, defaults] = await Promise.all([
     supabase
       .from("products")
-      .select("*, images:product_images(id, storage_path, width, height, alt, sort_order), related:product_related!product_related_product_id_fkey(sort_order, product:products!product_related_related_id_fkey(id, name))")
+      .select("*, images:product_images(id, storage_path, width, height, alt, sort_order), related:product_related!product_related_product_id_fkey(sort_order, product:products!product_related_related_id_fkey(id, name)), values:product_attribute_values(value_id)")
       .eq("id", id)
       .maybeSingle(),
     loadCategoryOptions(supabase),
+    loadAttributes(supabase),
     loadDefaults(supabase),
   ]);
   if (!p) notFound();
@@ -42,6 +43,7 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
         productId={p.id}
         meta={{ status: p.status as "draft" | "published" | "archived", updatedAt: p.updated_at, slug: p.slug }}
         categories={categories}
+        attributes={attributes}
         defaults={defaults}
         initial={{
           name: p.name,
@@ -65,6 +67,13 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
           images: [...(p.images ?? [])]
             .sort((a, b) => a.sort_order - b.sort_order)
             .map((i) => ({ key: i.id, storagePath: i.storage_path, width: i.width, height: i.height, alt: i.alt ?? "", persisted: true })),
+          attributeValueIds: (p.values ?? []).map((x) => x.value_id),
+          dims: {
+            height: p.height_cm != null ? String(p.height_cm) : "",
+            width: p.width_cm != null ? String(p.width_cm) : "",
+            depth: p.depth_cm != null ? String(p.depth_cm) : "",
+            diameter: p.diameter_cm != null ? String(p.diameter_cm) : "",
+          },
         }}
       />
     </div>

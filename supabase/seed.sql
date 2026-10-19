@@ -1,4 +1,4 @@
--- Dev seed: category tree, settings defaults and 8 sample products.
+-- Dev seed: category tree, settings defaults, 10 sample products and their attributes.
 -- Product photos are generated + uploaded by `npm run seed:dev` (scripts/seed-dev.mjs).
 
 update public.settings set
@@ -119,3 +119,122 @@ cross join public.settings s;
 insert into public.product_related (product_id, related_id, sort_order) values
   ('a0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002', 0),
   ('a0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000006', 1);
+
+-- Attributes -------------------------------------------------------------------
+
+insert into public.attributes (name, slug, kind, sort_order) values
+  ('Colour', 'color', 'color', 1),
+  ('Material', 'material', 'standard', 2),
+  ('Room', 'room', 'standard', 3);
+
+insert into public.attribute_values (attribute_id, name, slug, hex, swatch, sort_order)
+select a.id, v.name, v.slug, v.hex, v.swatch, v.sort_order
+from (values
+  ('color', 'Gold', 'gold', '#C9A24B', 'metallic', 1),
+  ('color', 'Ivory', 'ivory', '#F3EDE0', 'solid', 2),
+  ('color', 'White', 'white', '#FFFFFF', 'solid', 3),
+  ('color', 'Black', 'black', '#1D1D1B', 'solid', 4),
+  ('color', 'Natural', 'natural', '#C8A97E', 'solid', 5),
+  ('color', 'Amber', 'amber', '#B86B25', 'solid', 6),
+  ('color', 'Garnet', 'garnet', '#7A1F2B', 'solid', 7),
+  ('material', 'Brass', 'brass', null, 'solid', 1),
+  ('material', 'Ceramic', 'ceramic', null, 'solid', 2),
+  ('material', 'Glass', 'glass', null, 'solid', 3),
+  ('material', 'Jute', 'jute', null, 'solid', 4),
+  ('material', 'Linen', 'linen', null, 'solid', 5),
+  ('material', 'Marble', 'marble', null, 'solid', 6),
+  ('material', 'Rattan', 'rattan', null, 'solid', 7),
+  ('material', 'Silk', 'silk', null, 'solid', 8),
+  ('material', 'Teak', 'teak', null, 'solid', 9),
+  ('material', 'Velvet', 'velvet', null, 'solid', 10),
+  ('room', 'Living room', 'living-room', null, 'solid', 1),
+  ('room', 'Bedroom', 'bedroom', null, 'solid', 2),
+  ('room', 'Dining room', 'dining-room', null, 'solid', 3),
+  ('room', 'Entryway', 'entryway', null, 'solid', 4),
+  ('room', 'Office', 'office', null, 'solid', 5)
+) as v(attr, name, slug, hex, swatch, sort_order)
+join public.attributes a on a.slug = v.attr;
+
+insert into public.product_attribute_values (product_id, value_id)
+select v.product_id::uuid, av.id
+from (values
+  ('a0000000-0000-4000-8000-000000000001', 'color', 'ivory'),
+  ('a0000000-0000-4000-8000-000000000001', 'color', 'gold'),
+  ('a0000000-0000-4000-8000-000000000001', 'material', 'ceramic'),
+  ('a0000000-0000-4000-8000-000000000001', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000001', 'room', 'entryway'),
+  ('a0000000-0000-4000-8000-000000000002', 'color', 'gold'),
+  ('a0000000-0000-4000-8000-000000000002', 'material', 'brass'),
+  ('a0000000-0000-4000-8000-000000000002', 'room', 'dining-room'),
+  ('a0000000-0000-4000-8000-000000000002', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000003', 'color', 'natural'),
+  ('a0000000-0000-4000-8000-000000000003', 'material', 'rattan'),
+  ('a0000000-0000-4000-8000-000000000003', 'material', 'glass'),
+  ('a0000000-0000-4000-8000-000000000003', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000004', 'color', 'natural'),
+  ('a0000000-0000-4000-8000-000000000004', 'material', 'jute'),
+  ('a0000000-0000-4000-8000-000000000004', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000004', 'room', 'bedroom'),
+  ('a0000000-0000-4000-8000-000000000005', 'color', 'amber'),
+  ('a0000000-0000-4000-8000-000000000005', 'material', 'glass'),
+  ('a0000000-0000-4000-8000-000000000005', 'room', 'bedroom'),
+  ('a0000000-0000-4000-8000-000000000005', 'room', 'office'),
+  ('a0000000-0000-4000-8000-000000000006', 'color', 'white'),
+  ('a0000000-0000-4000-8000-000000000006', 'color', 'gold'),
+  ('a0000000-0000-4000-8000-000000000006', 'material', 'marble'),
+  ('a0000000-0000-4000-8000-000000000006', 'material', 'brass'),
+  ('a0000000-0000-4000-8000-000000000006', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000006', 'room', 'dining-room'),
+  ('a0000000-0000-4000-8000-000000000007', 'color', 'garnet'),
+  ('a0000000-0000-4000-8000-000000000007', 'material', 'velvet'),
+  ('a0000000-0000-4000-8000-000000000007', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000007', 'room', 'bedroom'),
+  ('a0000000-0000-4000-8000-000000000008', 'color', 'gold'),
+  ('a0000000-0000-4000-8000-000000000008', 'color', 'ivory'),
+  ('a0000000-0000-4000-8000-000000000008', 'material', 'brass'),
+  ('a0000000-0000-4000-8000-000000000008', 'material', 'linen'),
+  ('a0000000-0000-4000-8000-000000000008', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000008', 'room', 'office'),
+  ('a0000000-0000-4000-8000-000000000008', 'room', 'bedroom'),
+  ('a0000000-0000-4000-8000-000000000009', 'color', 'natural'),
+  ('a0000000-0000-4000-8000-000000000009', 'material', 'teak'),
+  ('a0000000-0000-4000-8000-000000000009', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000009', 'room', 'entryway'),
+  ('a0000000-0000-4000-8000-000000000010', 'color', 'gold'),
+  ('a0000000-0000-4000-8000-000000000010', 'color', 'ivory'),
+  ('a0000000-0000-4000-8000-000000000010', 'material', 'brass'),
+  ('a0000000-0000-4000-8000-000000000010', 'material', 'silk'),
+  ('a0000000-0000-4000-8000-000000000010', 'room', 'living-room'),
+  ('a0000000-0000-4000-8000-000000000010', 'room', 'bedroom')
+) as v(product_id, attr, value)
+join public.attributes a on a.slug = v.attr
+join public.attribute_values av on av.attribute_id = a.id and av.slug = v.value;
+
+-- Dimensions (cm) ----------------------------------------------------------------
+
+update public.products p set
+  height_cm = v.h, width_cm = v.w, depth_cm = v.d, diameter_cm = v.dia
+from (values
+  ('a0000000-0000-4000-8000-000000000001', 42, null, null, 24),
+  ('a0000000-0000-4000-8000-000000000002', 12, null, null, 10),
+  ('a0000000-0000-4000-8000-000000000003', 30, null, null, 30),
+  ('a0000000-0000-4000-8000-000000000004', 38, null, null, 40),
+  ('a0000000-0000-4000-8000-000000000005', 24, null, null, 9),
+  ('a0000000-0000-4000-8000-000000000006', 4, 40, 25, null),
+  ('a0000000-0000-4000-8000-000000000007', 50, 50, 15, null),
+  ('a0000000-0000-4000-8000-000000000008', 58, null, null, 30),
+  ('a0000000-0000-4000-8000-000000000009', 80, 120, 40, null),
+  ('a0000000-0000-4000-8000-000000000010', 160, null, null, 45)
+) as v(id, h, w, d, dia)
+where p.id = v.id::uuid;
+
+-- Which dimensions each department filters on (children inherit).
+update public.categories c set filter_dims = v.dims, primary_dim = v.primary_dim
+from (values
+  ('decor', array['height', 'width', 'diameter'], 'height'),
+  ('furniture', array['height', 'width', 'depth'], 'width'),
+  ('lighting', array['height', 'diameter'], 'height'),
+  ('textiles', array['width', 'height'], 'width'),
+  ('tableware', array['height', 'diameter'], 'height')
+) as v(path, dims, primary_dim)
+where c.path = v.path;

@@ -2,15 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { requireAdminPage } from "@/lib/admin/auth";
-import { loadCategoryOptions, loadDefaults } from "@/lib/admin/product-loader";
-import { ProductForm } from "@/components/admin/product-form";
+import { loadAttributes, loadCategoryOptions, loadDefaults } from "@/lib/admin/product-loader";
+import { EMPTY_DIMS, ProductForm } from "@/components/admin/product-form";
 
 export const metadata: Metadata = { title: "New product" };
 
 export default async function NewProductPage() {
   const { supabase } = await requireAdminPage();
   await connection();
-  const [categories, defaults] = await Promise.all([loadCategoryOptions(supabase), loadDefaults(supabase)]);
+  const [categories, attributes, defaults] = await Promise.all([
+    loadCategoryOptions(supabase),
+    loadAttributes(supabase),
+    loadDefaults(supabase),
+  ]);
   const id = crypto.randomUUID();
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8 lg:py-10">
@@ -23,6 +27,7 @@ export default async function NewProductPage() {
         productId={id}
         meta={null}
         categories={categories}
+        attributes={attributes}
         defaults={defaults}
         initial={{
           name: "",
@@ -42,6 +47,8 @@ export default async function NewProductPage() {
           itemUpcCode: "",
           related: [],
           images: [],
+          attributeValueIds: [],
+          dims: EMPTY_DIMS,
         }}
       />
     </div>

@@ -6,6 +6,8 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { TAGS } from "@/lib/data/catalog";
 import type { Availability } from "@/lib/catalog/types";
 import { SLUG_RE, slugify } from "@/lib/slug";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/database.types";
 
 export type ActionResult<T = object> = ({ ok: true } & T) | { ok: false; error: string; fieldErrors?: Record<string, string>; conflict?: boolean };
 
@@ -21,6 +23,33 @@ const optionalText = z
   .trim()
   .max(4000)
   .transform((v) => v || null);
+
+const Cm = z.number().positive("Dimensions must be more than 0").max(99999, "That dimension looks too large").nullable().default(null);
+
+/** Replace a product's attribute values (only rows that changed, so search refreshes stay cheap). */
+async function writeAttributeValues(supabase: SupabaseClient<Database>, productId: string, valueIds: string[]) {
+  const { data: current, error } = await supabase.from("product_attribute_values").select("value_id").eq("product_id", productId);
+  if (error) return error;
+  const want = new Set(valueIds);
+  const have = new Set((current ?? []).map((r) => r.value_id));
+  const removed = [...have].filter((id) => !want.has(id));
+  const added = [...want].filter((id) => !have.has(id));
+  if (removed.length) {
+    const { error: delError } = await supabase
+      .from("product_attribute_values")
+      .delete()
+      .eq("product_id", productId)
+      .in("value_id", removed);
+    if (delError) return delError;
+  }
+  if (added.length) {
+    const { error: insError } = await supabase
+      .from("product_attribute_values")
+      .insert(added.map((value_id) => ({ product_id: productId, value_id })));
+    if (insError) return insError;
+  }
+  return null;
+}
 
 const ProductInput = z.object({
   id: z.uuid(),
@@ -64,6 +93,11 @@ const ProductInput = z.object({
     )
     .max(20),
   relatedIds: z.array(z.uuid()).max(4),
+  attributeValueIds: z.array(z.uuid()).max(100).default([]),
+  heightCm: Cm,
+  widthCm: Cm,
+  depthCm: Cm,
+  diameterCm: Cm,
 });
 
 export type ProductInputT = z.input<typeof ProductInput>;
@@ -149,6 +183,10 @@ export async function saveProduct(
     featured_rank: v.featuredRank,
     item_code: v.itemCode,
     item_upc_code: v.itemUpcCode,
+    height_cm: v.heightCm,
+    width_cm: v.widthCm,
+    depth_cm: v.depthCm,
+    diameter_cm: v.diameterCm,
   };
 
   const { data: saved, error: saveError } = existing
@@ -194,6 +232,10 @@ export async function saveProduct(
       .insert(related.map((related_id, sort_order) => ({ product_id: v.id, related_id, sort_order })));
     if (relError) return { ok: false, error: relError.message };
   }
+
+  // Attributes (shop filters).
+  const attrError = await writeAttributeValues(supabase, v.id, v.attributeValueIds);
+  if (attrError) return { ok: false, error: attrError.message };
 
   // Touch updated_at after child writes so the conflict check sees the final version.
   const { data: final } = await supabase
@@ -263,6 +305,10 @@ export async function duplicateProduct(id: string): Promise<ActionResult<{ id: s
       care_text: p.care_text,
       delivery_text: p.delivery_text,
       featured_rank: null,
+      height_cm: p.height_cm,
+      width_cm: p.width_cm,
+      depth_cm: p.depth_cm,
+      diameter_cm: p.diameter_cm,
     })
     .select("id")
     .single();
@@ -270,6 +316,10 @@ export async function duplicateProduct(id: string): Promise<ActionResult<{ id: s
   const { data: rel } = await supabase.from("product_related").select("related_id, sort_order").eq("product_id", id);
   if (rel?.length) {
     await supabase.from("product_related").insert(rel.map((r) => ({ ...r, product_id: created.id })));
+  }
+  const { data: values } = await supabase.from("product_attribute_values").select("value_id").eq("product_id", id);
+  if (values?.length) {
+    await supabase.from("product_attribute_values").insert(values.map((r) => ({ product_id: created.id, value_id: r.value_id })));
   }
   updateTag(TAGS.products);
   return { ok: true, id: created.id };
@@ -294,4 +344,32 @@ export async function searchProductsForRelated(q: string, excludeId: string) {
     status: r.status!,
     categoryName: r.category_name,
   }));
+}
+
+const BulkInput = z.object({
+  productId: z.uuid(),
+  attributeValueIds: z.array(z.uuid()).max(100),
+  heightCm: Cm,
+  widthCm: Cm,
+  depthCm: Cm,
+  diameterCm: Cm,
+});
+
+/** Bulk-edit table: one product's attributes and dimensions. */
+export async function bulkUpdateProductAttributes(input: z.input<typeof BulkInput>): Promise<ActionResult<{ updatedAt: string }>> {
+  const { supabase } = await requireAdmin();
+  const parsed = BulkInput.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Please check the row" };
+  const v = parsed.data;
+  const attrError = await writeAttributeValues(supabase, v.productId, v.attributeValueIds);
+  if (attrError) return { ok: false, error: attrError.message };
+  const { data, error } = await supabase
+    .from("products")
+    .update({ height_cm: v.heightCm, width_cm: v.widthCm, depth_cm: v.depthCm, diameter_cm: v.diameterCm })
+    .eq("id", v.productId)
+    .select("slug, updated_at")
+    .single();
+  if (error) return { ok: false, error: error.message };
+  invalidateProduct(data.slug);
+  return { ok: true, updatedAt: data.updated_at };
 }

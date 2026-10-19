@@ -8,8 +8,11 @@ import {
   moveCategory,
   renameCategory,
   reparentCategory,
+  setCategoryFilters,
   setCategoryTile,
 } from "@/app/admin/actions/categories";
+import { resolveCategoryDims } from "@/lib/catalog/tree";
+import { DIMS, isDimKey, type DimKey } from "@/lib/catalog/types";
 import { createClient } from "@/lib/supabase/browser";
 import { PoshImage } from "@/components/ui/posh-image";
 import { prepareImage } from "./image-prep";
@@ -23,12 +26,14 @@ export type AdminCategory = {
   depth: number;
   sort_order: number;
   tile_image_path: string | null;
+  filter_dims: string[] | null;
+  primary_dim: string | null;
   subtreeCount: number;
   directProducts: number;
   childCount: number;
 };
 
-type Panel = { id: string; kind: "rename" | "add" | "move" | "tile" } | { id: null; kind: "add" } | null;
+type Panel = { id: string; kind: "rename" | "add" | "move" | "tile" | "filters" } | { id: null; kind: "add" } | null;
 
 export function CategoryTree({ categories }: { categories: AdminCategory[] }) {
   const router = useRouter();
@@ -133,6 +138,7 @@ export function CategoryTree({ categories }: { categories: AdminCategory[] }) {
                   </Action>
                   <Action onClick={() => setPanel({ id: c.id, kind: "move" })}>Move to…</Action>
                   {c.depth === 1 && <Action onClick={() => setPanel({ id: c.id, kind: "tile" })}>Tile image</Action>}
+                  <Action onClick={() => setPanel({ id: c.id, kind: "filters" })}>Shop filters</Action>
                   <Action
                     danger
                     disabled={blocked || pending}
@@ -169,6 +175,15 @@ export function CategoryTree({ categories }: { categories: AdminCategory[] }) {
                   pending={pending}
                   onCancel={() => setPanel(null)}
                   onSubmit={(parentId) => run(() => reparentCategory(c.id, parentId), () => setPanel(null))}
+                />
+              )}
+              {panel && panel.id === c.id && panel.kind === "filters" && (
+                <FiltersForm
+                  category={c}
+                  all={categories}
+                  pending={pending}
+                  onCancel={() => setPanel(null)}
+                  onSubmit={(dims, primary) => run(() => setCategoryFilters(c.id, dims, primary), () => setPanel(null))}
                 />
               )}
               {panel && panel.id === c.id && panel.kind === "tile" && (
@@ -318,6 +333,85 @@ function MoveForm({
         <div className="flex gap-2">
           <button type="submit" className="btn btn-primary" disabled={pending || (category.depth === 1 && !target)}>
             Move
+          </button>
+          <button type="button" className="btn btn-outline" onClick={onCancel}>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </Panel>
+  );
+}
+
+const dimLabel = (d: DimKey | null) => (d ? DIMS.find((x) => x.key === d)!.label : "Largest dimension");
+
+function FiltersForm({
+  category,
+  all,
+  onSubmit,
+  onCancel,
+  pending,
+}: {
+  category: AdminCategory;
+  all: AdminCategory[];
+  onSubmit: (dims: string[] | null, primary: string | null) => void;
+  onCancel: () => void;
+  pending: boolean;
+}) {
+  // What this category gets from its parent when it doesn't set its own.
+  const parentPath = category.path.includes("/") ? category.path.slice(0, category.path.lastIndexOf("/")) : null;
+  const inherited = resolveCategoryDims(all, parentPath);
+  const [inheritDims, setInheritDims] = useState(category.filter_dims === null);
+  const [dims, setDims] = useState<DimKey[]>((category.filter_dims ?? inherited.dims).filter(isDimKey));
+  const [primary, setPrimary] = useState<string>(category.primary_dim ?? "inherit");
+  const from = parentPath ? "parent category" : "shop default";
+
+  return (
+    <Panel title={`Shop filters for “${category.name}”`}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit(inheritDims ? null : dims, primary === "inherit" ? null : primary);
+        }}
+        className="space-y-4 text-[14px]"
+      >
+        <fieldset>
+          <legend className="mb-2 font-medium text-ink-soft">Size filters shoppers see</legend>
+          <label className="flex min-h-11 items-center gap-3">
+            <input type="checkbox" className="h-5 w-5 accent-brown" checked={inheritDims} onChange={(e) => setInheritDims(e.target.checked)} />
+            Same as {from} ({inherited.dims.map((d) => dimLabel(d).toLowerCase()).join(", ")})
+          </label>
+          {!inheritDims && (
+            <div className="mt-1 grid grid-cols-2 gap-x-4 sm:grid-cols-4">
+              {DIMS.map((d) => (
+                <label key={d.key} className="flex min-h-11 items-center gap-3">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 accent-brown"
+                    checked={dims.includes(d.key)}
+                    onChange={(e) => setDims((x) => (e.target.checked ? [...x, d.key] : x.filter((k) => k !== d.key)))}
+                  />
+                  {d.label}
+                </label>
+              ))}
+            </div>
+          )}
+        </fieldset>
+        <label className="block">
+          <span className="mb-2 block font-medium text-ink-soft">“Size: small to large” sorts by</span>
+          <select className="field" value={primary} onChange={(e) => setPrimary(e.target.value)}>
+            <option value="inherit">Same as {from} ({dimLabel(inherited.primaryDim)})</option>
+            {DIMS.map((d) => (
+              <option key={d.key} value={d.key}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <p className="text-[12px] text-muted">Subcategories follow these settings unless they set their own.</p>
+        <div className="flex gap-2">
+          <button type="submit" className="btn btn-primary" disabled={pending}>
+            Save
           </button>
           <button type="button" className="btn btn-outline" onClick={onCancel}>
             Cancel

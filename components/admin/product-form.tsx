@@ -8,13 +8,14 @@ import { createClient } from "@/lib/supabase/browser";
 import { formatNumber, parseMoney } from "@/lib/format/money";
 import { relativeTime } from "@/lib/format/time";
 import { slugify } from "@/lib/slug";
-import { AVAILABILITIES, type Availability } from "@/lib/catalog/types";
+import { AVAILABILITIES, DIMS, type Attribute, type AttributeValue, type Availability, type DimKey } from "@/lib/catalog/types";
 import { storageUrl } from "@/lib/images";
 import { PoshImage } from "@/components/ui/posh-image";
 import { prepareImage, type PreparedImage } from "./image-prep";
 import { ImageLightbox } from "./image-lightbox";
+import { AttributePicker } from "./attribute-picker";
 
-export type CategoryOption = { id: string; label: string };
+export type CategoryOption = { id: string; label: string; dims: DimKey[] };
 export type RelatedItem = { id: string; name: string; imagePath: string | null };
 
 export type ProductFormValues = {
@@ -35,7 +36,18 @@ export type ProductFormValues = {
   itemUpcCode: string;
   related: RelatedItem[];
   images: SavedImage[];
+  attributeValueIds: string[];
+  /** Centimetres as typed ("38", "12.5"); empty = not set. */
+  dims: Record<DimKey, string>;
 };
+
+export const EMPTY_DIMS: Record<DimKey, string> = { height: "", width: "", depth: "", diameter: "" };
+
+/** "12.5" → 12.5; empty/invalid → null. One decimal place. */
+export function parseCm(input: string): number | null {
+  const n = Number(input.replace(",", ".").trim());
+  return input.trim() && Number.isFinite(n) && n > 0 ? Math.round(n * 10) / 10 : null;
+}
 
 type SavedImage = { key: string; storagePath: string; width: number | null; height: number | null; alt: string; persisted: boolean };
 type PendingImage = {
@@ -63,12 +75,14 @@ export function ProductForm({
   initial,
   meta,
   categories,
+  attributes: initialAttributes,
   defaults,
 }: {
   productId: string;
   initial: ProductFormValues;
   meta: ProductMeta;
   categories: CategoryOption[];
+  attributes: Attribute[];
   defaults: Defaults;
 }) {
   const router = useRouter();
@@ -81,6 +95,10 @@ export function ProductForm({
   const [savedMeta, setSavedMeta] = useState(meta);
   const [restore, setRestore] = useState<ProductFormValues | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  // Values created inline are added here so every picker sees them.
+  const [attributes, setAttributes] = useState(initialAttributes);
+  const addValue = (attributeId: string, value: AttributeValue) =>
+    setAttributes((list) => list.map((a) => (a.id === attributeId ? { ...a, values: [...a.values, value] } : a)));
   const baseline = useRef(JSON.stringify(initial));
   const set = <K extends keyof ProductFormValues>(k: K, val: ProductFormValues[K]) => setV((p) => ({ ...p, [k]: val }));
 
@@ -249,6 +267,11 @@ export function ProductForm({
         itemUpcCode: v.itemUpcCode ?? "",
         images: v.images.map((i) => ({ storagePath: i.storagePath, width: i.width, height: i.height, alt: i.alt || null })),
         relatedIds: v.related.map((r) => r.id),
+        attributeValueIds: v.attributeValueIds ?? [],
+        heightCm: parseCm(v.dims?.height ?? ""),
+        widthCm: parseCm(v.dims?.width ?? ""),
+        depthCm: parseCm(v.dims?.depth ?? ""),
+        diameterCm: parseCm(v.dims?.diameter ?? ""),
       });
       if (!res.ok) {
         setFieldErrors(res.fieldErrors ?? {});
@@ -567,6 +590,46 @@ export function ProductForm({
         {err("categoryId")}
       </div>
 
+      {/* 4b. Attributes & dimensions (shop filters) */}
+      <section aria-labelledby={`${ids}-attrs`} className={section}>
+        <h2 id={`${ids}-attrs`} className={label}>
+          Attributes &amp; dimensions
+        </h2>
+        <p className="-mt-1 mb-4 text-[13px] text-muted">
+          Shoppers filter by these. Pick every value that applies.{" "}
+          <Link href="/admin/attributes" className="text-brown underline underline-offset-4">
+            Manage attributes
+          </Link>
+        </p>
+        <div className="space-y-4">
+          {attributes.map((a) => (
+            <div key={a.id}>
+              <span id={`${ids}-attr-${a.id}`} className="mb-1.5 block text-[13px] text-ink-soft">
+                {a.name}
+              </span>
+              <AttributePicker
+                attribute={a}
+                labelledBy={`${ids}-attr-${a.id}`}
+                selected={v.attributeValueIds ?? []}
+                onChange={(next) => set("attributeValueIds", next)}
+                onCreated={addValue}
+              />
+            </div>
+          ))}
+          {attributes.length === 0 && (
+            <p className="text-[14px] text-muted">
+              No attributes yet. <Link href="/admin/attributes" className="text-brown underline underline-offset-4">Add Colour, Material…</Link>
+            </p>
+          )}
+        </div>
+        <DimensionInputs
+          values={v.dims ?? EMPTY_DIMS}
+          onChange={(dims) => set("dims", dims)}
+          active={categories.find((c) => c.id === v.categoryId)?.dims ?? null}
+          ids={ids}
+        />
+      </section>
+
       {/* 5. Note & description */}
       <div className={section}>
         <label htmlFor={`${ids}-note`} className={label}>
@@ -777,6 +840,58 @@ export function ProductForm({
         </div>
       </div>
     </form>
+  );
+}
+
+/** cm inputs. Dimensions the category doesn't filter on are muted, not hidden (still shown on the product page). */
+export function DimensionInputs({
+  values,
+  onChange,
+  active,
+  ids,
+  compact = false,
+}: {
+  values: Record<DimKey, string>;
+  onChange: (next: Record<DimKey, string>) => void;
+  /** Dimensions the chosen category filters on; null = no category yet. */
+  active: DimKey[] | null;
+  ids: string;
+  compact?: boolean;
+}) {
+  return (
+    <div className={compact ? "" : "mt-5"}>
+      {!compact && (
+        <p className="mb-2 text-[13px] text-ink-soft">
+          Dimensions (cm)
+          {active && (
+            <span className="text-muted"> · this category filters by {active.map((d) => DIMS.find((x) => x.key === d)?.label.toLowerCase()).join(", ")}</span>
+          )}
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {DIMS.map((d) => {
+          const muted = active !== null && !active.includes(d.key) && !values[d.key];
+          const invalid = values[d.key].trim() !== "" && parseCm(values[d.key]) === null;
+          return (
+            <label key={d.key} className={`relative block ${muted ? "opacity-60" : ""}`}>
+              <span className={compact ? "sr-only" : "mb-1 block text-[12px] text-muted"}>{d.label}</span>
+              <input
+                id={`${ids}-dim-${d.key}`}
+                className={`field pr-10 ${compact ? "min-h-10 py-1.5 text-[13px]" : ""}`}
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder={compact ? d.short : "—"}
+                aria-label={compact ? `${d.label} (cm)` : undefined}
+                aria-invalid={invalid ? true : undefined}
+                value={values[d.key]}
+                onChange={(e) => onChange({ ...values, [d.key]: e.target.value.replace(/[^\d.,]/g, "").slice(0, 7) })}
+              />
+              <span className={`pointer-events-none absolute right-3 text-[12px] text-muted ${compact ? "top-1/2 -translate-y-1/2" : "bottom-3.5"}`}>cm</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
