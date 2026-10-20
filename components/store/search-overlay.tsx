@@ -9,6 +9,7 @@ import { PoshImage } from "@/components/ui/posh-image";
 import { useDialog } from "@/components/ui/use-dialog";
 import type { SearchSuggestions } from "@/lib/data/catalog";
 import { formatPriceOrRequest } from "@/lib/format/money";
+import { displayName } from "@/lib/format/text";
 
 const EMPTY: SearchSuggestions = { products: [], categories: [] };
 
@@ -178,7 +179,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
                               {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="64px" className="object-contain p-1" />}
                             </span>
                             <span className="min-w-0">
-                              <span className="block truncate font-display text-[19px] leading-tight text-brown-deep">{p.name}</span>
+                              <span className="block truncate font-display text-[19px] leading-tight text-brown-deep">{displayName(p.name)}</span>
                               <span className="block text-[13px] text-muted">
                                 {p.category_name} · {p.availability === "sold_out" ? "Sold out" : formatPriceOrRequest(p.price)}
                               </span>

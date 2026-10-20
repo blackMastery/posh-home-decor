@@ -4,6 +4,7 @@ import { PoshImage } from "@/components/ui/posh-image";
 import { Swatch } from "@/components/ui/swatch";
 import { Price, ProductBadge } from "./price";
 import { QuickAdd } from "./quick-add";
+import { displayName } from "@/lib/format/text";
 
 export const CARD_SIZES = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw";
 
@@ -33,7 +34,7 @@ export function ProductCard({ product, priority = false }: { product: ProductCar
       <div className="mt-3 space-y-1">
         <h3 className="font-display text-[clamp(18px,1.6vw,21px)] leading-tight font-medium text-brown-deep">
           <Link href={`/products/${product.slug}`} className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-gold">
-            {product.name}
+            {displayName(product.name)}
           </Link>
         </h3>
         {product.note && <p className="text-[13px] text-muted">{product.note}</p>}

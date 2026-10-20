@@ -15,6 +15,7 @@ import { ChevronDown } from "@/components/ui/icons";
 import { IMAGE_TRANSFORM, SITE_URL } from "@/lib/env";
 import { renderUrl, storageUrl } from "@/lib/images";
 import { baseOpenGraph } from "@/lib/seo";
+import { displayName } from "@/lib/format/text";
 
 type Props = PageProps<"/products/[slug]">;
 
@@ -42,12 +43,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = (p.note ? `${p.note}. ` : "") + (p.description ?? "").slice(0, 150);
   const image = p.images[0];
   return {
-    title: p.name,
+    title: displayName(p.name),
     description,
     alternates: { canonical: `/products/${p.slug}` },
     openGraph: {
       ...baseOpenGraph,
-      title: `${p.name} | Posh Home Decor`,
+      title: `${displayName(p.name)} | Posh Home Decor`,
       description,
       url: `/products/${p.slug}`,
       images: image ? [{ url: ogImage(image.storage_path), width: 1200, height: 630, alt: image.alt || p.name }] : baseOpenGraph.images,
@@ -171,7 +172,7 @@ async function ProductContent({ params }: Props) {
               <ProductBadge availability={product.availability} onSale={product.is_on_sale} isNew={product.is_new} />
             </div>
             <h1 className="mt-3 font-display text-[clamp(34px,4vw,54px)] leading-[1.02] font-medium text-brown-deep">
-              {product.name}
+              {displayName(product.name)}
             </h1>
             {product.note && <p className="mt-2 text-[15px] text-muted">{product.note}</p>}
             <p className="mt-5 text-[22px] font-medium">

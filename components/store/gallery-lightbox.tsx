@@ -11,6 +11,7 @@ import { track } from "@/lib/analytics";
 import { SITE_URL } from "@/lib/env";
 import { Price, ProductBadge } from "./price";
 import { useStore } from "./store-provider";
+import { displayName } from "@/lib/format/text";
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -164,7 +165,7 @@ function LookPanel({ photo }: { photo: GalleryPhoto }) {
                         <ProductBadge availability={p.availability} onSale={p.is_on_sale} isNew={false} />
                       </span>
                     </div>
-                    <p className="mt-1.5 line-clamp-2 text-[14px] leading-tight font-medium text-brown-deep">{p.name}</p>
+                    <p className="mt-1.5 line-clamp-2 text-[14px] leading-tight font-medium text-brown-deep">{displayName(p.name)}</p>
                     <p className="text-[13px]">
                       <Price price={p.price} compareAt={p.compare_at_price} prefix={pricePrefix} />
                     </p>

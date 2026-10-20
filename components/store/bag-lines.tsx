@@ -7,6 +7,7 @@ import { PoshImage } from "@/components/ui/posh-image";
 import { MinusIcon, PlusIcon } from "@/components/ui/icons";
 import type { ProductCardData } from "@/lib/catalog/types";
 import { useStore } from "./store-provider";
+import { displayName } from "@/lib/format/text";
 
 /** lineTotal is null when the product is "Price on request". */
 export type BagLine = { product: ProductCardData; qty: number; lineTotal: number | null };
@@ -107,7 +108,7 @@ export function BagLineItem({ line, onNavigate }: { line: BagLine; onNavigate?: 
               onClick={onNavigate}
               className="font-display text-[19px] leading-tight font-medium text-brown-deep hover:text-brown"
             >
-              {p.name}
+              {displayName(p.name)}
             </Link>
             {p.note && <p className="mt-0.5 text-[13px] text-muted">{p.note}</p>}
           </div>
