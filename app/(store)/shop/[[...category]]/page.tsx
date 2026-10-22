@@ -137,13 +137,18 @@ async function ShopContent(props: Props) {
   const filtered = hasActiveFilters(filters, preset);
 
   const topLevel = categories.filter((c) => c.depth === 1 && c.productCount > 0).sort((a, b) => a.sort_order - b.sort_order);
-  const children =
-    r.kind === "category"
-      ? categories
-          .filter((c) => c.parent_id === r.category.id && c.productCount > 0)
-          .sort((a, b) => a.sort_order - b.sort_order)
-      : [];
-  const activeTop = r.kind === "category" ? r.trail[0]?.path : null;
+  const trail = r.kind === "category" ? r.trail : [];
+  const activeTop = trail[0]?.path ?? null;
+  // One row per level of the current trail: the children of each ancestor (and of the current category).
+  const subRows = trail
+    .map((parent, i) => ({
+      parent,
+      activePath: trail[i + 1]?.path ?? null,
+      items: categories
+        .filter((c) => c.parent_id === parent.id && c.productCount > 0)
+        .sort((a, b) => a.sort_order - b.sort_order),
+    }))
+    .filter((row) => row.items.length > 0);
 
   // Params kept when paging this listing (the preset is implied by the path)…
   const keepHere = new URLSearchParams();
@@ -196,20 +201,6 @@ async function ShopContent(props: Props) {
       <header className="mt-4">
         <p className="eyebrow text-bronze">Shop</p>
         <h1 className="mt-3 font-display text-[clamp(38px,5vw,68px)] leading-none font-medium text-brown-deep">{title(r)}</h1>
-        {children.length > 0 && (
-          <ul className="mt-6 flex flex-wrap gap-2">
-            {children.map((c) => (
-              <li key={c.id}>
-                <Link
-                  href={withParams(`/shop/${c.path}`)}
-                  className="inline-flex min-h-11 items-center border border-line-strong px-4 text-[14px] text-ink-soft hover:border-brown hover:text-brown"
-                >
-                  {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
       </header>
 
       <ShopFiltersProvider
@@ -217,24 +208,56 @@ async function ShopContent(props: Props) {
       >
         <div className="mt-10 space-y-5 border-y border-line py-5">
           <ShopControls q={q} sort={sort} />
-          <nav aria-label="Categories" className="no-scrollbar -mx-[clamp(16px,4vw,48px)] overflow-x-auto px-[clamp(16px,4vw,48px)]">
-            <ul className="flex w-max gap-2">
-              {chips.map((c) => (
-                <li key={c.href}>
-                  <Link
-                    href={withParams(c.href)}
-                    aria-current={c.active ? "page" : undefined}
-                    className={`inline-flex min-h-11 items-center px-5 text-[13px] tracking-[0.12em] uppercase transition-colors ${
-                      c.active
-                        ? "bg-brown text-cream"
-                        : "border border-line-strong text-ink-soft hover:border-brown hover:text-brown"
-                    }`}
-                  >
-                    {c.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <nav aria-label="Categories" className="space-y-4">
+            <div className="no-scrollbar -mx-[clamp(16px,4vw,48px)] overflow-x-auto px-[clamp(16px,4vw,48px)]">
+              <ul className="flex w-max gap-2">
+                {chips.map((c) => (
+                  <li key={c.href}>
+                    <Link
+                      href={withParams(c.href)}
+                      aria-current={c.active && subRows.length === 0 ? "page" : undefined}
+                      className={`inline-flex min-h-11 items-center px-5 text-[13px] tracking-[0.12em] uppercase transition-colors ${
+                        c.active
+                          ? "bg-brown text-cream"
+                          : "border border-line-strong text-ink-soft hover:border-brown hover:text-brown"
+                      }`}
+                    >
+                      {c.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Sub-levels step in under their parent, each indented one more rule. */}
+            {subRows.map((row, depth) => (
+              <div key={row.parent.id} className={`border-l-2 border-gold/60 pl-3 sm:pl-4 ${["", "ml-4", "ml-8"][depth] ?? "ml-8"}`}>
+                <p className="eyebrow text-muted">
+                  In <span className="text-bronze">{row.parent.name}</span>
+                </p>
+                <div className="no-scrollbar mt-2 -mr-[clamp(16px,4vw,48px)] overflow-x-auto pr-[clamp(16px,4vw,48px)]">
+                  <ul aria-label={`${row.parent.name} categories`} className="flex w-max gap-2">
+                    {[
+                      { href: `/shop/${row.parent.path}`, label: `All ${row.parent.name}`, active: row.activePath === null },
+                      ...row.items.map((c) => ({ href: `/shop/${c.path}`, label: c.name, active: row.activePath === c.path })),
+                    ].map((c) => (
+                      <li key={c.href}>
+                        <Link
+                          href={withParams(c.href)}
+                          aria-current={c.active && c.href === basePath(r) ? "page" : undefined}
+                          className={`inline-flex min-h-11 items-center border px-4 text-[14px] transition-colors ${
+                            c.active
+                              ? "border-brown bg-sand text-brown-deep"
+                              : "border-line-strong text-ink-soft hover:border-brown hover:text-brown"
+                          }`}
+                        >
+                          {c.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
           </nav>
         </div>
 
