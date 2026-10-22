@@ -15,6 +15,7 @@ import {
   PendingResults,
   ShopFiltersProvider,
 } from "@/components/store/shop-filters";
+import { BackToTop } from "@/components/store/back-to-top";
 import { Breadcrumbs } from "@/components/store/breadcrumbs";
 import { JsonLd } from "@/components/store/json-ld";
 import { SITE_URL } from "@/lib/env";
@@ -100,9 +101,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default function ShopPage(props: Props) {
   return (
-    <Suspense fallback={<ShopSkeleton />}>
-      <ShopContent {...props} />
-    </Suspense>
+    <>
+      <Suspense fallback={<ShopSkeleton />}>
+        <ShopContent {...props} />
+      </Suspense>
+      <BackToTop />
+    </>
   );
 }
 
