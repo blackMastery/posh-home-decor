@@ -246,7 +246,8 @@ async function ShopContent(props: Props) {
           </div>
 
           <div>
-            <div className="flex min-h-11 items-center justify-between gap-4">
+            {/* Below lg the count + Filter button stick under the header so filters stay one tap away. */}
+            <div className="sticky top-[68px] z-30 -mx-[clamp(16px,4vw,48px)] flex min-h-11 items-center justify-between gap-4 border-b border-line bg-cream px-[clamp(16px,4vw,48px)] py-2 nav:top-[121px] lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0">
               <p className="text-[13px] tracking-[0.12em] text-muted uppercase" aria-live="polite">
                 {total} {total === 1 ? "piece" : "pieces"}
                 {q && (
