@@ -2,7 +2,11 @@
 
 All notable changes to this project are recorded here, grouped by date (newest first).
 
-<!-- changelog-last-commit: 216d442cbe45849cf47012454d584efea1d2ca4b -->
+<!-- changelog-last-commit: 9f3c130c24cc2e1a8b1dfa10211ded9f10be4a22 -->
+
+## 2026-10-21
+
+- The shop page has a floating back-to-top button that appears after scrolling down, on both desktop and mobile.
 
 ## 2026-10-20
 
