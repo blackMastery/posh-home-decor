@@ -2,11 +2,12 @@
 
 All notable changes to this project are recorded here, grouped by date (newest first).
 
-<!-- changelog-last-commit: 9f3c130c24cc2e1a8b1dfa10211ded9f10be4a22 -->
+<!-- changelog-last-commit: c2a1644d19adedc8910fa57764b0348f9177459a -->
 
 ## 2026-10-21
 
 - The shop page has a floating back-to-top button that appears after scrolling down, on both desktop and mobile.
+- On phones and tablets, the shop's piece count and Filter button now stay pinned under the header while scrolling, so filters are always one tap away.
 
 ## 2026-10-20
 
