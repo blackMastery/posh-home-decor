@@ -2,12 +2,19 @@
 
 All notable changes to this project are recorded here, grouped by date (newest first).
 
-<!-- changelog-last-commit: c2a1644d19adedc8910fa57764b0348f9177459a -->
+<!-- changelog-last-commit: 9a03ce214cb1520a4c6ad37105b17deb8baf226f -->
+
+## 2026-10-23
+
+- **Fixed:** Product links shared on Facebook (and WhatsApp, X, etc.) now show a thumbnail. Each product gets a branded 1200×630 share image showing the photo, name and price, which refreshes when the product changes.
+- Product pages now have a meta description (built from the product's details when it has no description), product-specific X/Twitter tags, and Facebook product tags for price and availability.
+- Richer Google product data: colour, material, dimensions, condition and seller. Product photos are now listed in the sitemap.
 
 ## 2026-10-21
 
 - The shop page has a floating back-to-top button that appears after scrolling down, on both desktop and mobile.
 - On phones and tablets, the shop's piece count and Filter button now stay pinned under the header while scrolling, so filters are always one tap away.
+- Shop category navigation now shows parent categories above their subcategories: each level sits in its own indented row labelled like "In Decor", with an "All Decor" option, and sibling categories stay visible on deeper pages.
 
 ## 2026-10-20
 
