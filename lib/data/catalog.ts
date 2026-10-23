@@ -333,17 +333,20 @@ export async function getStyleItWith(productId: string): Promise<ProductCardData
   return (data ?? []).map((r) => card(r as unknown as Record<string, unknown>));
 }
 
-export async function getPublishedSlugs(): Promise<{ slug: string; updated_at: string }[]> {
+export async function getPublishedSlugs(): Promise<{ slug: string; updated_at: string; imagePaths: string[] }[]> {
   "use cache";
   cacheLife("hours");
   cacheTag(TAGS.products);
   const { data, error } = await createPublicClient()
     .from("products")
-    .select("slug, updated_at")
+    .select("slug, updated_at, images:product_images(storage_path, sort_order)")
     .eq("status", "published")
     .order("first_published_at", { ascending: false });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map(({ images, ...p }) => ({
+    ...p,
+    imagePaths: [...(images ?? [])].sort((a, b) => a.sort_order - b.sort_order).map((i) => i.storage_path),
+  }));
 }
 
 /** Fresh (uncached) product cards by id, for bag/wishlist reconciliation. */

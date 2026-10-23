@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getCategories, getPublishedSlugs } from "@/lib/data/catalog";
 import { SITE_URL } from "@/lib/env";
+import { storageUrl } from "@/lib/images";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, products] = await Promise.all([getCategories(), getPublishedSlugs()]);
@@ -17,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(p.updated_at),
       changeFrequency: "weekly" as const,
       priority: 0.8,
+      images: p.imagePaths.map((path) => storageUrl(path)),
     })),
   ];
 }

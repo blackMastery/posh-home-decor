@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Fragment, Suspense, type ReactNode } from "react";
 import { getCategories, getProductBySlug, getPublishedSlugs, getSettings, getStyleItWith } from "@/lib/data/catalog";
 import { ancestry } from "@/lib/catalog/tree";
-import { formatDimensions, type Availability } from "@/lib/catalog/types";
+import { formatDimensions, type Availability, type DimKey } from "@/lib/catalog/types";
 import { Breadcrumbs } from "@/components/store/breadcrumbs";
 import { ProductGallery } from "@/components/store/product-gallery";
 import { ProductPurchase } from "@/components/store/product-purchase";
@@ -12,9 +12,9 @@ import { Price, ProductBadge } from "@/components/store/price";
 import { ProductGrid } from "@/components/store/product-card";
 import { JsonLd } from "@/components/store/json-ld";
 import { ChevronDown } from "@/components/ui/icons";
-import { IMAGE_TRANSFORM, SITE_URL } from "@/lib/env";
-import { renderUrl, storageUrl } from "@/lib/images";
-import { baseOpenGraph } from "@/lib/seo";
+import { SITE_URL } from "@/lib/env";
+import { storageUrl } from "@/lib/images";
+import { BRAND_NAME, baseOpenGraph, productDescription, productOgImagePath } from "@/lib/seo";
 import { displayName } from "@/lib/format/text";
 
 type Props = PageProps<"/products/[slug]">;
@@ -25,33 +25,43 @@ const SCHEMA_AVAILABILITY: Record<Availability, string> = {
   sold_out: "https://schema.org/OutOfStock",
 };
 
+/** Facebook/Open Graph product availability values. */
+const OG_AVAILABILITY: Record<Availability, string> = {
+  available: "in stock",
+  coming_soon: "preorder",
+  sold_out: "out of stock",
+};
+
+/** Spec attributes that map onto schema.org Product properties; the rest go in additionalProperty. */
+const SCHEMA_SPEC_PROPS: Record<string, "color" | "material"> = { colour: "color", color: "color", material: "material" };
+
 export async function generateStaticParams() {
   const slugs = await getPublishedSlugs();
   // Cache Components requires at least one param; unknown slugs render on demand.
   return slugs.length ? slugs.map((s) => ({ slug: s.slug })) : [{ slug: "__placeholder__" }];
 }
 
-function ogImage(path: string) {
-  const url = storageUrl(path);
-  return IMAGE_TRANSFORM ? renderUrl(url, { width: 1200, height: 630, resize: "cover", quality: 80 }) : url;
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const p = await getProductBySlug(slug);
+  const [p, settings] = await Promise.all([getProductBySlug(slug), getSettings()]);
   if (!p) return { title: "Not found" };
-  const description = (p.note ? `${p.note}. ` : "") + (p.description ?? "").slice(0, 150);
-  const image = p.images[0];
+  const name = displayName(p.name);
+  const title = `${name} | ${BRAND_NAME}`;
+  const description = productDescription(p, settings.price_prefix);
+  // Our own 1200×630 card: raw product photos are often portrait/small, which Facebook drops or crops.
+  const image = { url: productOgImagePath(p, settings.price_prefix), width: 1200, height: 630, type: "image/png", alt: name };
   return {
-    title: displayName(p.name),
+    title: name,
     description,
     alternates: { canonical: `/products/${p.slug}` },
-    openGraph: {
-      ...baseOpenGraph,
-      title: `${displayName(p.name)} | Posh Home Decor`,
-      description,
-      url: `/products/${p.slug}`,
-      images: image ? [{ url: ogImage(image.storage_path), width: 1200, height: 630, alt: image.alt || p.name }] : baseOpenGraph.images,
+    openGraph: { ...baseOpenGraph, title, description, url: `/products/${p.slug}`, images: [image] },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
+    other: {
+      "product:brand": BRAND_NAME,
+      "product:availability": OG_AVAILABILITY[p.availability],
+      "product:condition": "new",
+      "product:retailer_item_id": p.slug,
+      ...(p.price != null ? { "product:price:amount": String(p.price), "product:price:currency": "GYD" } : {}),
     },
   };
 }
@@ -78,6 +88,18 @@ async function ProductContent({ params }: Props) {
     { href: `/products/${product.slug}`, label: product.name },
   ];
   const dimensions = formatDimensions(product.dimensions);
+  const schemaProps: Record<string, string> = {};
+  const extraProps: { "@type": "PropertyValue"; name: string; value: string | number; unitCode?: string }[] = [];
+  for (const s of product.specs) {
+    const value = s.values.map((v) => v.name).join(", ");
+    const key = SCHEMA_SPEC_PROPS[s.attribute.slug];
+    if (key) schemaProps[key] = value;
+    else extraProps.push({ "@type": "PropertyValue", name: s.attribute.name, value });
+  }
+  const size = (key: DimKey) =>
+    product.dimensions[key] != null ? { "@type": "QuantitativeValue", value: product.dimensions[key], unitCode: "CMT" } : undefined;
+  if (product.dimensions.diameter != null)
+    extraProps.push({ "@type": "PropertyValue", name: "Diameter", value: product.dimensions.diameter, unitCode: "CMT" });
   // Spec values link to the department filtered by that value ("More in Rattan").
   const department = trail[0]?.path ?? product.category.path;
   const specs =
@@ -126,19 +148,27 @@ async function ProductContent({ params }: Props) {
         data={{
           "@context": "https://schema.org",
           "@type": "Product",
-          name: product.name,
+          "@id": `${url}#product`,
+          name: displayName(product.name),
           url,
-          brand: { "@type": "Brand", name: "Posh Home Decor" },
-          description: product.description ?? product.note ?? undefined,
+          sku: product.slug,
+          brand: { "@type": "Brand", name: BRAND_NAME },
+          description: product.description?.trim() || productDescription(product, settings.price_prefix),
           image: product.images.map((i) => storageUrl(i.storage_path)),
           category: trail.map((c) => c.name).join(" > "),
+          ...schemaProps,
+          height: size("height"),
+          width: size("width"),
+          depth: size("depth"),
+          additionalProperty: extraProps.length ? extraProps : undefined,
           offers: {
             "@type": "Offer",
             url,
             // "Price on request" products omit price rather than publishing a fake one.
             ...(product.price != null ? { priceCurrency: "GYD", price: product.price } : {}),
             availability: SCHEMA_AVAILABILITY[product.availability],
-            seller: { "@id": `${SITE_URL}/#business` },
+            itemCondition: "https://schema.org/NewCondition",
+            seller: { "@type": "Organization", "@id": `${SITE_URL}/#business`, name: BRAND_NAME, url: SITE_URL },
           },
         }}
       />
