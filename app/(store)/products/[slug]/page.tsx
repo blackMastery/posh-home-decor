@@ -209,7 +209,7 @@ async function ProductContent({ params }: Props) {
               <Price price={product.price} compareAt={product.compare_at_price} prefix={settings.price_prefix} />
             </p>
             {product.description && (
-              <p className="mt-6 max-w-prose text-[16px] leading-relaxed font-light text-ink-soft">{product.description}</p>
+              <p className="mt-6 max-w-prose whitespace-pre-line text-[16px] leading-relaxed font-light text-ink-soft">{product.description.trim()}</p>
             )}
 
             <div className="mt-8">
