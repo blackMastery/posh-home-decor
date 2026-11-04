@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { duplicateProduct, saveProduct, searchProductsForRelated, setStatus } from "@/app/admin/actions/products";
 import { createClient } from "@/lib/supabase/browser";
-import { formatNumber, parseMoney } from "@/lib/format/money";
+import { discountPercent, formatNumber, parseMoney, priceAfterDiscount } from "@/lib/format/money";
 import { relativeTime } from "@/lib/format/time";
 import { slugify } from "@/lib/slug";
 import { AVAILABILITIES, DIMS, type Attribute, type AttributeValue, type Availability, type DimKey } from "@/lib/catalog/types";
@@ -508,7 +508,7 @@ export function ProductForm({
       </div>
 
       {/* 3. Price */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_1fr_120px]">
         <div>
           <label htmlFor={`${ids}-price`} className={label}>
             Price (GYD)
@@ -540,6 +540,13 @@ export function ProductForm({
             <p className="mt-1.5 text-[13px] text-[#2F5320]">Shows as Sale</p>
           ) : null}
         </div>
+        <DiscountInput
+          id={`${ids}-pct`}
+          labelClass={label}
+          price={price}
+          compareAt={compareAt}
+          onApply={(next) => setV((p) => ({ ...p, ...next }))}
+        />
       </div>
 
       {/* Codes */}
@@ -927,6 +934,76 @@ function MoneyInput({
           onChange(n == null ? "" : formatNumber(Math.min(n, 99_999_999)));
         }}
       />
+    </div>
+  );
+}
+
+/**
+ * "% off" — type a percent and the Price is recalculated from the Was price.
+ * If there's no Was price yet, the current Price becomes the Was price first.
+ * Clearing it (on blur) ends the sale: Price goes back to the Was price.
+ */
+function DiscountInput({
+  id,
+  labelClass,
+  price,
+  compareAt,
+  onApply,
+}: {
+  id: string;
+  labelClass: string;
+  price: number | null;
+  compareAt: number | null;
+  onApply: (next: { price: string; compareAtPrice: string }) => void;
+}) {
+  // While typing we show the raw text; otherwise the % derived from the two prices.
+  const [draft, setDraft] = useState<string | null>(null);
+  const base = compareAt ?? price;
+  const derived = discountPercent(price, compareAt);
+  const value = draft ?? (derived != null ? String(derived) : "");
+
+  function apply(text: string) {
+    if (base == null) return;
+    const pct = Number.parseInt(text, 10);
+    if (text === "") {
+      if (compareAt != null) onApply({ price: formatNumber(compareAt), compareAtPrice: "" });
+      return;
+    }
+    if (pct >= 1 && pct <= 99) {
+      onApply({ price: formatNumber(priceAfterDiscount(base, pct)), compareAtPrice: formatNumber(base) });
+    }
+  }
+
+  return (
+    <div className="col-span-2 sm:col-span-1">
+      <label htmlFor={id} className={labelClass}>
+        % off
+      </label>
+      <div className="relative">
+        <input
+          id={id}
+          inputMode="numeric"
+          autoComplete="off"
+          className="field pr-8"
+          placeholder={base == null ? "—" : "e.g. 25"}
+          disabled={base == null}
+          value={value}
+          aria-describedby={`${id}-hint`}
+          onChange={(e) => {
+            const text = e.target.value.replace(/\D/g, "").slice(0, 2);
+            setDraft(text);
+            if (text !== "") apply(text);
+          }}
+          onBlur={() => {
+            if (draft === "") apply("");
+            setDraft(null);
+          }}
+        />
+        <span className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-muted">%</span>
+      </div>
+      <p id={`${id}-hint`} className="mt-1.5 text-[13px] text-muted">
+        {base == null ? "Add a price first" : derived != null ? `Shows “${derived}% off”` : "Sets Price from Was price"}
+      </p>
     </div>
   );
 }

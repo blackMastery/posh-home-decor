@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/admin/auth";
-import { formatPriceOrRequest } from "@/lib/format/money";
+import { discountPercent, formatPriceOrRequest } from "@/lib/format/money";
 import { toAvailability } from "@/lib/catalog/types";
 import { PoshImage } from "@/components/ui/posh-image";
 import { AvailabilitySwitch } from "@/components/admin/availability-switch";
@@ -101,7 +101,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                   <p className="truncate text-[13px] text-muted">
                     {formatPriceOrRequest(p.price)}
                     {p.price != null && p.compare_at_price != null && p.compare_at_price > p.price && (
-                      <span className="ml-1 text-brown">· Sale</span>
+                      <span className="ml-1 text-brown">· Sale {discountPercent(p.price, p.compare_at_price) ?? ""}{discountPercent(p.price, p.compare_at_price) != null && "% off"}</span>
                     )}{" "}
                     · {p.category_name}
                   </p>

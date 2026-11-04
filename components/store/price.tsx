@@ -1,23 +1,27 @@
 import type { Availability } from "@/lib/catalog/types";
-import { formatPrice, PRICE_ON_REQUEST } from "@/lib/format/money";
+import { discountPercent, formatPrice, PRICE_ON_REQUEST } from "@/lib/format/money";
 
 export function Price({
   price,
   compareAt,
   prefix = "$",
   className = "",
+  showDiscount = true,
 }: {
   price: number | null;
   compareAt?: number | null;
   prefix?: string;
   className?: string;
+  /** Show the "25% off" pill when on sale. */
+  showDiscount?: boolean;
 }) {
   if (price == null) {
     return <span className={`text-ink-soft ${className}`}>{PRICE_ON_REQUEST}</span>;
   }
   const onSale = compareAt != null && compareAt > price;
+  const pct = showDiscount ? discountPercent(price, compareAt) : null;
   return (
-    <span className={`inline-flex items-baseline gap-2 ${className}`}>
+    <span className={`inline-flex flex-wrap items-baseline gap-x-2 gap-y-1 ${className}`}>
       {onSale && (
         <s className="text-muted text-[0.85em] font-normal">
           <span className="sr-only">Was </span>
@@ -28,6 +32,11 @@ export function Price({
         {onSale && <span className="sr-only">Now </span>}
         {formatPrice(price, prefix)}
       </span>
+      {pct != null && (
+        <span className="self-center bg-error/10 px-1.5 py-1 text-[11px] leading-none font-medium tracking-[0.06em] text-error uppercase">
+          {pct}% off
+        </span>
+      )}
     </span>
   );
 }
