@@ -4,7 +4,7 @@ import Image, { type ImageLoaderProps, type ImageProps } from "next/image";
 import { IMAGE_TRANSFORM } from "@/lib/env";
 import { renderUrl, storageUrl, type Bucket } from "@/lib/images";
 
-function supabaseLoader({ src, width, quality }: ImageLoaderProps) {
+export function supabaseLoader({ src, width, quality }: ImageLoaderProps) {
   // "contain" scales proportionally. Supabase's default ("cover") keeps the original
   // height when only width is given, returning a cropped centre strip of the photo.
   return renderUrl(src, { width, quality: quality ?? 75, resize: "contain" });

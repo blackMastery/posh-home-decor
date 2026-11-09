@@ -330,7 +330,7 @@ export async function searchProductsForRelated(q: string, excludeId: string) {
   const term = q.trim().slice(0, 60).replace(/[%_\\]/g, (m) => `\\${m}`);
   let query = supabase
     .from("product_cards")
-    .select("id, name, image_path, status, category_name")
+    .select("id, name, slug, image_path, status, category_name, price, compare_at_price")
     .neq("status", "archived")
     .order("updated_at", { ascending: false })
     .limit(8);
@@ -343,6 +343,9 @@ export async function searchProductsForRelated(q: string, excludeId: string) {
     imagePath: r.image_path,
     status: r.status!,
     categoryName: r.category_name,
+    slug: r.slug!,
+    price: r.price,
+    compareAt: r.compare_at_price,
   }));
 }
 

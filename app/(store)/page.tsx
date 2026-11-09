@@ -5,12 +5,15 @@ import { PoshImage } from "@/components/ui/posh-image";
 import { ArrowRight } from "@/components/ui/icons";
 import { JsonLd } from "@/components/store/json-ld";
 import { HomeHero } from "@/components/store/home-hero";
+import { HeroCarousel } from "@/components/store/hero-carousel";
+import { getHeroSlides } from "@/lib/data/hero";
 import { SITE_URL } from "@/lib/env";
 import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/seo";
 import { ADDRESS, LANDLINE, MAPS_URL, WHATSAPP } from "@/lib/contact";
 
 export default async function HomePage() {
-  const [categories, newest, comingSoon] = await Promise.all([
+  const [heroSlides, categories, newest, comingSoon] = await Promise.all([
+    getHeroSlides(),
     getCategories(),
     getNewArrivals(4),
     getComingSoon(4),
@@ -68,8 +71,8 @@ export default async function HomePage() {
         }}
       />
 
-      {/* 1. Hero */}
-      <HomeHero />
+      {/* 1. Hero: admin slides, or the built-in collage when none are live */}
+      {heroSlides.length > 0 ? <HeroCarousel slides={heroSlides} /> : <HomeHero />}
 
       {/* 2. Shop by category */}
       {tiles.length > 0 && (

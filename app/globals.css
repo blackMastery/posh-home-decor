@@ -162,6 +162,16 @@
 }
 
 /* Hero accent: slow gold light sweep across the italic words. */
+/* Hero carousel: active dot fills over the autoplay interval. */
+@keyframes hero-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @keyframes hero-shimmer {
   to {
     background-position: -200% 0;

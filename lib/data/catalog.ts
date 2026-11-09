@@ -28,6 +28,7 @@ export const TAGS = {
   redirects: "redirects",
   gallery: "gallery",
   attributes: "attributes",
+  hero: "hero",
 } as const;
 
 export const CARD_COLUMNS =

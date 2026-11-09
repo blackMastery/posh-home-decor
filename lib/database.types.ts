@@ -258,6 +258,150 @@ export type Database = {
         }
         Relationships: []
       }
+      hero_slide_stats: {
+        Row: {
+          clicks: number
+          day: string
+          slide_id: string
+          views: number
+        }
+        Insert: {
+          clicks?: number
+          day: string
+          slide_id: string
+          views?: number
+        }
+        Update: {
+          clicks?: number
+          day?: string
+          slide_id?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_slide_stats_slide_id_fkey"
+            columns: ["slide_id"]
+            isOneToOne: false
+            referencedRelation: "hero_slides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hero_slides: {
+        Row: {
+          alt: string
+          body: string
+          category_id: string | null
+          created_at: string
+          cta_label: string
+          desktop_height: number | null
+          desktop_image_path: string | null
+          desktop_width: number | null
+          ends_at: string | null
+          eyebrow: string
+          headline: string
+          id: string
+          internal_name: string
+          is_visible: boolean
+          kind: string
+          link_type: string
+          link_url: string | null
+          mobile_height: number | null
+          mobile_image_path: string
+          mobile_width: number | null
+          product_id: string | null
+          scrim: string
+          show_price: boolean
+          sort_order: number
+          starts_at: string | null
+          text_position: string
+          text_tone: string
+          updated_at: string
+        }
+        Insert: {
+          alt?: string
+          body?: string
+          category_id?: string | null
+          created_at?: string
+          cta_label?: string
+          desktop_height?: number | null
+          desktop_image_path?: string | null
+          desktop_width?: number | null
+          ends_at?: string | null
+          eyebrow?: string
+          headline?: string
+          id?: string
+          internal_name: string
+          is_visible?: boolean
+          kind?: string
+          link_type?: string
+          link_url?: string | null
+          mobile_height?: number | null
+          mobile_image_path: string
+          mobile_width?: number | null
+          product_id?: string | null
+          scrim?: string
+          show_price?: boolean
+          sort_order?: number
+          starts_at?: string | null
+          text_position?: string
+          text_tone?: string
+          updated_at?: string
+        }
+        Update: {
+          alt?: string
+          body?: string
+          category_id?: string | null
+          created_at?: string
+          cta_label?: string
+          desktop_height?: number | null
+          desktop_image_path?: string | null
+          desktop_width?: number | null
+          ends_at?: string | null
+          eyebrow?: string
+          headline?: string
+          id?: string
+          internal_name?: string
+          is_visible?: boolean
+          kind?: string
+          link_type?: string
+          link_url?: string | null
+          mobile_height?: number | null
+          mobile_image_path?: string
+          mobile_width?: number | null
+          product_id?: string | null
+          scrim?: string
+          show_price?: boolean
+          sort_order?: number
+          starts_at?: string | null
+          text_position?: string
+          text_tone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_slides_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hero_slides_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hero_slides_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inquiries: {
         Row: {
           address: string | null
@@ -660,6 +804,13 @@ export type Database = {
         Args: { p_from: string; p_to: string }
         Returns: undefined
       }
+      hero_next_start: { Args: Record<PropertyKey, never>; Returns: string }
+      hero_stats_summary: {
+        Args: { p_since30: string; p_since7: string }
+        Returns: { clicks30: number; clicks7: number; slide_id: string; views30: number; views7: number }[]
+      }
+      record_hero_events: { Args: { p_events: Json; p_ip_hash: string }; Returns: undefined }
+      reorder_hero_slides: { Args: { p_ids: string[] }; Returns: undefined }
       attribute_value_usage: {
         Args: Record<PropertyKey, never>
         Returns: {

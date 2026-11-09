@@ -34,6 +34,21 @@ await expectBlocked('link gallery product', () =>
   db.from('gallery_photo_products').insert({ photo_id: '00000000-0000-0000-0000-000000000000', product_id: '00000000-0000-0000-0000-000000000000' }).select())
 await expectBlocked('upload to site/gallery', () =>
   db.storage.from('site').upload(`gallery/${Date.now()}.jpg`, new Blob(['x'], { type: 'image/jpeg' })))
+await expectBlocked('read hidden hero slides', () => db.from('hero_slides').select('id').eq('is_visible', false))
+await expectBlocked('insert hero slide', () =>
+  db.from('hero_slides').insert({ internal_name: 'x', mobile_image_path: 'hero/00000000-0000-0000-0000-000000000000.jpg' }).select())
+await expectBlocked('update hero slide', () =>
+  db.from('hero_slides').update({ is_visible: true }).neq('id', '00000000-0000-0000-0000-000000000000').select())
+await expectBlocked('read scheduled hero slides', () => db.from('hero_slides').select('id').gt('starts_at', new Date().toISOString()))
+await expectBlocked('read hero internal_name', () => db.from('hero_slides').select('internal_name').limit(1))
+await expectBlocked('call record_hero_events', () =>
+  db.rpc('record_hero_events', { p_ip_hash: 'a'.repeat(64), p_events: [{ id: '00000000-0000-0000-0000-000000000000', v: 1, c: 5 }] }))
+await expectBlocked('call reorder_hero_slides', () => db.rpc('reorder_hero_slides', { p_ids: [] }))
+await expectBlocked('read hero stats', () => db.from('hero_slide_stats').select('*').limit(1))
+await expectBlocked('write hero stats', () =>
+  db.from('hero_slide_stats').insert({ slide_id: '00000000-0000-0000-0000-000000000000', day: '2026-01-01', views: 999 }).select())
+await expectBlocked('upload to site/hero', () =>
+  db.storage.from('site').upload(`hero/${Date.now()}.jpg`, new Blob(['x'], { type: 'image/jpeg' })))
 
 const { data: pub } = await db.from('products').select('id').eq('status', 'published')
 results.push([pub?.length ? 'PASS' : 'FAIL', 'can read published products', `rows: ${pub?.length ?? 0}`])
