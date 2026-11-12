@@ -65,6 +65,7 @@ export function ProductFilters({
         <select aria-label="Availability" className={select} value={avail} onChange={(e) => update("avail", e.target.value, "all")}>
           <option value="all">Any availability</option>
           <option value="available">Available</option>
+          <option value="preorder">Pre-order</option>
           <option value="coming_soon">Coming soon</option>
           <option value="sold_out">Sold out</option>
         </select>

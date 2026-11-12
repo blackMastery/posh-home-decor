@@ -56,7 +56,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/og/products/[slug]"
     product.price != null && product.compare_at_price != null && product.compare_at_price > product.price
       ? formatPrice(product.compare_at_price, settings.price_prefix)
       : null;
-  const status = STATUS[product.availability];
+  const status = product.is_preorder ? "Pre-order" : STATUS[product.availability];
   const eyebrow = product.category.name.toUpperCase();
   const footer = `Order on WhatsApp · ${new URL(PRODUCTION_URL).host.replace(/^www\./, "")}`;
 

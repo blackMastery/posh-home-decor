@@ -21,6 +21,8 @@ type Item = {
   line_total: number | null;
   /** Absent on inquiries sent before "Coming soon" existed. */
   availability?: Availability;
+  /** Absent on inquiries sent before Pre-order existed. */
+  is_preorder?: boolean;
   was_available: boolean;
   image_path: string | null;
 };
@@ -123,6 +125,7 @@ export default async function InquiryDetail({ params }: PageProps<"/admin/inquir
                     {(i.availability ?? (i.was_available ? "available" : "sold_out")) === "sold_out" &&
                       " · marked sold out when sent"}
                     {i.availability === "coming_soon" && " · pre-order (coming soon)"}
+                    {i.is_preorder && " · pre-order"}
                   </p>
                   {notes.length > 0 && (
                     <p className="mt-1 flex flex-wrap gap-1.5">

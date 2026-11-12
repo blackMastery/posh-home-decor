@@ -20,7 +20,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
   const status = ["draft", "published", "archived", "all"].includes(one("status")) ? one("status") : "active";
   // "soldout" kept so old bookmarks still work.
   const availRaw = one("avail") === "soldout" ? "sold_out" : one("avail");
-  const avail = ["available", "coming_soon", "sold_out"].includes(availRaw) ? availRaw : "all";
+  const avail = ["available", "preorder", "coming_soon", "sold_out"].includes(availRaw) ? availRaw : "all";
   const cat = one("cat");
   const data = one("data") === "missing" ? "missing" : "";
   const sort = ["name", "newest"].includes(one("sort")) ? one("sort") : "edited";
@@ -31,12 +31,14 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
 
   let query = supabase
     .from("product_cards")
-    .select("id, name, slug, price, compare_at_price, availability, status, image_path, category_name, category_path, updated_at, item_code", {
+    .select("id, name, slug, price, compare_at_price, availability, is_preorder, status, image_path, category_name, category_path, updated_at, item_code", {
       count: "exact",
     });
   if (status === "active") query = query.neq("status", "archived");
   else if (status !== "all") query = query.eq("status", status);
-  if (avail !== "all") query = query.eq("availability", avail);
+  // "preorder" uses the view's effective flag (Available + flagged).
+  if (avail === "preorder") query = query.eq("is_preorder", true);
+  else if (avail !== "all") query = query.eq("availability", avail);
   if (catPath) query = query.or(`category_path.eq.${catPath},category_path.like.${catPath}/%`);
   if (data === "missing") query = query.or(MISSING_DATA_FILTER);
   if (q) {
@@ -102,7 +104,8 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                     {formatPriceOrRequest(p.price)}
                     {p.price != null && p.compare_at_price != null && p.compare_at_price > p.price && (
                       <span className="ml-1 text-brown">· Sale {discountPercent(p.price, p.compare_at_price) ?? ""}{discountPercent(p.price, p.compare_at_price) != null && "% off"}</span>
-                    )}{" "}
+                    )}
+                    {p.is_preorder && <span className="ml-1 text-bronze">· Pre-order</span>}{" "}
                     · {p.category_name}
                   </p>
                   <StatusChip status={p.status!} />

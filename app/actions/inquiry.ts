@@ -110,7 +110,7 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
     for (const i of v.items) qtyById.set(i.productId, Math.min(MAX_QTY, (qtyById.get(i.productId) ?? 0) + i.qty));
     const { data: products, error: productsError } = await db
       .from("product_cards")
-      .select("id, slug, name, note, price, availability, image_path")
+      .select("id, slug, name, note, price, availability, is_preorder, image_path")
       .in("id", [...qtyById.keys()])
       .eq("status", "published");
     if (productsError) throw productsError;
@@ -129,6 +129,7 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
           qty,
           line_total: p.price == null ? null : p.price * qty,
           availability,
+          is_preorder: availability === "available" && Boolean(p.is_preorder),
           was_available: availability !== "sold_out",
           image_path: p.image_path,
         };
@@ -148,7 +149,13 @@ export async function submitInquiry(input: InquiryInput): Promise<InquiryResult>
       const message = buildOrderMessage(
         {
           ref,
-          lines: items.map((i) => ({ name: i.name, qty: i.qty, lineTotal: i.line_total, availability: i.availability })),
+          lines: items.map((i) => ({
+            name: i.name,
+            qty: i.qty,
+            lineTotal: i.line_total,
+            availability: i.availability,
+            preorder: i.is_preorder,
+          })),
           subtotal,
           fulfilment: v.fulfilment,
           name: v.name,

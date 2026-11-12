@@ -33,6 +33,8 @@ export type ProductCardData = {
   availability: Availability;
   is_new: boolean;
   is_on_sale: boolean;
+  /** Available and flagged Pre-order: sold now, delivered later. */
+  is_preorder: boolean;
   image_path: string | null;
   image_width: number | null;
   image_height: number | null;
@@ -99,11 +101,12 @@ export function isDimKey(value: unknown): value is DimKey {
   return DIMS.some((d) => d.key === value);
 }
 
-export type ShowFlag = "new" | "sale" | "coming-soon";
+export type ShowFlag = "new" | "sale" | "coming-soon" | "pre-order";
 export const SHOW_FLAGS: { value: ShowFlag; param: string; label: string }[] = [
   { value: "new", param: "new", label: "New in" },
   { value: "sale", param: "sale", label: "On sale" },
   { value: "coming-soon", param: "soon", label: "Coming soon" },
+  { value: "pre-order", param: "preorder", label: "Pre-order" },
 ];
 
 /** Either bound may be open. */

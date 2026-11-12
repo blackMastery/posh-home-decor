@@ -14,7 +14,7 @@ import {
 //
 //   ?color=gold,black&material=glass   attribute values (slugs)
 //   ?price=5000-20000  ?h=20-40  ?dia=-30   ranges (either bound optional)
-//   ?new=1&sale=1&soon=1                New in / On sale / Coming soon (OR'd)
+//   ?new=1&sale=1&soon=1&preorder=1     New in / On sale / Coming soon / Pre-order (OR'd)
 //   ?instock=1                          hide sold out
 
 const PRICE_PARAM = "price";
@@ -24,8 +24,13 @@ const MAX_VALUES = 30;
 /** Every param a filter can own (attribute slugs come on top of these). */
 export const FILTER_PARAMS = [PRICE_PARAM, IN_STOCK_PARAM, ...DIMS.map((d) => d.param), ...SHOW_FLAGS.map((f) => f.param)];
 
-/** Landing routes that preset one New / Sale / Coming soon toggle. */
-export const PRESET_ROUTES: Record<ShowFlag, string> = { new: "/shop/new", sale: "/shop/sale", "coming-soon": "/shop/coming-soon" };
+/** Landing routes that preset one New / Sale / Coming soon / Pre-order toggle. */
+export const PRESET_ROUTES: Record<ShowFlag, string> = {
+  new: "/shop/new",
+  sale: "/shop/sale",
+  "coming-soon": "/shop/coming-soon",
+  "pre-order": "/shop/pre-order",
+};
 
 type ParamSource = URLSearchParams | Record<string, string | string[] | undefined>;
 

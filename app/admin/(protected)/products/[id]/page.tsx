@@ -55,6 +55,7 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
           note: p.note ?? "",
           description: p.description ?? "",
           availability: toAvailability(p.availability),
+          isPreorder: p.is_preorder,
           detailsText: p.details_text ?? "",
           careText: p.care_text ?? "",
           deliveryText: p.delivery_text ?? "",

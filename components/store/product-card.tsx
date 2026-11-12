@@ -27,7 +27,7 @@ export function ProductCard({ product, priority = false }: { product: ProductCar
             )}
         </div>
         <div className="pointer-events-none absolute top-3 left-3">
-          <ProductBadge availability={product.availability} onSale={product.is_on_sale} isNew={product.is_new} />
+          <ProductBadge availability={product.availability} onSale={product.is_on_sale} isNew={product.is_new} preorder={product.is_preorder} />
         </div>
         {!soldOut && <QuickAdd productId={product.id} name={product.name} />}
       </div>

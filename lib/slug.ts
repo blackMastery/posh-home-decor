@@ -1,4 +1,4 @@
-export const RESERVED_CATEGORY_SLUGS = ["new", "sale", "coming-soon"] as const;
+export const RESERVED_CATEGORY_SLUGS = ["new", "sale", "coming-soon", "pre-order"] as const;
 
 export function slugify(input: string) {
   return input

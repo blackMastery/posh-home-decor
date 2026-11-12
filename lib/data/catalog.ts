@@ -32,7 +32,7 @@ export const TAGS = {
 } as const;
 
 export const CARD_COLUMNS =
-  "id, slug, name, note, price, compare_at_price, availability, is_new, is_on_sale, image_path, image_width, image_height, image_alt, color_swatches";
+  "id, slug, name, note, price, compare_at_price, availability, is_new, is_on_sale, is_preorder, image_path, image_width, image_height, image_alt, color_swatches";
 
 function swatches(raw: unknown): ColorSwatch[] {
   if (!Array.isArray(raw)) return [];
@@ -55,6 +55,7 @@ export function card(row: Record<string, unknown>): ProductCardData {
     availability: toAvailability(row.availability),
     is_new: Boolean(row.is_new),
     is_on_sale: Boolean(row.is_on_sale),
+    is_preorder: Boolean(row.is_preorder),
     image_path: (row.image_path as string | null) ?? null,
     image_width: (row.image_width as number | null) ?? null,
     image_height: (row.image_height as number | null) ?? null,
@@ -171,6 +172,7 @@ export async function fetchShopFacets(query: FacetQuery): Promise<FacetResult> {
       new: Number(raw.show?.new ?? 0),
       sale: Number(raw.show?.sale ?? 0),
       "coming-soon": Number(raw.show?.["coming-soon"] ?? 0),
+      "pre-order": Number(raw.show?.["pre-order"] ?? 0),
     },
     price: raw.price ? { min: Number(raw.price.min), max: Number(raw.price.max) } : null,
     dims: Object.fromEntries(
@@ -190,7 +192,7 @@ export function getShopFacets(query: FacetQuery) {
   return hasActiveFilters(query.filters) ? fetchShopFacets(query) : getShopFacetsCached(query);
 }
 
-/** Counts for the virtual New / Sale / Coming soon filters (hidden when empty). */
+/** Counts for the virtual New / Sale / Coming soon / Pre-order filters (hidden when empty). */
 export async function getVirtualCounts() {
   "use cache";
   cacheLife("days");
@@ -202,6 +204,7 @@ export async function getVirtualCounts() {
     newCount: Number(show.new ?? 0),
     saleCount: Number(show.sale ?? 0),
     comingSoonCount: Number(show["coming-soon"] ?? 0),
+    preOrderCount: Number(show["pre-order"] ?? 0),
   };
 }
 
@@ -279,6 +282,7 @@ export type ProductDetail = {
   availability: Availability;
   is_new: boolean;
   is_on_sale: boolean;
+  is_preorder: boolean;
   details_text: string | null;
   care_text: string | null;
   delivery_text: string | null;
@@ -305,7 +309,7 @@ export async function getProductBySlug(slug: string): Promise<ProductDetail | nu
     .maybeSingle();
   if (error) throw error;
   if (!p) return null;
-  const { data: flags } = await db.from("product_cards").select("is_new, is_on_sale").eq("id", p.id).single();
+  const { data: flags } = await db.from("product_cards").select("is_new, is_on_sale, is_preorder").eq("id", p.id).single();
   const { links, height_cm, width_cm, depth_cm, diameter_cm, ...rest } = p;
   const dimValues: Record<string, number | null> = { height_cm, width_cm, depth_cm, diameter_cm };
   const dimensions: ProductDetail["dimensions"] = {};
@@ -320,6 +324,7 @@ export async function getProductBySlug(slug: string): Promise<ProductDetail | nu
     availability: toAvailability(p.availability),
     is_new: Boolean(flags?.is_new),
     is_on_sale: Boolean(flags?.is_on_sale),
+    is_preorder: Boolean(flags?.is_preorder),
     category: p.category as ProductDetail["category"],
     images: [...(p.images ?? [])].sort((a, b) => a.sort_order - b.sort_order),
   };

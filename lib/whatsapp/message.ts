@@ -7,6 +7,8 @@ export type MessageLine = {
   /** null = price on request. */
   lineTotal: number | null;
   availability: Availability;
+  /** Available and flagged Pre-order. */
+  preorder?: boolean;
 };
 
 export type MessageInput = {
@@ -33,16 +35,25 @@ const FLAGS: Record<Availability, string> = {
   sold_out: " (marked sold out on the site)",
 };
 
+const PREORDER_FLAG = " (pre-order)";
+
+/** Availability note after a line; pre-order applies only to Available pieces. */
+function flagFor(l: MessageLine, condensed: boolean) {
+  if (l.availability === "available") return l.preorder ? PREORDER_FLAG : "";
+  if (condensed) return l.availability === "coming_soon" ? FLAGS.coming_soon : "";
+  return FLAGS[l.availability];
+}
+
 function render(input: MessageInput, mode: Mode) {
   const p = input.pricePrefix ?? "$";
   const out: string[] = [];
   out.push(`Hello Posh! I'd like to order (${input.ref}):`, "");
   for (const l of input.lines) {
     if (mode === "condensed") {
-      out.push(`• ${l.qty} × ${l.name}${l.availability === "coming_soon" ? FLAGS.coming_soon : ""}`);
+      out.push(`• ${l.qty} × ${l.name}${flagFor(l, true)}`);
     } else {
       const price = l.lineTotal == null ? "price on request" : formatPrice(l.lineTotal, p);
-      out.push(`• ${l.qty} × ${l.name} — ${price}${FLAGS[l.availability]}`);
+      out.push(`• ${l.qty} × ${l.name} — ${price}${flagFor(l, false)}`);
     }
   }
   if (mode === "condensed") out.push(`(full list saved under ${input.ref})`);

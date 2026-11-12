@@ -28,6 +28,8 @@ export type ProductFormValues = {
   note: string;
   description: string;
   availability: Availability;
+  /** Sold now, delivered later. Only applies while Available. */
+  isPreorder: boolean;
   detailsText: string;
   careText: string;
   deliveryText: string;
@@ -259,6 +261,7 @@ export function ProductForm({
         compareAtPrice: compareAt,
         categoryId: v.categoryId,
         availability: v.availability,
+        isPreorder: v.availability === "available" && v.isPreorder,
         detailsText: v.detailsText,
         careText: v.careText,
         deliveryText: v.deliveryText,
@@ -682,11 +685,34 @@ export function ProductForm({
         </div>
         <p className="mt-2 text-[13px] text-muted">
           {v.availability === "available"
-            ? "Customers can add it to their bag."
+            ? v.isPreorder
+              ? "Shown with a Pre-order badge. Customers order now; you deliver when it arrives."
+              : "Customers can add it to their bag."
             : v.availability === "coming_soon"
               ? "Shown with a Coming soon badge. Customers can pre-order."
               : "Switch to Sold out after it sells in the showroom."}
         </p>
+        {v.availability === "available" && (
+          <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-between gap-4 border-t border-line pt-3">
+            <span>
+              <span className="block text-[15px] font-medium text-brown-deep">Pre-order</span>
+              <span className="block text-[13px] text-muted">For pieces you sell now but deliver later, e.g. made to order.</span>
+            </span>
+            <input
+              type="checkbox"
+              role="switch"
+              checked={v.isPreorder}
+              onChange={(e) => set("isPreorder", e.target.checked)}
+              className="peer sr-only"
+            />
+            <span
+              aria-hidden
+              className="relative inline-block h-7 w-12 shrink-0 rounded-full bg-line-strong transition-colors peer-checked:bg-[#3E7B2A] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brown"
+            >
+              <span className={`absolute top-1 left-1 h-5 w-5 rounded-full bg-cream-raised shadow transition-transform ${v.isPreorder ? "translate-x-5" : ""}`} />
+            </span>
+          </label>
+        )}
       </fieldset>
 
       {/* 7. Accordions */}

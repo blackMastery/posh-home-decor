@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     twitter: { card: "summary_large_image", title, description, images: [image] },
     other: {
       "product:brand": BRAND_NAME,
-      "product:availability": OG_AVAILABILITY[p.availability],
+      "product:availability": p.is_preorder ? "preorder" : OG_AVAILABILITY[p.availability],
       "product:condition": "new",
       "product:retailer_item_id": p.slug,
       ...(p.price != null ? { "product:price:amount": String(p.price), "product:price:currency": "GYD" } : {}),
@@ -166,7 +166,7 @@ async function ProductContent({ params }: Props) {
             url,
             // "Price on request" products omit price rather than publishing a fake one.
             ...(product.price != null ? { priceCurrency: "GYD", price: product.price } : {}),
-            availability: SCHEMA_AVAILABILITY[product.availability],
+            availability: product.is_preorder ? "https://schema.org/PreOrder" : SCHEMA_AVAILABILITY[product.availability],
             itemCondition: "https://schema.org/NewCondition",
             seller: { "@type": "Organization", "@id": `${SITE_URL}/#business`, name: BRAND_NAME, url: SITE_URL },
           },
@@ -199,7 +199,7 @@ async function ProductContent({ params }: Props) {
           <div className="nav:sticky nav:top-[150px] nav:self-start">
             <div className="flex items-center gap-3">
               <p className="eyebrow text-bronze">{product.category.name}</p>
-              <ProductBadge availability={product.availability} onSale={product.is_on_sale} isNew={product.is_new} />
+              <ProductBadge availability={product.availability} onSale={product.is_on_sale} isNew={product.is_new} preorder={product.is_preorder} />
             </div>
             <h1 className="mt-3 font-display text-[clamp(34px,4vw,54px)] leading-[1.02] font-medium text-brown-deep">
               {displayName(product.name)}
@@ -218,6 +218,7 @@ async function ProductContent({ params }: Props) {
                 name={product.name}
                 price={product.price}
                 availability={product.availability}
+                preorder={product.is_preorder}
                 productUrl={url}
               />
               <p className="mt-3 text-[13px] text-muted">

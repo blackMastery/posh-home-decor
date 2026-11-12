@@ -162,7 +162,7 @@ function LookPanel({ photo }: { photo: GalleryPhoto }) {
                     <div className={`relative aspect-[4/5] overflow-hidden ${p.image_path ? "bg-white" : "bg-sand-image"} ${p.availability === "sold_out" ? "opacity-70" : ""}`}>
                       {p.image_path && <PoshImage path={p.image_path} alt="" fill sizes="148px" className="object-contain p-2" />}
                       <span className="absolute top-2 left-2">
-                        <ProductBadge availability={p.availability} onSale={p.is_on_sale} isNew={false} />
+                        <ProductBadge availability={p.availability} onSale={p.is_on_sale} isNew={false} preorder={p.is_preorder} />
                       </span>
                     </div>
                     <p className="mt-1.5 line-clamp-2 text-[14px] leading-tight font-medium text-brown-deep">{displayName(p.name)}</p>

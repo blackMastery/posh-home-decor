@@ -93,7 +93,13 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
   const preview = buildOrderMessage(
     {
       ref: "PH-•••••",
-      lines: lines.map((l) => ({ name: l.product.name, qty: l.qty, lineTotal: l.lineTotal, availability: l.product.availability })),
+      lines: lines.map((l) => ({
+            name: l.product.name,
+            qty: l.qty,
+            lineTotal: l.lineTotal,
+            availability: l.product.availability,
+            preorder: l.product.is_preorder,
+          })),
       subtotal,
       fulfilment: f.fulfilment,
       name: f.name.trim() || "Your name",
@@ -171,7 +177,13 @@ function CheckoutForm({ initial }: { initial: CustomerDetails }) {
       url = buildOrderMessage(
         {
           ref,
-          lines: lines.map((l) => ({ name: l.product.name, qty: l.qty, lineTotal: l.lineTotal, availability: l.product.availability })),
+          lines: lines.map((l) => ({
+            name: l.product.name,
+            qty: l.qty,
+            lineTotal: l.lineTotal,
+            availability: l.product.availability,
+            preorder: l.product.is_preorder,
+          })),
           subtotal,
           fulfilment: f.fulfilment,
           name: f.name.trim(),

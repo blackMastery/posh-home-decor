@@ -41,34 +41,42 @@ export function Price({
   );
 }
 
-/** Badge precedence: Sold out > Coming soon > Sale > New. */
+/** Badge precedence: Sold out > Coming soon > Pre-order > Sale > New. */
 export function ProductBadge({
   availability,
   onSale,
   isNew,
+  preorder = false,
 }: {
   availability: Availability;
   onSale: boolean;
   isNew: boolean;
+  /** Effective pre-order (Available + flagged). */
+  preorder?: boolean;
 }) {
+  const isPreorder = availability === "available" && preorder;
   const label =
     availability === "sold_out"
       ? "Sold out"
       : availability === "coming_soon"
         ? "Coming soon"
-        : onSale
-          ? "Sale"
-          : isNew
-            ? "New"
-            : null;
+        : isPreorder
+          ? "Pre-order"
+          : onSale
+            ? "Sale"
+            : isNew
+              ? "New"
+              : null;
   if (!label) return null;
   const tone =
     availability === "sold_out"
       ? "bg-ink-soft text-cream"
       : availability === "coming_soon"
         ? "bg-gold text-brown-deep"
-        : onSale
-          ? "bg-brown text-cream"
-          : "bg-cream-raised text-brown-deep border border-line-strong";
+        : isPreorder
+          ? "bg-bronze text-cream"
+          : onSale
+            ? "bg-brown text-cream"
+            : "bg-cream-raised text-brown-deep border border-line-strong";
   return <span className={`eyebrow px-2.5 py-1.5 text-[10px] ${tone}`}>{label}</span>;
 }

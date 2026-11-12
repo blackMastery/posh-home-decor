@@ -608,6 +608,7 @@ export type Database = {
           first_published_at: string | null
           height_cm: number | null
           id: string
+          is_preorder: boolean
           item_code: string | null
           item_upc_code: string | null
           name: string
@@ -635,6 +636,7 @@ export type Database = {
           first_published_at?: string | null
           height_cm?: number | null
           id?: string
+          is_preorder?: boolean
           item_code?: string | null
           item_upc_code?: string | null
           name: string
@@ -662,6 +664,7 @@ export type Database = {
           first_published_at?: string | null
           height_cm?: number | null
           id?: string
+          is_preorder?: boolean
           item_code?: string | null
           item_upc_code?: string | null
           name?: string
@@ -778,6 +781,7 @@ export type Database = {
           image_width: number | null
           is_new: boolean | null
           is_on_sale: boolean | null
+          is_preorder: boolean | null
           item_code: string | null
           item_upc_code: string | null
           name: string | null
@@ -894,6 +898,7 @@ export type Database = {
           image_width: number
           is_new: boolean
           is_on_sale: boolean
+          is_preorder: boolean
           name: string
           note: string
           price: number
@@ -936,6 +941,7 @@ export type Database = {
           image_width: number | null
           is_new: boolean | null
           is_on_sale: boolean | null
+          is_preorder: boolean | null
           item_code: string | null
           item_upc_code: string | null
           name: string | null

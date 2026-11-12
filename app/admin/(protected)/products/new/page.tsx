@@ -39,6 +39,7 @@ export default async function NewProductPage() {
           note: "",
           description: "",
           availability: "available",
+          isPreorder: false,
           detailsText: defaults.details,
           careText: defaults.care,
           deliveryText: defaults.delivery,

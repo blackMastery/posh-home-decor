@@ -30,6 +30,7 @@ type Resolved =
   | { kind: "new" }
   | { kind: "sale" }
   | { kind: "coming-soon" }
+  | { kind: "pre-order" }
   | { kind: "category"; category: Category; trail: Category[] };
 
 async function resolve(segments: string[] | undefined): Promise<Resolved | null> {
@@ -37,6 +38,7 @@ async function resolve(segments: string[] | undefined): Promise<Resolved | null>
   if (segments.length === 1 && segments[0] === "new") return { kind: "new" };
   if (segments.length === 1 && segments[0] === "sale") return { kind: "sale" };
   if (segments.length === 1 && segments[0] === "coming-soon") return { kind: "coming-soon" };
+  if (segments.length === 1 && segments[0] === "pre-order") return { kind: "pre-order" };
   const path = segments.map((s) => decodeURIComponent(s).toLowerCase()).join("/");
   const categories = await getCategories();
   const category = categories.find((c) => c.path === path);
@@ -63,14 +65,16 @@ function title(r: Resolved) {
       return "Sale";
     case "coming-soon":
       return "Coming soon";
+    case "pre-order":
+      return "Pre-order";
     case "category":
       return r.category.name;
   }
 }
 
-/** New / Sale / Coming soon landing pages preset that toggle. */
+/** New / Sale / Coming soon / Pre-order landing pages preset that toggle. */
 function presetOf(r: Resolved): ShowFlag | null {
-  return r.kind === "new" || r.kind === "sale" || r.kind === "coming-soon" ? r.kind : null;
+  return r.kind === "new" || r.kind === "sale" || r.kind === "coming-soon" || r.kind === "pre-order" ? r.kind : null;
 }
 
 function basePath(r: Resolved) {

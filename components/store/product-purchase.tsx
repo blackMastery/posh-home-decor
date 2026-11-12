@@ -15,6 +15,7 @@ export function ProductPurchase({
   name,
   price,
   availability,
+  preorder = false,
   productUrl,
 }: {
   productId: string;
@@ -22,6 +23,8 @@ export function ProductPurchase({
   /** null = price on request. */
   price: number | null;
   availability: Availability;
+  /** Available and flagged Pre-order. */
+  preorder?: boolean;
   productUrl: string;
 }) {
   const [qty, setQty] = useState(1);
@@ -35,7 +38,7 @@ export function ProductPurchase({
         ? priceQuestionMessage(name, productUrl)
         : productQuestionMessage(name, productUrl),
   );
-  const action = availability === "coming_soon" ? "Pre-order" : "Add to bag";
+  const action = availability === "coming_soon" || (availability === "available" && preorder) ? "Pre-order" : "Add to bag";
 
   return (
     <div className="space-y-3">
